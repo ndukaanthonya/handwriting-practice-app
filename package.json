@@ -1,0 +1,10 @@
+{
+    "name": "handwriting-practice-app",
+    "version": "1.0.0",
+    "description": "Handwriting practice worksheet generator",
+    "dependencies": {
+      "nodemailer": "^6.9.7",
+      "google-spreadsheet": "^4.1.2"
+    }
+  }
+
