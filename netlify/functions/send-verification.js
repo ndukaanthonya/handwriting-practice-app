@@ -1,10 +1,23 @@
-const nodemailer = require('nodemailer');
-
 exports.handler = async (event, context) => {
-    // Only allow POST requests
+    // Import nodemailer inside the handler
+    const nodemailer = require('nodemailer');
+    
+    // Enable CORS
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    };
+
+    // Handle preflight
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers, body: '' };
+    }
+
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
+            headers,
             body: JSON.stringify({ error: 'Method not allowed' })
         };
     }
@@ -12,14 +25,33 @@ exports.handler = async (event, context) => {
     try {
         const { email, code } = JSON.parse(event.body);
 
-        // Create transporter (using Gmail - you'll need to configure this)
-        const transporter = nodemailer.createTransporter({
+        console.log('Attempting to send email to:', email);
+        console.log('Using EMAIL_USER:', process.env.EMAIL_USER);
+
+        // Validate environment variables
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            throw new Error('Email credentials not configured');
+        }
+
+        // Create transporter
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
             }
         });
+
+        console.log('Transporter created, verifying connection...');
+
+        // Verify connection
+        try {
+            await transporter.verify();
+            console.log('SMTP connection verified successfully');
+        } catch (verifyError) {
+            console.error('SMTP verification failed:', verifyError);
+            throw verifyError;
+        }
 
         // Email content
         const mailOptions = {
@@ -43,19 +75,31 @@ exports.handler = async (event, context) => {
             `
         };
 
-        // Send email
-        await transporter.sendMail(mailOptions);
+        console.log('Sending email...');
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully:', info.messageId);
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ success: true })
+            headers,
+            body: JSON.stringify({ success: true, messageId: info.messageId })
         };
 
     } catch (error) {
         console.error('Error sending email:', error);
+        console.error('Error details:', {
+            message: error.message,
+            code: error.code,
+            stack: error.stack
+        });
+
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Failed to send verification code' })
+            headers,
+            body: JSON.stringify({ 
+                error: 'Failed to send verification code',
+                details: error.message
+            })
         };
     }
 };
