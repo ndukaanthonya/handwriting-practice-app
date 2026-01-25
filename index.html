@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwriting Practice Generator</title>
+    
+    <!-- Google Fonts - 100+ Handwriting/Cursive Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Allura&family=Arizonia&family=Alex+Brush&family=Architects+Daughter&family=Bad+Script&family=Ballet&family=Berkshire+Swash&family=Bilbo&family=Bilbo+Swash+Caps&family=Caveat&family=Charm&family=Courgette&family=Damion&family=Dancing+Script&family=Dawning+of+a+New+Day&family=Dekko&family=Delius&family=Devonshire&family=Dr+Sugiyama&family=Eagle+Lake&family=Engagement&family=Ephesis&family=Euphoria+Script&family=Felipa&family=Fondamento&family=Give+You+Glory&family=Gloria+Hallelujah&family=Grand+Hotel&family=Great+Vibes&family=Homemade+Apple&family=Indie+Flower&family=Italianno&family=Just+Another+Hand&family=Kalam&family=Kaushan+Script&family=Kristi&family=La+Belle+Aurore&family=League+Script&family=Leckerli+One&family=Liu+Jian+Mao+Cao&family=Lobster&family=Lobster+Two&family=Long+Cang&family=Loved+by+the+King&family=Lovers+Quarrel&family=Ma+Shan+Zheng&family=Marck+Script&family=Meddon&family=Meie+Script&family=Merienda&family=Miss+Fajardose&family=Monsieur+La+Doulaise&family=Montez&family=Mr+Dafoe&family=Mr+De+Haviland&family=Mrs+Saint+Delafield&family=Mrs+Sheppards&family=Nanum+Pen+Script&family=Neucha&family=Norican&family=Nothing+You+Could+Do&family=Over+the+Rainbow&family=Pacifico&family=Parisienne&family=Passero+One&family=Patrick+Hand&family=Permanent+Marker&family=Petit+Formal+Script&family=Pinyon+Script&family=Princess+Sofia&family=Qwigley&family=Rancho&family=Reenie+Beanie&family=Rochester&family=Rock+Salt&family=Rosarivo&family=Rouge+Script&family=Ruge+Boogie&family=Ruthie&family=Sacramento&family=Satisfy&family=Schoolbell&family=Sedgwick+Ave&family=Shadows+Into+Light&family=Shojumaru&family=Smooch&family=Snippet&family=Sofadi+One&family=Sofia&family=Stalemate&family=Sue+Ellen+Francisco&family=Sunshiney&family=Swanky+and+Moo+Moo&family=Tangerine&family=The+Girl+Next+Door&family=Tillana&family=Vibur&family=Vollkorn&family=Walter+Turncoat&family=Yellowtail&family=Yeseva+One&family=Zeyada&family=Zhi+Mang+Xing&family=Playwrite+AU+NSW&family=Playwrite+AU+VIC&family=Playwrite+BE+VLG&family=Playwrite+CL&family=Playwrite+CU&family=Playwrite+DE+Grund&family=Playwrite+GB+S&family=Playwrite+IN&family=Playwrite+IT+Moderna&family=Playwrite+MX&family=Playwrite+NZ&family=Playwrite+US+Modern&family=Borel&family=Gideon+Roman&family=Handlee&family=Julee&family=Klee+One&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>✍️ Handwriting Practice</h1>
+        <p class="subtitle">Generate beautiful practice worksheets</p>
+
+        <div class="form-group">
+            <label for="font-select">Choose Font Style</label>
+            <select id="font-select">
+                <!-- Fonts will be populated by JavaScript -->
+            </select>
+            <div class="font-count" id="font-count"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="text-select">Practice Text</label>
+            <select id="text-select">
+                <option value="pangram">The Quick Brown Fox (Pangram)</option>
+                <option value="alphabet">Alphabet (A-Z)</option>
+                <option value="numbers">Numbers (0-9)</option>
+                <option value="lowercase">Lowercase Letters (a-z)</option>
+                <option value="common">Common Words</option>
+            </select>
+        </div>
+
+        <div class="preview-section">
+            <div class="preview-label">Preview</div>
+            <div class="preview-text" id="preview">The quick brown fox</div>
+        </div>
+
+        <button id="generate-btn">📄 Download PDF Worksheet</button>
+        <div class="loading" id="loading">Generating your worksheet...</div>
+        <div class="success-message" id="success-message">
+            ✅ Success! Your worksheet is downloading. Check your email for a copy!
+        </div>
+    </div>
+
+    <!-- Email Modal -->
+    <div class="modal" id="email-modal">
+        <div class="modal-content">
+            <h2 class="modal-title">📧 Enter Your Email</h2>
+            <p class="modal-subtitle">We'll send you a copy of your worksheet</p>
+            
+            <div class="form-group">
+                <label for="user-email">Email Address</label>
+                <input type="email" id="user-email" placeholder="your@email.com" required>
+                <div class="error-message" id="email-error">Please enter a valid email address</div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="cancel-btn">Cancel</button>
+                <button id="confirm-btn">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden A4 Container -->
+    <div id="a4-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

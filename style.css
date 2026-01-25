@@ -1,0 +1,283 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+    max-width: 500px;
+    width: 100%;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 28px;
+    text-align: center;
+}
+
+.subtitle {
+    color: #666;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #444;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+select, input[type="email"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #333;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+select {
+    cursor: pointer;
+}
+
+select:hover, input[type="email"]:hover {
+    border-color: #667eea;
+}
+
+select:focus, input[type="email"]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+input[type="email"].error {
+    border-color: #e74c3c;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+.preview-section {
+    margin: 25px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.preview-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.preview-text {
+    font-size: 32px;
+    color: #333;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 10px;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    margin-top: 15px;
+    color: #667eea;
+    font-size: 14px;
+}
+
+.loading.active {
+    display: block;
+}
+
+.success-message {
+    display: none;
+    text-align: center;
+    margin-top: 15px;
+    padding: 15px;
+    background: #d4edda;
+    color: #155724;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.success-message.show {
+    display: block;
+}
+
+.font-count {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin-top: -15px;
+    margin-bottom: 20px;
+}
+
+/* A4 Paper Container - Hidden until generation */
+#a4-container {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    width: 210mm;
+    height: 297mm;
+    background: white;
+    padding: 20mm;
+    box-sizing: border-box;
+}
+
+.practice-line {
+    position: relative;
+    margin-bottom: 15mm;
+    padding-bottom: 8mm;
+}
+
+.practice-text {
+    font-size: 48px;
+    color: #c0c0c0;
+    line-height: 1.5;
+    margin-bottom: 5mm;
+}
+
+.guide-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #000;
+}
+
+.worksheet-title {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10mm;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.modal-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    flex: 1;
+}
+
+.btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #d0d0d0;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
