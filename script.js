@@ -249,7 +249,7 @@ async function sendEmailNotification(email, font, textType, fileName) {
         };
 
         await emailjs.send(
-            'YOUR_SERVICE_ID',      // REPLACE THIS with your EmailJS service ID
+            'service_d5xxbx1',      // REPLACE THIS with your EmailJS service ID
             'YOUR_TEMPLATE_ID',     // REPLACE THIS with your EmailJS template ID
             templateParams
         );
