@@ -26,22 +26,33 @@ const handwritingFonts = [
     'Borel', 'Gideon Roman', 'Handlee', 'Julee', 'Klee One'
 ];
 
-// Get all the HTML elements we need to work with
+// Get all HTML elements
 const fontSelect = document.getElementById('font-select');
 const textSelect = document.getElementById('text-select');
+const sizeSelect = document.getElementById('size-select');
 const preview = document.getElementById('preview');
 const generateBtn = document.getElementById('generate-btn');
 const loading = document.getElementById('loading');
 const successMessage = document.getElementById('success-message');
 const a4Container = document.getElementById('a4-container');
 const fontCount = document.getElementById('font-count');
+const themeToggle = document.getElementById('theme-toggle');
 
-// Modal elements
+// Email modal elements
 const emailModal = document.getElementById('email-modal');
 const userEmailInput = document.getElementById('user-email');
 const emailError = document.getElementById('email-error');
-const confirmBtn = document.getElementById('confirm-btn');
+const sendCodeBtn = document.getElementById('send-code-btn');
 const cancelBtn = document.getElementById('cancel-btn');
+
+// Code modal elements
+const codeModal = document.getElementById('code-modal');
+const displayEmail = document.getElementById('display-email');
+const verificationCodeInput = document.getElementById('verification-code');
+const codeError = document.getElementById('code-error');
+const verifyCodeBtn = document.getElementById('verify-code-btn');
+const codeCancelBtn = document.getElementById('code-cancel-btn');
+const resendCodeBtn = document.getElementById('resend-code-btn');
 
 // Text options for practice
 const textOptions = {
@@ -52,12 +63,28 @@ const textOptions = {
     common: 'the and for are but not you all can her was one our'
 };
 
-// Initialize EmailJS with your public key
-(function() {
-    emailjs.init("YOUR_PUBLIC_KEY"); // REPLACE THIS with your actual EmailJS public key
-})();
+// Store verification data temporarily
+let verificationData = {
+    email: '',
+    code: '',
+    timestamp: null
+};
 
-// Populate the font dropdown with all 105 fonts
+// Initialize theme
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+}
+
+// Toggle theme
+themeToggle.addEventListener('click', function() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+});
+
+// Populate font dropdown
 handwritingFonts.sort().forEach(font => {
     const option = document.createElement('option');
     option.value = font;
@@ -65,10 +92,9 @@ handwritingFonts.sort().forEach(font => {
     fontSelect.appendChild(option);
 });
 
-// Display how many fonts are available
 fontCount.textContent = `${handwritingFonts.length} handwriting fonts available`;
 
-// Function to update the preview when user changes selections
+// Update preview
 function updatePreview() {
     const selectedFont = fontSelect.value;
     const selectedTextKey = textSelect.value;
@@ -78,17 +104,80 @@ function updatePreview() {
     preview.textContent = text.substring(0, 30) + (text.length > 30 ? '...' : '');
 }
 
-// Listen for changes in the dropdowns
 fontSelect.addEventListener('change', updatePreview);
 textSelect.addEventListener('change', updatePreview);
 
-// Function to validate email address
+// Email validation
 function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
 }
 
-// Show email modal when user clicks "Download PDF"
+// Generate 6-digit verification code
+function generateVerificationCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Send verification code via Netlify Function
+async function sendVerificationCode(email) {
+    try {
+        const code = generateVerificationCode();
+        
+        // Store code and timestamp
+        verificationData.email = email;
+        verificationData.code = code;
+        verificationData.timestamp = Date.now();
+
+        // Call Netlify Function to send email
+        const response = await fetch('/.netlify/functions/send-verification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, code })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send verification code');
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error sending code:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Save email data to Google Sheets via Netlify Function
+async function saveEmailData(email, font, textType, textSize) {
+    try {
+        const response = await fetch('/.netlify/functions/save-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email,
+                font,
+                textType,
+                textSize,
+                timestamp: new Date().toISOString(),
+                verified: true
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to save email data');
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error saving email:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Show email modal
 generateBtn.addEventListener('click', function() {
     emailModal.classList.add('active');
     userEmailInput.value = '';
@@ -96,85 +185,186 @@ generateBtn.addEventListener('click', function() {
     userEmailInput.classList.remove('error');
 });
 
-// Close modal when user clicks "Cancel"
+// Cancel email modal
 cancelBtn.addEventListener('click', function() {
     emailModal.classList.remove('active');
 });
 
-// When user clicks "Continue" in the modal
-confirmBtn.addEventListener('click', async function() {
+// Send verification code
+sendCodeBtn.addEventListener('click', async function() {
     const email = userEmailInput.value.trim();
     
-    // Validate the email
     if (!validateEmail(email)) {
+        emailError.textContent = 'Please enter a valid email address';
         emailError.classList.add('show');
         userEmailInput.classList.add('error');
         return;
     }
 
-    // Email is valid, close modal and generate PDF
-    emailModal.classList.remove('active');
-    await generatePDF(email);
+    // Disable button and show loading
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.textContent = 'Sending...';
+
+    // Send verification code
+    const result = await sendVerificationCode(email);
+
+    if (result.success) {
+        // Hide email modal, show code modal
+        emailModal.classList.remove('active');
+        codeModal.classList.add('active');
+        displayEmail.textContent = email;
+        verificationCodeInput.value = '';
+        codeError.classList.remove('show');
+    } else {
+        emailError.textContent = 'Failed to send code. Please try again.';
+        emailError.classList.add('show');
+    }
+
+    // Re-enable button
+    sendCodeBtn.disabled = false;
+    sendCodeBtn.textContent = 'Send Code';
 });
 
-// Allow user to press Enter key in email input
+// Resend code
+resendCodeBtn.addEventListener('click', async function() {
+    resendCodeBtn.disabled = true;
+    resendCodeBtn.textContent = 'Sending...';
+
+    const result = await sendVerificationCode(verificationData.email);
+
+    if (result.success) {
+        alert('New code sent! Check your email.');
+    } else {
+        alert('Failed to send code. Please try again.');
+    }
+
+    resendCodeBtn.disabled = false;
+    resendCodeBtn.textContent = 'Resend';
+});
+
+// Cancel code modal
+codeCancelBtn.addEventListener('click', function() {
+    codeModal.classList.remove('active');
+    verificationData = { email: '', code: '', timestamp: null };
+});
+
+// Verify code and generate PDF
+verifyCodeBtn.addEventListener('click', async function() {
+    const enteredCode = verificationCodeInput.value.trim();
+    
+    if (enteredCode.length !== 6) {
+        codeError.textContent = 'Please enter a 6-digit code';
+        codeError.classList.add('show');
+        verificationCodeInput.classList.add('error');
+        return;
+    }
+
+    // Check if code expired (10 minutes)
+    const currentTime = Date.now();
+    const codeAge = currentTime - verificationData.timestamp;
+    const tenMinutes = 10 * 60 * 1000;
+
+    if (codeAge > tenMinutes) {
+        codeError.textContent = 'Code expired. Please request a new code.';
+        codeError.classList.add('show');
+        verificationCodeInput.classList.add('error');
+        return;
+    }
+
+    // Verify code
+    if (enteredCode !== verificationData.code) {
+        codeError.textContent = 'Invalid code. Please try again.';
+        codeError.classList.add('show');
+        verificationCodeInput.classList.add('error');
+        return;
+    }
+
+    // Code is valid! Close modal and generate PDF
+    codeModal.classList.remove('active');
+    
+    // Save email data to Google Sheets
+    const selectedFont = fontSelect.value;
+    const selectedTextKey = textSelect.value;
+    const selectedSize = sizeSelect.value;
+    
+    await saveEmailData(verificationData.email, selectedFont, selectedTextKey, selectedSize);
+    
+    // Generate PDF
+    await generatePDF();
+    
+    // Clear verification data
+    verificationData = { email: '', code: '', timestamp: null };
+});
+
+// Allow only numbers in verification code input
+verificationCodeInput.addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+    codeError.classList.remove('show');
+    verificationCodeInput.classList.remove('error');
+});
+
+// Allow Enter key in email input
 userEmailInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
-        confirmBtn.click();
+        sendCodeBtn.click();
     }
 });
 
-// Remove error message when user starts typing
+// Allow Enter key in code input
+verificationCodeInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        verifyCodeBtn.click();
+    }
+});
+
+// Remove error on email input
 userEmailInput.addEventListener('input', function() {
     emailError.classList.remove('show');
     userEmailInput.classList.remove('error');
 });
 
-// Main function to generate the PDF
-async function generatePDF(email) {
-    // Disable the button so user can't click multiple times
+// Generate PDF function
+async function generatePDF() {
     generateBtn.disabled = true;
     loading.classList.add('active');
     successMessage.classList.remove('show');
 
     try {
-        // Get the selected font and text
         const selectedFont = fontSelect.value;
         const selectedTextKey = textSelect.value;
+        const selectedSize = parseFloat(sizeSelect.value);
         const text = textOptions[selectedTextKey];
 
-        // Create the worksheet title
+        // Convert cm to pixels (1cm ≈ 37.8 pixels at 96 DPI)
+        const fontSizePx = selectedSize * 37.8;
+
+        // Create worksheet content
         a4Container.innerHTML = `
             <div class="worksheet-title">Handwriting Practice Worksheet</div>
         `;
 
-        // Decide how many times to repeat the text
-        const repetitions = selectedTextKey === 'alphabet' || selectedTextKey === 'numbers' ? 8 : 6;
-        const lines = [];
-        
-        // Fill the lines array with repeated text
-        for (let i = 0; i < repetitions; i++) {
-            lines.push(text);
-        }
+        // Calculate repetitions based on size
+        const pageHeight = 297; // A4 height in mm
+        const usableHeight = 257; // Subtract margins and title
+        const lineHeightMm = selectedSize * 10 + 15; // Text height + spacing
+        const repetitions = Math.floor(usableHeight / lineHeightMm);
 
-        // Create HTML for each practice line
-        lines.forEach(line => {
+        // Create practice lines
+        for (let i = 0; i < repetitions; i++) {
             const lineDiv = document.createElement('div');
             lineDiv.className = 'practice-line';
             lineDiv.innerHTML = `
-                <div class="practice-text" style="font-family: '${selectedFont}', cursive;">${line}</div>
+                <div class="practice-text" style="font-family: '${selectedFont}', cursive; font-size: ${fontSizePx}px;">${text}</div>
                 <div class="guide-line"></div>
             `;
             a4Container.appendChild(lineDiv);
-        });
+        }
 
-        // Wait for all fonts to load completely
+        // Wait for fonts to load
         await document.fonts.ready;
-        
-        // Wait a bit more to ensure everything is rendered
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 200));
 
-        // Capture the A4 container as an image using html2canvas
+        // Capture with html2canvas
         const canvas = await html2canvas(a4Container, {
             scale: 2,
             useCORS: true,
@@ -182,7 +372,7 @@ async function generatePDF(email) {
             backgroundColor: '#ffffff'
         });
 
-        // Create a new PDF document using jsPDF
+        // Create PDF
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
             orientation: 'portrait',
@@ -190,81 +380,34 @@ async function generatePDF(email) {
             format: 'a4'
         });
 
-        // Convert canvas to image and add to PDF
         const imgData = canvas.toDataURL('image/png');
         pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
         
-        // Create a filename
-        const fileName = `handwriting-practice-${selectedFont.replace(/\s+/g, '-').toLowerCase()}.pdf`;
-        
-        // Download the PDF
+        const fileName = `handwriting-practice-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${selectedSize}cm.pdf`;
         pdf.save(fileName);
 
-        // Get PDF as blob for email attachment
-        const pdfBlob = pdf.output('blob');
-
-        // Store download data (for analytics or backend)
-        const downloadData = {
-            email: email,
-            font: selectedFont,
-            textType: selectedTextKey,
-            timestamp: new Date().toISOString(),
-            fileName: fileName
-        };
-
-        console.log('Download Data:', downloadData);
-        console.log('PDF Blob size:', pdfBlob.size, 'bytes');
-
-        // Send email notification via EmailJS
-        await sendEmailNotification(email, selectedFont, selectedTextKey, fileName);
-        
         // Show success message
         successMessage.classList.add('show');
         setTimeout(() => {
             successMessage.classList.remove('show');
         }, 5000);
 
-        // Clear the A4 container
+        // Clear container
         a4Container.innerHTML = '';
 
     } catch (error) {
         console.error('Error generating PDF:', error);
         alert('Sorry, there was an error generating your worksheet. Please try again.');
     } finally {
-        // Re-enable the button
         generateBtn.disabled = false;
         loading.classList.remove('active');
     }
 }
 
-// Function to send email via EmailJS
-async function sendEmailNotification(email, font, textType, fileName) {
-    try {
-        const templateParams = {
-            to_email: email,
-            font: font,
-            textType: textType,
-            fileName: fileName,
-            timestamp: new Date().toLocaleString()
-        };
-
-        await emailjs.send(
-            'service_d5xxbx1',      // REPLACE THIS with your EmailJS service ID
-            'YOUR_TEMPLATE_ID',     // REPLACE THIS with your EmailJS template ID
-            templateParams
-        );
-
-        console.log('Email sent successfully to:', email);
-    } catch (error) {
-        console.error('Email sending failed:', error);
-        // Don't show error to user - they still got their PDF download
-    }
-}
-
-// Initialize the preview when page loads
+// Initialize
+initTheme();
 document.fonts.ready.then(() => {
     updatePreview();
 });
-
-// Also update preview immediately for faster feedback
 updatePreview();
+``

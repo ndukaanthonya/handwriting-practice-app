@@ -13,11 +13,16 @@
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Dark Mode Toggle -->
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+    </button>
+
     <div class="container">
         <h1>✍️ Handwriting Practice</h1>
         <p class="subtitle">Generate beautiful practice worksheets</p>
@@ -41,23 +46,35 @@
             </select>
         </div>
 
+        <div class="form-group">
+            <label for="size-select">Text Height Size</label>
+            <select id="size-select">
+                <option value="0.5">0.5 cm (Small)</option>
+                <option value="0.6">0.6 cm</option>
+                <option value="0.7">0.7 cm</option>
+                <option value="0.8">0.8 cm</option>
+                <option value="0.9" selected>0.9 cm (Recommended)</option>
+                <option value="1.0">1.0 cm (Large)</option>
+            </select>
+        </div>
+
         <div class="preview-section">
             <div class="preview-label">Preview</div>
             <div class="preview-text" id="preview">The quick brown fox</div>
         </div>
 
         <button id="generate-btn">📄 Download PDF Worksheet</button>
-        <div class="loading" id="loading">Generating your worksheet...</div>
+        <div class="loading" id="loading">Processing...</div>
         <div class="success-message" id="success-message">
-            ✅ Success! Your worksheet is downloading. Check your email for a copy!
+            ✅ Success! Your worksheet is downloading.
         </div>
     </div>
 
-    <!-- Email Modal -->
+    <!-- Email Verification Modal -->
     <div class="modal" id="email-modal">
         <div class="modal-content">
-            <h2 class="modal-title">📧 Enter Your Email</h2>
-            <p class="modal-subtitle">We'll send you a copy of your worksheet</p>
+            <h2 class="modal-title">📧 Verify Your Email</h2>
+            <p class="modal-subtitle">Enter your email to receive a verification code</p>
             
             <div class="form-group">
                 <label for="user-email">Email Address</label>
@@ -67,7 +84,30 @@
 
             <div class="modal-buttons">
                 <button class="btn-secondary" id="cancel-btn">Cancel</button>
-                <button id="confirm-btn">Continue</button>
+                <button id="send-code-btn">Send Code</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Code Modal -->
+    <div class="modal" id="code-modal">
+        <div class="modal-content">
+            <h2 class="modal-title">🔐 Enter Verification Code</h2>
+            <p class="modal-subtitle">We sent a 6-digit code to <strong id="display-email"></strong></p>
+            
+            <div class="form-group">
+                <label for="verification-code">Verification Code</label>
+                <input type="text" id="verification-code" placeholder="000000" maxlength="6" inputmode="numeric" pattern="[0-9]*" required>
+                <div class="error-message" id="code-error">Invalid code. Please try again.</div>
+            </div>
+
+            <div class="resend-code">
+                Didn't receive code? <button class="link-btn" id="resend-code-btn">Resend</button>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="code-cancel-btn">Cancel</button>
+                <button id="verify-code-btn">Verify & Download</button>
             </div>
         </div>
     </div>
