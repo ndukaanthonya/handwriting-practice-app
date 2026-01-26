@@ -338,27 +338,42 @@ async function generatePDF() {
         // Convert cm to pixels (1cm ≈ 37.8 pixels at 96 DPI)
         const fontSizePx = selectedSize * 37.8;
 
-        // Create worksheet content
+        // Create worksheet content with watermark
         a4Container.innerHTML = `
             <div class="worksheet-title">Handwriting Practice Worksheet</div>
         `;
 
-        // Calculate repetitions based on size
+        // Calculate better spacing for more lines
         const pageHeight = 297; // A4 height in mm
-        const usableHeight = 257; // Subtract margins and title
-        const lineHeightMm = selectedSize * 10 + 15; // Text height + spacing
-        const repetitions = Math.floor(usableHeight / lineHeightMm);
+        const headerSpace = 20; // Title and top margin
+        const footerSpace = 25; // Watermark and bottom margin
+        const usableHeight = pageHeight - headerSpace - footerSpace; // ~252mm
+        
+        // Calculate line height based on text size
+        // Smaller spacing between lines for better use of space
+        const lineHeightMm = (selectedSize * 10) + 8; // Reduced from 15 to 8
+        const maxLines = Math.min(25, Math.floor(usableHeight / lineHeightMm));
+
+        console.log(`Generating ${maxLines} practice lines with ${selectedSize}cm text`);
 
         // Create practice lines
-        for (let i = 0; i < repetitions; i++) {
+        for (let i = 0; i < maxLines; i++) {
             const lineDiv = document.createElement('div');
             lineDiv.className = 'practice-line';
+            lineDiv.style.marginBottom = '5mm'; // Reduced spacing between lines
+            lineDiv.style.paddingBottom = '5mm';
             lineDiv.innerHTML = `
                 <div class="practice-text" style="font-family: '${selectedFont}', cursive; font-size: ${fontSizePx}px;">${text}</div>
                 <div class="guide-line"></div>
             `;
             a4Container.appendChild(lineDiv);
         }
+
+        // Add watermark at bottom
+        const watermark = document.createElement('div');
+        watermark.className = 'worksheet-watermark';
+        watermark.textContent = 'Made by Annaelechukwu';
+        a4Container.appendChild(watermark);
 
         // Wait for fonts to load
         await document.fonts.ready;
@@ -395,6 +410,11 @@ async function generatePDF() {
         // Clear container
         a4Container.innerHTML = '';
 
+        // Show Buy Me a Coffee modal after successful download
+        setTimeout(() => {
+            showCoffeeModal();
+        }, 1000);
+
     } catch (error) {
         console.error('Error generating PDF:', error);
         alert('Sorry, there was an error generating your worksheet. Please try again.');
@@ -403,6 +423,35 @@ async function generatePDF() {
         loading.classList.remove('active');
     }
 }
+
+// Buy Me a Coffee Modal
+const coffeeModal = document.getElementById('coffee-modal');
+const coffeeCloseBtn = document.getElementById('coffee-close-btn');
+
+function showCoffeeModal() {
+    // Check if user has dismissed the modal in the last 24 hours
+    const lastDismissed = localStorage.getItem('coffeeDismissed');
+    const now = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+
+    if (!lastDismissed || (now - parseInt(lastDismissed)) > oneDayMs) {
+        coffeeModal.classList.add('active');
+    }
+}
+
+coffeeCloseBtn.addEventListener('click', function() {
+    coffeeModal.classList.remove('active');
+    // Remember that user dismissed it
+    localStorage.setItem('coffeeDismissed', Date.now().toString());
+});
+
+// Also close if user clicks outside the modal
+coffeeModal.addEventListener('click', function(e) {
+    if (e.target === coffeeModal) {
+        coffeeModal.classList.remove('active');
+        localStorage.setItem('coffeeDismissed', Date.now().toString());
+    }
+});
 
 // Initialize
 initTheme();
