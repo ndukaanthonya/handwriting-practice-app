@@ -338,19 +338,20 @@ button:disabled {
     height: 297mm;
     background: white;
     padding: 20mm;
+    padding-bottom: 20mm;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .practice-line {
     position: relative;
-    margin-bottom: 15mm;
-    padding-bottom: 8mm;
+    width: 100%;
 }
 
 .practice-text {
     color: #c0c0c0;
-    line-height: 1.5;
-    margin-bottom: 5mm;
+    line-height: 1.2;
+    margin-bottom: 2mm;
 }
 
 .guide-line {
@@ -364,9 +365,22 @@ button:disabled {
 
 .worksheet-title {
     text-align: center;
-    font-size: 24px;
+    font-size: 20px;
     color: #333;
-    margin-bottom: 10mm;
+    margin-bottom: 8mm;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: bold;
+}
+
+.worksheet-watermark {
+    position: absolute;
+    bottom: 5mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10px;
+    color: #999;
+    font-style: italic;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
