@@ -26,9 +26,11 @@ exports.handler = async (event, context) => {
     try {
         const { email, font, textType, textSize, timestamp, verified } = JSON.parse(event.body);
 
-        console.log('Saving email data:', { email, font, textType, textSize });
-        console.log('Sheet ID:', process.env.GOOGLE_SHEET_ID?.substring(0, 10) + '...');
-        console.log('Service account:', process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL);
+        console.log('=== SAVING EMAIL DATA ===');
+        console.log('Email:', email);
+        console.log('Font:', font);
+        console.log('Text Type:', textType);
+        console.log('Text Size:', textSize);
 
         // Validate environment variables
         if (!process.env.GOOGLE_SHEET_ID) {
@@ -52,70 +54,88 @@ exports.handler = async (event, context) => {
             ],
         });
 
-        console.log('Initializing Google Sheet document...');
-        
-        // Initialize the sheet with JWT auth
+        console.log('Initializing Google Sheet...');
         const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID, serviceAccountAuth);
 
         console.log('Loading sheet info...');
         await doc.loadInfo();
-        console.log('Sheet loaded successfully! Title:', doc.title);
+        console.log('Sheet loaded! Title:', doc.title);
 
         // Get the first sheet
-        const sheet = doc.sheetsByIndex[0];
+        let sheet = doc.sheetsByIndex[0];
         
         if (!sheet) {
-            console.error('No sheets found in the document');
-            throw new Error('No sheets found in the spreadsheet');
+            console.log('No sheet found, creating new sheet...');
+            sheet = await doc.addSheet({ 
+                title: 'Emails',
+                headerValues: ['Email', 'Font', 'Text Type', 'Text Size', 'Timestamp', 'Verified'] 
+            });
+            console.log('New sheet created:', sheet.title);
+        } else {
+            console.log('Using existing sheet:', sheet.title);
         }
 
-        console.log('Using sheet:', sheet.title);
-        console.log('Sheet has', sheet.rowCount, 'rows');
-
-        // Load the header row to ensure it exists
+        // Load the sheet to get current data
         await sheet.loadHeaderRow();
-        console.log('Headers:', sheet.headerValues);
+        console.log('Current headers:', sheet.headerValues);
+        console.log('Current row count:', sheet.rowCount);
 
-        console.log('Adding new row with data...');
+        // Check if headers exist, if not, set them
+        if (!sheet.headerValues || sheet.headerValues.length === 0) {
+            console.log('No headers found, setting headers...');
+            await sheet.setHeaderRow(['Email', 'Font', 'Text Type', 'Text Size', 'Timestamp', 'Verified']);
+            console.log('Headers set successfully');
+        }
+
+        // Load existing rows to check
+        const rows = await sheet.getRows();
+        console.log('Existing rows before adding:', rows.length);
+
+        console.log('Adding new row...');
         
-        // Add the new row
+        // Add the new row - this should APPEND, not replace
         const newRow = await sheet.addRow({
-            Email: email,
-            Font: font,
+            'Email': email,
+            'Font': font,
             'Text Type': textType,
             'Text Size': textSize + ' cm',
-            Timestamp: timestamp,
-            Verified: verified ? 'Yes' : 'No'
+            'Timestamp': timestamp,
+            'Verified': verified ? 'Yes' : 'No'
         });
 
-        console.log('✅ Row added successfully! Row number:', newRow.rowNumber);
+        console.log('✅ Row added successfully!');
+        console.log('New row number:', newRow.rowNumber);
+        
+        // Verify the row was added
+        const updatedRows = await sheet.getRows();
+        console.log('Total rows after adding:', updatedRows.length);
+
+        // Double-check by reading the last row
+        const lastRow = updatedRows[updatedRows.length - 1];
+        console.log('Last row email:', lastRow.get('Email'));
 
         return {
             statusCode: 200,
             headers,
             body: JSON.stringify({ 
                 success: true,
-                rowNumber: newRow.rowNumber 
+                rowNumber: newRow.rowNumber,
+                totalRows: updatedRows.length
             })
         };
 
     } catch (error) {
-        console.error('❌ Error saving to Google Sheets:', error);
+        console.error('❌ ERROR saving to Google Sheets:', error);
         console.error('Error name:', error.name);
         console.error('Error message:', error.message);
-        console.error('Error code:', error.code);
-        
-        if (error.response) {
-            console.error('API Response:', error.response.data);
-        }
+        console.error('Error stack:', error.stack);
 
         return {
             statusCode: 500,
             headers,
             body: JSON.stringify({ 
                 error: 'Failed to save email data',
-                details: error.message,
-                errorType: error.name
+                details: error.message
             })
         };
     }
