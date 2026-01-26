@@ -344,90 +344,112 @@ async function generatePDF() {
         a4Container.style.position = 'absolute';
         a4Container.style.left = '-9999px';
 
-        // Create worksheet title
-        const title = document.createElement('div');
-        title.className = 'worksheet-title';
-        title.textContent = 'Handwriting Practice Worksheet';
-        a4Container.appendChild(title);
-
-        // Calculate spacing for 25 lines
+        // Page dimensions in mm
         const pageHeightMm = 297; // A4 height
-        const topMarginMm = 20; // Space for title
-        const bottomMarginMm = 20; // Space for watermark
-        const usableHeightMm = pageHeightMm - topMarginMm - bottomMarginMm; // 257mm
+        const pageWidthMm = 210; // A4 width
+        const topMarginMm = 20; // Top padding
+        const bottomMarginMm = 20; // Bottom padding
+        const leftRightMarginMm = 20; // Side padding
 
-        // Target 25 lines - calculate spacing needed
-        const targetLines = 25;
-        const totalSpacingMm = usableHeightMm;
-        const spacingPerLineMm = totalSpacingMm / targetLines;
+        // Reserve space for title and watermark
+        const titleHeightMm = 15; // Space for title
+        const watermarkHeightMm = 8; // Space for watermark
 
-        console.log(`Creating ${targetLines} lines with ${spacingPerLineMm.toFixed(2)}mm spacing each`);
+        // Calculate usable height for practice lines
+        const usableHeightMm = pageHeightMm - topMarginMm - bottomMarginMm - titleHeightMm - watermarkHeightMm;
+        // = 297 - 20 - 20 - 15 - 8 = 234mm
 
-        // Create 25 practice lines
-        for (let i = 0; i < targetLines; i++) {
+        // Each line needs: text height + spacing below
+        const textHeightMm = selectedSize * 10; // Convert cm to mm
+        const spacingBelowMm = 5; // Gap between guide line and next text
+        const lineHeightMm = textHeightMm + spacingBelowMm;
+
+        // Calculate how many lines fit
+        const numberOfLines = Math.floor(usableHeightMm / lineHeightMm);
+        
+        console.log('PDF Generation Details:');
+        console.log('- Text size:', selectedSize, 'cm');
+        console.log('- Text height:', textHeightMm, 'mm');
+        console.log('- Line height (text + spacing):', lineHeightMm, 'mm');
+        console.log('- Usable height:', usableHeightMm, 'mm');
+        console.log('- Number of lines that fit:', numberOfLines);
+
+        // Create worksheet title
+        const titleDiv = document.createElement('div');
+        titleDiv.style.textAlign = 'center';
+        titleDiv.style.fontSize = '18px';
+        titleDiv.style.color = '#333';
+        titleDiv.style.fontWeight = 'bold';
+        titleDiv.style.marginBottom = '10mm';
+        titleDiv.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        titleDiv.textContent = 'Handwriting Practice Worksheet';
+        a4Container.appendChild(titleDiv);
+
+        // Create practice lines container
+        const linesContainer = document.createElement('div');
+        linesContainer.style.marginBottom = '10mm';
+        a4Container.appendChild(linesContainer);
+
+        // Create practice lines
+        for (let i = 0; i < numberOfLines; i++) {
             const lineDiv = document.createElement('div');
-            lineDiv.className = 'practice-line';
             lineDiv.style.position = 'relative';
-            lineDiv.style.marginBottom = '0';
-            lineDiv.style.paddingBottom = `${spacingPerLineMm - (selectedSize * 10)}mm`; // Adjust padding based on text height
+            lineDiv.style.marginBottom = `${spacingBelowMm}mm`;
+            lineDiv.style.height = `${textHeightMm}mm`;
             
             const textDiv = document.createElement('div');
-            textDiv.className = 'practice-text';
             textDiv.style.fontFamily = `'${selectedFont}', cursive`;
             textDiv.style.fontSize = `${fontSizePx}px`;
             textDiv.style.color = '#c0c0c0';
-            textDiv.style.lineHeight = '1.2';
-            textDiv.style.marginBottom = '2mm';
+            textDiv.style.lineHeight = '1.0';
+            textDiv.style.height = `${textHeightMm}mm`;
+            textDiv.style.overflow = 'hidden';
             textDiv.textContent = text;
             
             const guideLine = document.createElement('div');
-            guideLine.className = 'guide-line';
             guideLine.style.position = 'absolute';
             guideLine.style.bottom = '0';
             guideLine.style.left = '0';
             guideLine.style.right = '0';
-            guideLine.style.height = '2px';
+            guideLine.style.height = '1.5px';
             guideLine.style.backgroundColor = '#000';
             
             lineDiv.appendChild(textDiv);
             lineDiv.appendChild(guideLine);
-            a4Container.appendChild(lineDiv);
+            linesContainer.appendChild(lineDiv);
         }
 
-        // Add watermark at bottom
-        const watermark = document.createElement('div');
-        watermark.className = 'worksheet-watermark';
-        watermark.style.position = 'absolute';
-        watermark.style.bottom = '5mm';
-        watermark.style.left = '0';
-        watermark.style.right = '0';
-        watermark.style.textAlign = 'center';
-        watermark.style.fontSize = '10px';
-        watermark.style.color = '#999';
-        watermark.style.fontStyle = 'italic';
-        watermark.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-        watermark.textContent = 'Made by Annaelechukwu';
-        a4Container.appendChild(watermark);
+        // Add watermark at bottom with proper spacing
+        const watermarkDiv = document.createElement('div');
+        watermarkDiv.style.position = 'absolute';
+        watermarkDiv.style.bottom = `${bottomMarginMm - 5}mm`;
+        watermarkDiv.style.left = '0';
+        watermarkDiv.style.right = '0';
+        watermarkDiv.style.textAlign = 'center';
+        watermarkDiv.style.fontSize = '9px';
+        watermarkDiv.style.color = '#aaa';
+        watermarkDiv.style.fontStyle = 'italic';
+        watermarkDiv.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        watermarkDiv.textContent = 'Made by Annaelechukwu';
+        a4Container.appendChild(watermarkDiv);
 
         // Wait for fonts to load
         await document.fonts.ready;
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        console.log('Capturing PDF with html2canvas...');
+        console.log('Capturing with html2canvas...');
 
-        // Capture with html2canvas
+        // Capture with html2canvas - exact A4 dimensions
         const canvas = await html2canvas(a4Container, {
             scale: 2,
             useCORS: true,
             logging: false,
             backgroundColor: '#ffffff',
-            width: 794, // A4 width in pixels at 96 DPI (210mm)
-            height: 1123, // A4 height in pixels at 96 DPI (297mm)
-            windowWidth: 794,
-            windowHeight: 1123
+            width: 794, // 210mm at 96 DPI
+            height: 1123 // 297mm at 96 DPI
         });
 
-        console.log('Creating PDF...');
+        console.log('Creating PDF document...');
 
         // Create PDF
         const { jsPDF } = window.jspdf;
@@ -443,6 +465,7 @@ async function generatePDF() {
         const fileName = `handwriting-practice-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${selectedSize}cm.pdf`;
         
         console.log('Saving PDF:', fileName);
+        console.log('Total lines created:', numberOfLines);
         pdf.save(fileName);
 
         // Show success message
