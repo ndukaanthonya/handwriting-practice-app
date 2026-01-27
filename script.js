@@ -26,7 +26,7 @@ const handwritingFonts = [
     'Borel', 'Gideon Roman', 'Handlee', 'Julee', 'Klee One'
 ];
 
-// Get all HTML elements
+// Get all HTML elements (with null checks)
 const fontSelect = document.getElementById('font-select');
 const contentSelect = document.getElementById('content-select');
 const pagesSelect = document.getElementById('pages-select');
@@ -93,25 +93,32 @@ function initTheme() {
 }
 
 // Toggle theme
-themeToggle.addEventListener('click', function() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-});
+if (themeToggle) {
+    themeToggle.addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
+}
 
 // Populate font dropdown
-handwritingFonts.sort().forEach(font => {
-    const option = document.createElement('option');
-    option.value = font;
-    option.textContent = font;
-    fontSelect.appendChild(option);
-});
+if (fontSelect) {
+    handwritingFonts.sort().forEach(font => {
+        const option = document.createElement('option');
+        option.value = font;
+        option.textContent = font;
+        fontSelect.appendChild(option);
+    });
+}
 
-fontCount.textContent = `${handwritingFonts.length} handwriting fonts available`;
+if (fontCount) {
+    fontCount.textContent = `${handwritingFonts.length} handwriting fonts available`;
+}
 
 // Update preview
 function updatePreview() {
+    if (!fontSelect || !preview) return;
     const selectedFont = fontSelect.value;
     preview.style.fontFamily = `'${selectedFont}', cursive`;
     preview.textContent = 'The quick brown fox jumps over the lazy dog'.substring(0, 40);
@@ -119,13 +126,14 @@ function updatePreview() {
 
 // Update file size estimate
 function updateSizeEstimate() {
+    if (!pagesSelect || !sizeEstimate) return;
     const pages = parseInt(pagesSelect.value);
-    const estimatedSize = Math.round(pages * 0.2 * 10) / 10; // ~0.2 MB per page
+    const estimatedSize = Math.round(pages * 0.2 * 10) / 10;
     sizeEstimate.textContent = `~${estimatedSize} MB`;
 }
 
-fontSelect.addEventListener('change', updatePreview);
-pagesSelect.addEventListener('change', updateSizeEstimate);
+if (fontSelect) fontSelect.addEventListener('change', updatePreview);
+if (pagesSelect) pagesSelect.addEventListener('change', updateSizeEstimate);
 
 // Email validation
 function validateEmail(email) {
@@ -186,150 +194,204 @@ async function saveEmailData(email, font, contentType, pages, textSize) {
 }
 
 // Show email modal
-generateBtn.addEventListener('click', function() {
-    emailModal.classList.add('active');
-    userEmailInput.value = '';
-    emailError.classList.remove('show');
-    userEmailInput.classList.remove('error');
-});
+if (generateBtn && emailModal) {
+    generateBtn.addEventListener('click', function() {
+        emailModal.classList.add('active');
+        if (userEmailInput) userEmailInput.value = '';
+        if (emailError) emailError.classList.remove('show');
+        if (userEmailInput) userEmailInput.classList.remove('error');
+    });
+}
 
-cancelBtn.addEventListener('click', () => emailModal.classList.remove('active'));
+if (cancelBtn && emailModal) {
+    cancelBtn.addEventListener('click', () => emailModal.classList.remove('active'));
+}
 
 // Send verification code
-sendCodeBtn.addEventListener('click', async function() {
-    const email = userEmailInput.value.trim();
-    
-    if (!validateEmail(email)) {
-        emailError.textContent = 'Please enter a valid email address';
-        emailError.classList.add('show');
-        userEmailInput.classList.add('error');
-        return;
-    }
+if (sendCodeBtn) {
+    sendCodeBtn.addEventListener('click', async function() {
+        const email = userEmailInput ? userEmailInput.value.trim() : '';
+        
+        if (!validateEmail(email)) {
+            if (emailError) {
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.classList.add('show');
+            }
+            if (userEmailInput) userEmailInput.classList.add('error');
+            return;
+        }
 
-    sendCodeBtn.disabled = true;
-    sendCodeBtn.textContent = 'Sending...';
+        sendCodeBtn.disabled = true;
+        sendCodeBtn.textContent = 'Sending...';
 
-    const result = await sendVerificationCode(email);
+        const result = await sendVerificationCode(email);
 
-    if (result.success) {
-        emailModal.classList.remove('active');
-        codeModal.classList.add('active');
-        displayEmail.textContent = email;
-        verificationCodeInput.value = '';
-        codeError.classList.remove('show');
-    } else {
-        emailError.textContent = 'Failed to send code. Please try again.';
-        emailError.classList.add('show');
-    }
+        if (result.success) {
+            if (emailModal) emailModal.classList.remove('active');
+            if (codeModal) codeModal.classList.add('active');
+            if (displayEmail) displayEmail.textContent = email;
+            if (verificationCodeInput) verificationCodeInput.value = '';
+            if (codeError) codeError.classList.remove('show');
+        } else {
+            if (emailError) {
+                emailError.textContent = 'Failed to send code. Please try again.';
+                emailError.classList.add('show');
+            }
+        }
 
-    sendCodeBtn.disabled = false;
-    sendCodeBtn.textContent = 'Send Code';
-});
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.textContent = 'Send Code';
+    });
+}
 
-resendCodeBtn.addEventListener('click', async function() {
-    resendCodeBtn.disabled = true;
-    resendCodeBtn.textContent = 'Sending...';
-    const result = await sendVerificationCode(verificationData.email);
-    if (result.success) alert('New code sent!');
-    else alert('Failed to send code.');
-    resendCodeBtn.disabled = false;
-    resendCodeBtn.textContent = 'Resend';
-});
+if (resendCodeBtn) {
+    resendCodeBtn.addEventListener('click', async function() {
+        resendCodeBtn.disabled = true;
+        resendCodeBtn.textContent = 'Sending...';
+        const result = await sendVerificationCode(verificationData.email);
+        if (result.success) alert('New code sent!');
+        else alert('Failed to send code.');
+        resendCodeBtn.disabled = false;
+        resendCodeBtn.textContent = 'Resend';
+    });
+}
 
-codeCancelBtn.addEventListener('click', function() {
-    codeModal.classList.remove('active');
-    verificationData = { email: '', code: '', timestamp: null };
-});
+if (codeCancelBtn && codeModal) {
+    codeCancelBtn.addEventListener('click', function() {
+        codeModal.classList.remove('active');
+        verificationData = { email: '', code: '', timestamp: null };
+    });
+}
 
-verifyCodeBtn.addEventListener('click', async function() {
-    const enteredCode = verificationCodeInput.value.trim();
-    
-    if (enteredCode.length !== 6) {
-        codeError.textContent = 'Please enter a 6-digit code';
-        codeError.classList.add('show');
-        return;
-    }
+if (verifyCodeBtn) {
+    verifyCodeBtn.addEventListener('click', async function() {
+        const enteredCode = verificationCodeInput ? verificationCodeInput.value.trim() : '';
+        
+        if (enteredCode.length !== 6) {
+            if (codeError) {
+                codeError.textContent = 'Please enter a 6-digit code';
+                codeError.classList.add('show');
+            }
+            return;
+        }
 
-    const codeAge = Date.now() - verificationData.timestamp;
-    if (codeAge > 10 * 60 * 1000) {
-        codeError.textContent = 'Code expired. Request a new code.';
-        codeError.classList.add('show');
-        return;
-    }
+        const codeAge = Date.now() - verificationData.timestamp;
+        if (codeAge > 10 * 60 * 1000) {
+            if (codeError) {
+                codeError.textContent = 'Code expired. Request a new code.';
+                codeError.classList.add('show');
+            }
+            return;
+        }
 
-    if (enteredCode !== verificationData.code) {
-        codeError.textContent = 'Invalid code. Try again.';
-        codeError.classList.add('show');
-        return;
-    }
+        if (enteredCode !== verificationData.code) {
+            if (codeError) {
+                codeError.textContent = 'Invalid code. Try again.';
+                codeError.classList.add('show');
+            }
+            return;
+        }
 
-    codeModal.classList.remove('active');
-    
-    const selectedFont = fontSelect.value;
-    const selectedContent = contentSelect.value;
-    const selectedPages = parseInt(pagesSelect.value);
-    const selectedSize = sizeSelect.value;
-    
-    await saveEmailData(verificationData.email, selectedFont, selectedContent, selectedPages, selectedSize);
-    await generatePDF();
-    
-    verificationData = { email: '', code: '', timestamp: null };
-});
+        if (codeModal) codeModal.classList.remove('active');
+        
+        const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
+        const selectedContent = contentSelect ? contentSelect.value : 'pangram';
+        const selectedPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
+        const selectedSize = sizeSelect ? sizeSelect.value : '0.9';
+        
+        await saveEmailData(verificationData.email, selectedFont, selectedContent, selectedPages, selectedSize);
+        await generatePDF();
+        
+        verificationData = { email: '', code: '', timestamp: null };
+    });
+}
 
-verificationCodeInput.addEventListener('input', function(e) {
-    this.value = this.value.replace(/[^0-9]/g, '');
-    codeError.classList.remove('show');
-});
+if (verificationCodeInput) {
+    verificationCodeInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (codeError) codeError.classList.remove('show');
+    });
+}
 
-userEmailInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendCodeBtn.click(); });
-verificationCodeInput.addEventListener('keypress', e => { if (e.key === 'Enter') verifyCodeBtn.click(); });
-userEmailInput.addEventListener('input', () => {
-    emailError.classList.remove('show');
-    userEmailInput.classList.remove('error');
-});
+if (userEmailInput) {
+    userEmailInput.addEventListener('keypress', e => { 
+        if (e.key === 'Enter' && sendCodeBtn) sendCodeBtn.click(); 
+    });
+    userEmailInput.addEventListener('input', () => {
+        if (emailError) emailError.classList.remove('show');
+        userEmailInput.classList.remove('error');
+    });
+}
+
+if (verificationCodeInput) {
+    verificationCodeInput.addEventListener('keypress', e => { 
+        if (e.key === 'Enter' && verifyCodeBtn) verifyCodeBtn.click(); 
+    });
+}
 
 // Preview PDF
-previewBtn.addEventListener('click', async function() {
-    await generatePreview();
-});
+if (previewBtn) {
+    previewBtn.addEventListener('click', async function() {
+        await generatePreview();
+    });
+}
 
-closePreviewBtn.addEventListener('click', () => previewModal.classList.remove('active'));
-previewCloseBtn.addEventListener('click', () => previewModal.classList.remove('active'));
-previewDownloadBtn.addEventListener('click', () => {
-    previewModal.classList.remove('active');
-    generateBtn.click();
-});
+if (closePreviewBtn && previewModal) {
+    closePreviewBtn.addEventListener('click', () => previewModal.classList.remove('active'));
+}
+
+if (previewCloseBtn && previewModal) {
+    previewCloseBtn.addEventListener('click', () => previewModal.classList.remove('active'));
+}
+
+if (previewDownloadBtn && previewModal && generateBtn) {
+    previewDownloadBtn.addEventListener('click', () => {
+        previewModal.classList.remove('active');
+        generateBtn.click();
+    });
+}
 
 async function generatePreview() {
+    if (!previewBtn) return;
+    
     previewBtn.disabled = true;
     previewBtn.textContent = 'Generating Preview...';
 
     try {
-        const selectedFont = fontSelect.value;
-        const selectedContent = contentSelect.value;
-        const selectedSize = parseFloat(sizeSelect.value);
-        const pages = parseInt(pagesSelect.value);
+        const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
+        const selectedContent = contentSelect ? contentSelect.value : 'pangram';
+        const selectedSize = sizeSelect ? parseFloat(sizeSelect.value) : 0.9;
+        const pages = pagesSelect ? parseInt(pagesSelect.value) : 1;
 
-        // Generate first page only for preview
         const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, 0);
         
-        // Display in preview modal
-        const ctx = previewCanvas.getContext('2d');
-        previewCanvas.width = canvas.width;
-        previewCanvas.height = canvas.height;
-        ctx.drawImage(canvas, 0, 0);
+        if (previewCanvas) {
+            const ctx = previewCanvas.getContext('2d');
+            previewCanvas.width = canvas.width;
+            previewCanvas.height = canvas.height;
+            ctx.drawImage(canvas, 0, 0);
+        }
 
-        // Update preview info
-        document.getElementById('preview-font-name').textContent = selectedFont;
-        document.getElementById('preview-content-name').textContent = contentSelect.options[contentSelect.selectedIndex].text;
-        document.getElementById('preview-pages-name').textContent = pages;
-        document.getElementById('preview-size-name').textContent = selectedSize + ' cm';
-        document.getElementById('preview-file-size').textContent = sizeEstimate.textContent;
+        const previewFontName = document.getElementById('preview-font-name');
+        const previewContentName = document.getElementById('preview-content-name');
+        const previewPagesName = document.getElementById('preview-pages-name');
+        const previewSizeName = document.getElementById('preview-size-name');
+        const previewFileSize = document.getElementById('preview-file-size');
 
-        previewModal.classList.add('active');
+        if (previewFontName) previewFontName.textContent = selectedFont;
+        if (previewContentName && contentSelect) {
+            previewContentName.textContent = contentSelect.options[contentSelect.selectedIndex].text;
+        }
+        if (previewPagesName) previewPagesName.textContent = pages;
+        if (previewSizeName) previewSizeName.textContent = selectedSize + ' cm';
+        if (previewFileSize && sizeEstimate) {
+            previewFileSize.textContent = sizeEstimate.textContent;
+        }
+
+        if (previewModal) previewModal.classList.add('active');
     } catch (error) {
         console.error('Preview error:', error);
-        alert('Error generating preview');
+        alert('Error generating preview: ' + error.message);
     } finally {
         previewBtn.disabled = false;
         previewBtn.textContent = '👁️ Preview PDF';
@@ -338,6 +400,8 @@ async function generatePreview() {
 
 // Create a single PDF page
 async function createPDFPage(font, contentType, textSize, pageNumber) {
+    console.log(`Creating page ${pageNumber + 1}...`);
+    
     const container = document.createElement('div');
     container.style.width = '210mm';
     container.style.height = '297mm';
@@ -369,7 +433,8 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
     if (contentType === 'combined') {
         practiceTexts = textOptions.combined;
     } else {
-        practiceTexts = [textOptions[contentType]];
+        const textContent = textOptions[contentType];
+        practiceTexts = Array.isArray(textContent) ? textContent : [textContent];
     }
 
     // Create lines
@@ -418,8 +483,9 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
     container.appendChild(watermark);
 
     await document.fonts.ready;
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 200));
 
+    console.log('Capturing with html2canvas...');
     const canvas = await html2canvas(container, {
         scale: 1.5,
         useCORS: true,
@@ -428,32 +494,36 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
     });
 
     document.body.removeChild(container);
+    console.log(`Page ${pageNumber + 1} canvas created:`, canvas.width, 'x', canvas.height);
     return canvas;
 }
 
 // Generate full PDF
 async function generatePDF() {
-    generateBtn.disabled = true;
-    loading.classList.add('active');
-    loading.textContent = 'Starting PDF generation...';
-    successMessage.classList.remove('show');
+    console.log('=== PDF GENERATION START ===');
+    
+    if (generateBtn) generateBtn.disabled = true;
+    if (loading) {
+        loading.classList.add('active');
+        loading.textContent = 'Starting PDF generation...';
+    }
+    if (successMessage) successMessage.classList.remove('show');
 
     try {
-        const selectedFont = fontSelect.value;
-        const selectedContent = contentSelect.value;
-        const selectedSize = parseFloat(sizeSelect.value);
-        const totalPages = parseInt(pagesSelect.value);
+        const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
+        const selectedContent = contentSelect ? contentSelect.value : 'pangram';
+        const selectedSize = sizeSelect ? parseFloat(sizeSelect.value) : 0.9;
+        const totalPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
 
-        console.log('Starting PDF generation:', {
+        console.log('Settings:', {
             font: selectedFont,
             content: selectedContent,
             size: selectedSize,
             pages: totalPages
         });
 
-        // Check if jsPDF is loaded
         if (!window.jspdf) {
-            throw new Error('jsPDF library not loaded');
+            throw new Error('jsPDF library not loaded. Please refresh the page.');
         }
 
         const { jsPDF } = window.jspdf;
@@ -464,62 +534,48 @@ async function generatePDF() {
             compress: true
         });
 
-        console.log('PDF document created, generating pages...');
+        console.log('PDF document created');
 
         // Generate pages
         for (let i = 0; i < totalPages; i++) {
-            loading.textContent = `Generating page ${i + 1} of ${totalPages}...`;
-            console.log(`Generating page ${i + 1}/${totalPages}`);
+            if (loading) loading.textContent = `Generating page ${i + 1} of ${totalPages}...`;
+            console.log(`--- Page ${i + 1}/${totalPages} ---`);
             
-            try {
-                const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, i);
-                console.log(`Page ${i + 1} canvas created:`, canvas.width, 'x', canvas.height);
-                
-                const imgData = canvas.toDataURL('image/jpeg', 0.7);
-                console.log(`Page ${i + 1} converted to image`);
-                
-                if (i > 0) {
-                    pdf.addPage();
-                    console.log(`Added new page ${i + 1}`);
-                }
-                
-                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-                console.log(`Page ${i + 1} added to PDF`);
-                
-                // Small delay between pages
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-            } catch (pageError) {
-                console.error(`Error generating page ${i + 1}:`, pageError);
-                throw new Error(`Failed to generate page ${i + 1}: ${pageError.message}`);
-            }
+            const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, i);
+            const imgData = canvas.toDataURL('image/jpeg', 0.7);
+            
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        console.log('All pages generated, preparing download...');
-
-        // Create filename
-        const fileName = `handwriting-practice-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${totalPages}p.pdf`;
-        console.log('Saving PDF as:', fileName);
-
-        // Save PDF
+        const fileName = `handwriting-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${totalPages}p.pdf`;
+        console.log('Saving as:', fileName);
+        
         pdf.save(fileName);
-        console.log('PDF saved successfully!');
+        console.log('=== PDF SAVED SUCCESSFULLY ===');
 
-        // Show success message
-        successMessage.classList.add('show');
-        setTimeout(() => successMessage.classList.remove('show'), 5000);
+        if (successMessage) {
+            successMessage.classList.add('show');
+            setTimeout(() => {
+                if (successMessage) successMessage.classList.remove('show');
+            }, 5000);
+        }
 
-        // Show coffee modal after delay
         setTimeout(() => showCoffeeModal(), 1000);
 
     } catch (error) {
-        console.error('❌ PDF Generation Error:', error);
-        console.error('Error stack:', error.stack);
-        alert(`Error generating PDF: ${error.message}\n\nPlease check the console for details or try with fewer pages.`);
+        console.error('=== PDF GENERATION FAILED ===');
+        console.error('Error:', error.message);
+        console.error('Stack:', error.stack);
+        alert(`Error generating PDF: ${error.message}\n\nPlease try with fewer pages or refresh the page.`);
     } finally {
-        generateBtn.disabled = false;
-        loading.classList.remove('active');
-        loading.textContent = 'Processing...';
+        if (generateBtn) generateBtn.disabled = false;
+        if (loading) {
+            loading.classList.remove('active');
+            loading.textContent = 'Processing...';
+        }
     }
 }
 
@@ -528,6 +584,7 @@ const coffeeModal = document.getElementById('coffee-modal');
 const coffeeCloseBtn = document.getElementById('coffee-close-btn');
 
 function showCoffeeModal() {
+    if (!coffeeModal) return;
     const lastDismissed = localStorage.getItem('coffeeDismissed');
     const now = Date.now();
     if (!lastDismissed || (now - parseInt(lastDismissed)) > 24 * 60 * 60 * 1000) {
@@ -535,30 +592,37 @@ function showCoffeeModal() {
     }
 }
 
-coffeeCloseBtn.addEventListener('click', function() {
-    coffeeModal.classList.remove('active');
-    localStorage.setItem('coffeeDismissed', Date.now().toString());
-});
-
-coffeeModal.addEventListener('click', function(e) {
-    if (e.target === coffeeModal) {
+if (coffeeCloseBtn && coffeeModal) {
+    coffeeCloseBtn.addEventListener('click', function() {
         coffeeModal.classList.remove('active');
         localStorage.setItem('coffeeDismissed', Date.now().toString());
-    }
-});
+    });
+}
+
+if (coffeeModal) {
+    coffeeModal.addEventListener('click', function(e) {
+        if (e.target === coffeeModal) {
+            coffeeModal.classList.remove('active');
+            localStorage.setItem('coffeeDismissed', Date.now().toString());
+        }
+    });
+}
 
 // Get download counter
 async function updateDownloadCount() {
+    const downloadCountEl = document.getElementById('download-count');
+    if (!downloadCountEl) return;
+    
     try {
         const response = await fetch('/.netlify/functions/get-stats');
         const data = await response.json();
         if (data.success) {
-            document.getElementById('download-count').textContent = data.totalDownloads.toLocaleString();
+            downloadCountEl.textContent = data.totalDownloads.toLocaleString();
         } else {
-            document.getElementById('download-count').textContent = '100+';
+            downloadCountEl.textContent = '100+';
         }
     } catch (error) {
-        document.getElementById('download-count').textContent = '100+';
+        downloadCountEl.textContent = '100+';
     }
 }
 
@@ -567,4 +631,6 @@ initTheme();
 updatePreview();
 updateSizeEstimate();
 updateDownloadCount();
-document.fonts.ready.then(() => updatePreview());
+if (fontSelect && preview) {
+    document.fonts.ready.then(() => updatePreview());
+}
