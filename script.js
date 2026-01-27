@@ -435,6 +435,7 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
 async function generatePDF() {
     generateBtn.disabled = true;
     loading.classList.add('active');
+    loading.textContent = 'Starting PDF generation...';
     successMessage.classList.remove('show');
 
     try {
@@ -442,6 +443,18 @@ async function generatePDF() {
         const selectedContent = contentSelect.value;
         const selectedSize = parseFloat(sizeSelect.value);
         const totalPages = parseInt(pagesSelect.value);
+
+        console.log('Starting PDF generation:', {
+            font: selectedFont,
+            content: selectedContent,
+            size: selectedSize,
+            pages: totalPages
+        });
+
+        // Check if jsPDF is loaded
+        if (!window.jspdf) {
+            throw new Error('jsPDF library not loaded');
+        }
 
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
@@ -451,29 +464,58 @@ async function generatePDF() {
             compress: true
         });
 
+        console.log('PDF document created, generating pages...');
+
+        // Generate pages
         for (let i = 0; i < totalPages; i++) {
             loading.textContent = `Generating page ${i + 1} of ${totalPages}...`;
+            console.log(`Generating page ${i + 1}/${totalPages}`);
             
-            const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, i);
-            const imgData = canvas.toDataURL('image/jpeg', 0.7);
-            
-            if (i > 0) pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-            
-            await new Promise(resolve => setTimeout(resolve, 50));
+            try {
+                const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, i);
+                console.log(`Page ${i + 1} canvas created:`, canvas.width, 'x', canvas.height);
+                
+                const imgData = canvas.toDataURL('image/jpeg', 0.7);
+                console.log(`Page ${i + 1} converted to image`);
+                
+                if (i > 0) {
+                    pdf.addPage();
+                    console.log(`Added new page ${i + 1}`);
+                }
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                console.log(`Page ${i + 1} added to PDF`);
+                
+                // Small delay between pages
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+            } catch (pageError) {
+                console.error(`Error generating page ${i + 1}:`, pageError);
+                throw new Error(`Failed to generate page ${i + 1}: ${pageError.message}`);
+            }
         }
 
-        const fileName = `handwriting-practice-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${totalPages}pages.pdf`;
-        pdf.save(fileName);
+        console.log('All pages generated, preparing download...');
 
+        // Create filename
+        const fileName = `handwriting-practice-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${totalPages}p.pdf`;
+        console.log('Saving PDF as:', fileName);
+
+        // Save PDF
+        pdf.save(fileName);
+        console.log('PDF saved successfully!');
+
+        // Show success message
         successMessage.classList.add('show');
         setTimeout(() => successMessage.classList.remove('show'), 5000);
 
+        // Show coffee modal after delay
         setTimeout(() => showCoffeeModal(), 1000);
 
     } catch (error) {
-        console.error('Error generating PDF:', error);
-        alert('Error generating worksheet. Please try again.');
+        console.error('❌ PDF Generation Error:', error);
+        console.error('Error stack:', error.stack);
+        alert(`Error generating PDF: ${error.message}\n\nPlease check the console for details or try with fewer pages.`);
     } finally {
         generateBtn.disabled = false;
         loading.classList.remove('active');
