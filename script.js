@@ -398,7 +398,7 @@ async function generatePreview() {
     }
 }
 
-// Create a single PDF page
+// Create a single PDF page (with proper spacing to prevent overlap)
 async function createPDFPage(font, contentType, textSize, pageNumber) {
     console.log(`Creating page ${pageNumber + 1}...`);
     
@@ -412,19 +412,34 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
     container.style.left = '-9999px';
     document.body.appendChild(container);
 
+    // Calculate spacing to ensure 16 lines per page
+    const TARGET_LINES = 16;
+    const titleHeightMm = 15; // Space for title
+    const watermarkHeightMm = 10; // Space for watermark
+    const usableHeightMm = 297 - 40 - titleHeightMm - watermarkHeightMm; // 297 - (top+bottom padding) - title - watermark = 232mm
+    
+    // Each line gets equal space
+    const spacePerLineMm = usableHeightMm / TARGET_LINES; // ~14.5mm per line
+    
+    // Font size in pixels (with buffer for ascenders/descenders)
     const fontSizePx = textSize * 37.8;
-    const textHeightMm = textSize * 10;
-    const spacingMm = 5;
-    const lineHeightMm = textHeightMm + spacingMm;
-    const usableHeightMm = 234;
-    const linesPerPage = Math.floor(usableHeightMm / lineHeightMm);
+    
+    // Line height should be slightly larger than font size to accommodate ascenders/descenders
+    const lineHeightMultiplier = 1.4; // 40% extra space for tall letters
+    const textLineHeightMm = textSize * 10 * lineHeightMultiplier;
+    
+    // Guide line position (bottom of the allocated space)
+    const guideLinePositionMm = spacePerLineMm - 2; // 2mm from bottom of space
+
+    console.log(`Space per line: ${spacePerLineMm.toFixed(2)}mm, Font size: ${fontSizePx}px, Line height: ${textLineHeightMm.toFixed(2)}mm`);
 
     // Title
     const title = document.createElement('div');
     title.style.textAlign = 'center';
     title.style.fontSize = '18px';
     title.style.fontWeight = 'bold';
-    title.style.marginBottom = '10mm';
+    title.style.marginBottom = '8mm';
+    title.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     title.textContent = `Handwriting Practice - Page ${pageNumber + 1}`;
     container.appendChild(title);
 
@@ -437,48 +452,59 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
         practiceTexts = Array.isArray(textContent) ? textContent : [textContent];
     }
 
-    // Create lines
+    console.log(`Practice texts:`, practiceTexts.length, 'types');
+
+    // Create exactly 16 lines
     let lineCount = 0;
+    const linesPerText = Math.ceil(TARGET_LINES / practiceTexts.length);
+    
     for (let text of practiceTexts) {
-        const repetitions = Math.ceil(linesPerPage / practiceTexts.length);
-        for (let i = 0; i < repetitions && lineCount < linesPerPage; i++) {
-            const lineDiv = document.createElement('div');
-            lineDiv.style.position = 'relative';
-            lineDiv.style.marginBottom = `${spacingMm}mm`;
-            lineDiv.style.height = `${textHeightMm}mm`;
+        for (let i = 0; i < linesPerText && lineCount < TARGET_LINES; i++) {
+            const lineContainer = document.createElement('div');
+            lineContainer.style.position = 'relative';
+            lineContainer.style.height = `${spacePerLineMm}mm`;
+            lineContainer.style.marginBottom = '0';
+            lineContainer.style.overflow = 'hidden'; // Prevent any overflow
 
             const textDiv = document.createElement('div');
             textDiv.style.fontFamily = `'${font}', cursive`;
             textDiv.style.fontSize = `${fontSizePx}px`;
             textDiv.style.color = '#c0c0c0';
-            textDiv.style.lineHeight = '1.0';
+            textDiv.style.lineHeight = `${textLineHeightMm}mm`;
+            textDiv.style.height = `${textLineHeightMm}mm`;
+            textDiv.style.overflow = 'hidden';
+            textDiv.style.position = 'relative';
+            textDiv.style.top = '0';
             textDiv.textContent = text;
 
             const guideLine = document.createElement('div');
             guideLine.style.position = 'absolute';
-            guideLine.style.bottom = '0';
+            guideLine.style.bottom = `${spacePerLineMm - guideLinePositionMm}mm`;
             guideLine.style.left = '0';
             guideLine.style.right = '0';
             guideLine.style.height = '1.5px';
             guideLine.style.backgroundColor = '#000';
 
-            lineDiv.appendChild(textDiv);
-            lineDiv.appendChild(guideLine);
-            container.appendChild(lineDiv);
+            lineContainer.appendChild(textDiv);
+            lineContainer.appendChild(guideLine);
+            container.appendChild(lineContainer);
             lineCount++;
         }
     }
 
+    console.log(`Created ${lineCount} lines`);
+
     // Watermark
     const watermark = document.createElement('div');
     watermark.style.position = 'absolute';
-    watermark.style.bottom = '15mm';
+    watermark.style.bottom = '12mm';
     watermark.style.left = '0';
     watermark.style.right = '0';
     watermark.style.textAlign = 'center';
     watermark.style.fontSize = '9px';
     watermark.style.color = '#aaa';
     watermark.style.fontStyle = 'italic';
+    watermark.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     watermark.textContent = 'Made by Annaelechukwu';
     container.appendChild(watermark);
 
@@ -490,7 +516,9 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
         scale: 1.5,
         useCORS: true,
         logging: false,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        width: 794,
+        height: 1123
     });
 
     document.body.removeChild(container);
