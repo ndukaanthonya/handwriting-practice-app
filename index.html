@@ -26,6 +26,10 @@
     <div class="container">
         <h1>✍️ Handwriting Practice</h1>
         <p class="subtitle">Generate beautiful practice worksheets</p>
+        <div class="stats-badge" id="stats-badge">
+            <span class="stats-icon">📊</span>
+            <span id="download-count">Loading...</span> worksheets generated
+        </div>
 
         <div class="form-group">
             <label for="font-select">Choose Font Style</label>
@@ -36,14 +40,27 @@
         </div>
 
         <div class="form-group">
-            <label for="text-select">Practice Text</label>
-            <select id="text-select">
-                <option value="pangram">The Quick Brown Fox (Pangram)</option>
-                <option value="alphabet">Alphabet (A-Z)</option>
-                <option value="numbers">Numbers (0-9)</option>
-                <option value="lowercase">Lowercase Letters (a-z)</option>
-                <option value="common">Common Words</option>
+            <label for="content-select">Practice Content</label>
+            <select id="content-select">
+                <option value="pangram">Pangram Only</option>
+                <option value="alphabet">Alphabet Only</option>
+                <option value="numbers">Numbers Only</option>
+                <option value="lowercase">Lowercase Only</option>
+                <option value="common">Common Words Only</option>
+                <option value="combined" selected>All Combined (Recommended)</option>
             </select>
+            <div class="content-info">💡 "All Combined" includes pangram, alphabet, numbers & lowercase</div>
+        </div>
+
+        <div class="form-group">
+            <label for="pages-select">Number of Pages</label>
+            <select id="pages-select">
+                <option value="1">1 Page</option>
+                <option value="5">5 Pages</option>
+                <option value="10" selected>10 Pages (Recommended)</option>
+                <option value="20">20 Pages (Full Workbook)</option>
+            </select>
+            <div class="pages-info">📄 Estimated size: <span id="size-estimate">~2 MB</span></div>
         </div>
 
         <div class="form-group">
@@ -59,16 +76,12 @@
         </div>
 
         <div class="preview-section">
-            <div class="preview-label">Preview</div>
+            <div class="preview-label">Font Preview</div>
             <div class="preview-text" id="preview">The quick brown fox</div>
         </div>
 
+        <button id="preview-btn" class="btn-secondary" style="margin-bottom: 10px;">👁️ Preview PDF</button>
         <button id="generate-btn">📄 Download PDF Worksheet</button>
-        <div class="loading" id="loading">Processing...</div>
-        <div class="success-message" id="success-message">
-            ✅ Success! Your worksheet is downloading.
-        </div>
-    </div>
 
     <!-- Email Verification Modal -->
     <div class="modal" id="email-modal">
@@ -113,6 +126,35 @@
     </div>
 
     <!-- Hidden A4 Container -->
+     <!-- PDF Preview Modal -->
+    <div class="modal" id="preview-modal">
+        <div class="modal-content preview-modal-content">
+            <div class="preview-header">
+                <h2 class="modal-title">📄 PDF Preview</h2>
+                <button class="close-preview" id="close-preview-btn">✕</button>
+            </div>
+            
+            <div class="preview-container">
+                <div class="preview-watermark-overlay">PREVIEW</div>
+                <canvas id="preview-canvas"></canvas>
+            </div>
+            
+            <div class="preview-info">
+                <p><strong>Font:</strong> <span id="preview-font-name"></span></p>
+                <p><strong>Content:</strong> <span id="preview-content-name"></span></p>
+                <p><strong>Pages:</strong> <span id="preview-pages-name"></span></p>
+                <p><strong>Text Size:</strong> <span id="preview-size-name"></span></p>
+                <p><strong>Estimated File Size:</strong> <span id="preview-file-size"></span></p>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="preview-close-btn">Close Preview</button>
+                <button id="preview-download-btn">✅ Looks Good - Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buy Me a Coffee Modal -->
     <div id="a4-container"></div>
     <div class="modal" id="coffee-modal">
         <div class="modal-content coffee-content">

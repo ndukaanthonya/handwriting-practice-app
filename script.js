@@ -28,15 +28,18 @@ const handwritingFonts = [
 
 // Get all HTML elements
 const fontSelect = document.getElementById('font-select');
-const textSelect = document.getElementById('text-select');
+const contentSelect = document.getElementById('content-select');
+const pagesSelect = document.getElementById('pages-select');
 const sizeSelect = document.getElementById('size-select');
 const preview = document.getElementById('preview');
 const generateBtn = document.getElementById('generate-btn');
+const previewBtn = document.getElementById('preview-btn');
 const loading = document.getElementById('loading');
 const successMessage = document.getElementById('success-message');
 const a4Container = document.getElementById('a4-container');
 const fontCount = document.getElementById('font-count');
 const themeToggle = document.getElementById('theme-toggle');
+const sizeEstimate = document.getElementById('size-estimate');
 
 // Email modal elements
 const emailModal = document.getElementById('email-modal');
@@ -54,13 +57,26 @@ const verifyCodeBtn = document.getElementById('verify-code-btn');
 const codeCancelBtn = document.getElementById('code-cancel-btn');
 const resendCodeBtn = document.getElementById('resend-code-btn');
 
+// Preview modal elements
+const previewModal = document.getElementById('preview-modal');
+const previewCanvas = document.getElementById('preview-canvas');
+const closePreviewBtn = document.getElementById('close-preview-btn');
+const previewCloseBtn = document.getElementById('preview-close-btn');
+const previewDownloadBtn = document.getElementById('preview-download-btn');
+
 // Text options for practice
 const textOptions = {
     pangram: 'The quick brown fox jumps over the lazy dog',
     alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
     numbers: '0 1 2 3 4 5 6 7 8 9',
     lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
-    common: 'the and for are but not you all can her was one our'
+    common: 'the and for are but not you all can her was one our',
+    combined: [
+        'The quick brown fox jumps over the lazy dog',
+        'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+        'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+        '0 1 2 3 4 5 6 7 8 9'
+    ]
 };
 
 // Store verification data temporarily
@@ -97,15 +113,19 @@ fontCount.textContent = `${handwritingFonts.length} handwriting fonts available`
 // Update preview
 function updatePreview() {
     const selectedFont = fontSelect.value;
-    const selectedTextKey = textSelect.value;
-    const text = textOptions[selectedTextKey];
-
     preview.style.fontFamily = `'${selectedFont}', cursive`;
-    preview.textContent = text.substring(0, 30) + (text.length > 30 ? '...' : '');
+    preview.textContent = 'The quick brown fox jumps over the lazy dog'.substring(0, 40);
+}
+
+// Update file size estimate
+function updateSizeEstimate() {
+    const pages = parseInt(pagesSelect.value);
+    const estimatedSize = Math.round(pages * 0.2 * 10) / 10; // ~0.2 MB per page
+    sizeEstimate.textContent = `~${estimatedSize} MB`;
 }
 
 fontSelect.addEventListener('change', updatePreview);
-textSelect.addEventListener('change', updatePreview);
+pagesSelect.addEventListener('change', updateSizeEstimate);
 
 // Email validation
 function validateEmail(email) {
@@ -118,29 +138,21 @@ function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Send verification code via Netlify Function
+// Send verification code
 async function sendVerificationCode(email) {
     try {
         const code = generateVerificationCode();
-        
-        // Store code and timestamp
         verificationData.email = email;
         verificationData.code = code;
         verificationData.timestamp = Date.now();
 
-        // Call Netlify Function to send email
         const response = await fetch('/.netlify/functions/send-verification', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, code })
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to send verification code');
-        }
-
+        if (!response.ok) throw new Error('Failed to send verification code');
         return { success: true };
     } catch (error) {
         console.error('Error sending code:', error);
@@ -148,32 +160,28 @@ async function sendVerificationCode(email) {
     }
 }
 
-// Save email data to Google Sheets via Netlify Function
-async function saveEmailData(email, font, textType, textSize) {
+// Save email data
+async function saveEmailData(email, font, contentType, pages, textSize) {
     try {
         const response = await fetch('/.netlify/functions/save-email', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email,
                 font,
-                textType,
+                textType: contentType,
+                pages: pages + ' pages',
                 textSize,
                 timestamp: new Date().toISOString(),
                 verified: true
             })
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to save email data');
-        }
-
+        if (!response.ok) throw new Error('Failed to save email data');
         return { success: true };
     } catch (error) {
         console.error('Error saving email:', error);
-        return { success: false, error: error.message };
+        return { success: false };
     }
 }
 
@@ -185,10 +193,7 @@ generateBtn.addEventListener('click', function() {
     userEmailInput.classList.remove('error');
 });
 
-// Cancel email modal
-cancelBtn.addEventListener('click', function() {
-    emailModal.classList.remove('active');
-});
+cancelBtn.addEventListener('click', () => emailModal.classList.remove('active'));
 
 // Send verification code
 sendCodeBtn.addEventListener('click', async function() {
@@ -201,15 +206,12 @@ sendCodeBtn.addEventListener('click', async function() {
         return;
     }
 
-    // Disable button and show loading
     sendCodeBtn.disabled = true;
     sendCodeBtn.textContent = 'Sending...';
 
-    // Send verification code
     const result = await sendVerificationCode(email);
 
     if (result.success) {
-        // Hide email modal, show code modal
         emailModal.classList.remove('active');
         codeModal.classList.add('active');
         displayEmail.textContent = email;
@@ -220,192 +222,173 @@ sendCodeBtn.addEventListener('click', async function() {
         emailError.classList.add('show');
     }
 
-    // Re-enable button
     sendCodeBtn.disabled = false;
     sendCodeBtn.textContent = 'Send Code';
 });
 
-// Resend code
 resendCodeBtn.addEventListener('click', async function() {
     resendCodeBtn.disabled = true;
     resendCodeBtn.textContent = 'Sending...';
-
     const result = await sendVerificationCode(verificationData.email);
-
-    if (result.success) {
-        alert('New code sent! Check your email.');
-    } else {
-        alert('Failed to send code. Please try again.');
-    }
-
+    if (result.success) alert('New code sent!');
+    else alert('Failed to send code.');
     resendCodeBtn.disabled = false;
     resendCodeBtn.textContent = 'Resend';
 });
 
-// Cancel code modal
 codeCancelBtn.addEventListener('click', function() {
     codeModal.classList.remove('active');
     verificationData = { email: '', code: '', timestamp: null };
 });
 
-// Verify code and generate PDF
 verifyCodeBtn.addEventListener('click', async function() {
     const enteredCode = verificationCodeInput.value.trim();
     
     if (enteredCode.length !== 6) {
         codeError.textContent = 'Please enter a 6-digit code';
         codeError.classList.add('show');
-        verificationCodeInput.classList.add('error');
         return;
     }
 
-    // Check if code expired (10 minutes)
-    const currentTime = Date.now();
-    const codeAge = currentTime - verificationData.timestamp;
-    const tenMinutes = 10 * 60 * 1000;
-
-    if (codeAge > tenMinutes) {
-        codeError.textContent = 'Code expired. Please request a new code.';
+    const codeAge = Date.now() - verificationData.timestamp;
+    if (codeAge > 10 * 60 * 1000) {
+        codeError.textContent = 'Code expired. Request a new code.';
         codeError.classList.add('show');
-        verificationCodeInput.classList.add('error');
         return;
     }
 
-    // Verify code
     if (enteredCode !== verificationData.code) {
-        codeError.textContent = 'Invalid code. Please try again.';
+        codeError.textContent = 'Invalid code. Try again.';
         codeError.classList.add('show');
-        verificationCodeInput.classList.add('error');
         return;
     }
 
-    // Code is valid! Close modal and generate PDF
     codeModal.classList.remove('active');
     
-    // Save email data to Google Sheets
     const selectedFont = fontSelect.value;
-    const selectedTextKey = textSelect.value;
+    const selectedContent = contentSelect.value;
+    const selectedPages = parseInt(pagesSelect.value);
     const selectedSize = sizeSelect.value;
     
-    await saveEmailData(verificationData.email, selectedFont, selectedTextKey, selectedSize);
-    
-    // Generate PDF
+    await saveEmailData(verificationData.email, selectedFont, selectedContent, selectedPages, selectedSize);
     await generatePDF();
     
-    // Clear verification data
     verificationData = { email: '', code: '', timestamp: null };
 });
 
-// Allow only numbers in verification code input
 verificationCodeInput.addEventListener('input', function(e) {
     this.value = this.value.replace(/[^0-9]/g, '');
     codeError.classList.remove('show');
-    verificationCodeInput.classList.remove('error');
 });
 
-// Allow Enter key in email input
-userEmailInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        sendCodeBtn.click();
-    }
-});
-
-// Allow Enter key in code input
-verificationCodeInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        verifyCodeBtn.click();
-    }
-});
-
-// Remove error on email input
-userEmailInput.addEventListener('input', function() {
+userEmailInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendCodeBtn.click(); });
+verificationCodeInput.addEventListener('keypress', e => { if (e.key === 'Enter') verifyCodeBtn.click(); });
+userEmailInput.addEventListener('input', () => {
     emailError.classList.remove('show');
     userEmailInput.classList.remove('error');
 });
 
-// Generate PDF function
-async function generatePDF() {
-    generateBtn.disabled = true;
-    loading.classList.add('active');
-    successMessage.classList.remove('show');
+// Preview PDF
+previewBtn.addEventListener('click', async function() {
+    await generatePreview();
+});
+
+closePreviewBtn.addEventListener('click', () => previewModal.classList.remove('active'));
+previewCloseBtn.addEventListener('click', () => previewModal.classList.remove('active'));
+previewDownloadBtn.addEventListener('click', () => {
+    previewModal.classList.remove('active');
+    generateBtn.click();
+});
+
+async function generatePreview() {
+    previewBtn.disabled = true;
+    previewBtn.textContent = 'Generating Preview...';
 
     try {
         const selectedFont = fontSelect.value;
-        const selectedTextKey = textSelect.value;
+        const selectedContent = contentSelect.value;
         const selectedSize = parseFloat(sizeSelect.value);
-        const text = textOptions[selectedTextKey];
+        const pages = parseInt(pagesSelect.value);
 
-        // Convert cm to pixels (1cm ≈ 37.8 pixels at 96 DPI)
-        const fontSizePx = selectedSize * 37.8;
-
-        // Clear and set up A4 container
-        a4Container.innerHTML = '';
-        a4Container.style.display = 'block';
-        a4Container.style.position = 'absolute';
-        a4Container.style.left = '-9999px';
-
-        // Page dimensions in mm
-        const pageHeightMm = 297; // A4 height
-        const pageWidthMm = 210; // A4 width
-        const topMarginMm = 20; // Top padding
-        const bottomMarginMm = 20; // Bottom padding
-        const leftRightMarginMm = 20; // Side padding
-
-        // Reserve space for title and watermark
-        const titleHeightMm = 15; // Space for title
-        const watermarkHeightMm = 8; // Space for watermark
-
-        // Calculate usable height for practice lines
-        const usableHeightMm = pageHeightMm - topMarginMm - bottomMarginMm - titleHeightMm - watermarkHeightMm;
-        // = 297 - 20 - 20 - 15 - 8 = 234mm
-
-        // Each line needs: text height + spacing below
-        const textHeightMm = selectedSize * 10; // Convert cm to mm
-        const spacingBelowMm = 5; // Gap between guide line and next text
-        const lineHeightMm = textHeightMm + spacingBelowMm;
-
-        // Calculate how many lines fit
-        const numberOfLines = Math.floor(usableHeightMm / lineHeightMm);
+        // Generate first page only for preview
+        const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, 0);
         
-        console.log('PDF Generation Details:');
-        console.log('- Text size:', selectedSize, 'cm');
-        console.log('- Text height:', textHeightMm, 'mm');
-        console.log('- Line height (text + spacing):', lineHeightMm, 'mm');
-        console.log('- Usable height:', usableHeightMm, 'mm');
-        console.log('- Number of lines that fit:', numberOfLines);
+        // Display in preview modal
+        const ctx = previewCanvas.getContext('2d');
+        previewCanvas.width = canvas.width;
+        previewCanvas.height = canvas.height;
+        ctx.drawImage(canvas, 0, 0);
 
-        // Create worksheet title
-        const titleDiv = document.createElement('div');
-        titleDiv.style.textAlign = 'center';
-        titleDiv.style.fontSize = '18px';
-        titleDiv.style.color = '#333';
-        titleDiv.style.fontWeight = 'bold';
-        titleDiv.style.marginBottom = '10mm';
-        titleDiv.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-        titleDiv.textContent = 'Handwriting Practice Worksheet';
-        a4Container.appendChild(titleDiv);
+        // Update preview info
+        document.getElementById('preview-font-name').textContent = selectedFont;
+        document.getElementById('preview-content-name').textContent = contentSelect.options[contentSelect.selectedIndex].text;
+        document.getElementById('preview-pages-name').textContent = pages;
+        document.getElementById('preview-size-name').textContent = selectedSize + ' cm';
+        document.getElementById('preview-file-size').textContent = sizeEstimate.textContent;
 
-        // Create practice lines container
-        const linesContainer = document.createElement('div');
-        linesContainer.style.marginBottom = '10mm';
-        a4Container.appendChild(linesContainer);
+        previewModal.classList.add('active');
+    } catch (error) {
+        console.error('Preview error:', error);
+        alert('Error generating preview');
+    } finally {
+        previewBtn.disabled = false;
+        previewBtn.textContent = '👁️ Preview PDF';
+    }
+}
 
-        // Create practice lines
-        for (let i = 0; i < numberOfLines; i++) {
+// Create a single PDF page
+async function createPDFPage(font, contentType, textSize, pageNumber) {
+    const container = document.createElement('div');
+    container.style.width = '210mm';
+    container.style.height = '297mm';
+    container.style.background = 'white';
+    container.style.padding = '20mm';
+    container.style.boxSizing = 'border-box';
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    document.body.appendChild(container);
+
+    const fontSizePx = textSize * 37.8;
+    const textHeightMm = textSize * 10;
+    const spacingMm = 5;
+    const lineHeightMm = textHeightMm + spacingMm;
+    const usableHeightMm = 234;
+    const linesPerPage = Math.floor(usableHeightMm / lineHeightMm);
+
+    // Title
+    const title = document.createElement('div');
+    title.style.textAlign = 'center';
+    title.style.fontSize = '18px';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '10mm';
+    title.textContent = `Handwriting Practice - Page ${pageNumber + 1}`;
+    container.appendChild(title);
+
+    // Get content for this page
+    let practiceTexts = [];
+    if (contentType === 'combined') {
+        practiceTexts = textOptions.combined;
+    } else {
+        practiceTexts = [textOptions[contentType]];
+    }
+
+    // Create lines
+    let lineCount = 0;
+    for (let text of practiceTexts) {
+        const repetitions = Math.ceil(linesPerPage / practiceTexts.length);
+        for (let i = 0; i < repetitions && lineCount < linesPerPage; i++) {
             const lineDiv = document.createElement('div');
             lineDiv.style.position = 'relative';
-            lineDiv.style.marginBottom = `${spacingBelowMm}mm`;
+            lineDiv.style.marginBottom = `${spacingMm}mm`;
             lineDiv.style.height = `${textHeightMm}mm`;
-            
+
             const textDiv = document.createElement('div');
-            textDiv.style.fontFamily = `'${selectedFont}', cursive`;
+            textDiv.style.fontFamily = `'${font}', cursive`;
             textDiv.style.fontSize = `${fontSizePx}px`;
             textDiv.style.color = '#c0c0c0';
             textDiv.style.lineHeight = '1.0';
-            textDiv.style.height = `${textHeightMm}mm`;
-            textDiv.style.overflow = 'hidden';
             textDiv.textContent = text;
-            
+
             const guideLine = document.createElement('div');
             guideLine.style.position = 'absolute';
             guideLine.style.bottom = '0';
@@ -413,106 +396,108 @@ async function generatePDF() {
             guideLine.style.right = '0';
             guideLine.style.height = '1.5px';
             guideLine.style.backgroundColor = '#000';
-            
+
             lineDiv.appendChild(textDiv);
             lineDiv.appendChild(guideLine);
-            linesContainer.appendChild(lineDiv);
+            container.appendChild(lineDiv);
+            lineCount++;
         }
+    }
 
-        // Add watermark at bottom with proper spacing
-        const watermarkDiv = document.createElement('div');
-        watermarkDiv.style.position = 'absolute';
-        watermarkDiv.style.bottom = `${bottomMarginMm - 5}mm`;
-        watermarkDiv.style.left = '0';
-        watermarkDiv.style.right = '0';
-        watermarkDiv.style.textAlign = 'center';
-        watermarkDiv.style.fontSize = '9px';
-        watermarkDiv.style.color = '#aaa';
-        watermarkDiv.style.fontStyle = 'italic';
-        watermarkDiv.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-        watermarkDiv.textContent = 'Made by Annaelechukwu';
-        a4Container.appendChild(watermarkDiv);
+    // Watermark
+    const watermark = document.createElement('div');
+    watermark.style.position = 'absolute';
+    watermark.style.bottom = '15mm';
+    watermark.style.left = '0';
+    watermark.style.right = '0';
+    watermark.style.textAlign = 'center';
+    watermark.style.fontSize = '9px';
+    watermark.style.color = '#aaa';
+    watermark.style.fontStyle = 'italic';
+    watermark.textContent = 'Made by Annaelechukwu';
+    container.appendChild(watermark);
 
-        // Wait for fonts to load
-        await document.fonts.ready;
-        await new Promise(resolve => setTimeout(resolve, 300));
+    await document.fonts.ready;
+    await new Promise(resolve => setTimeout(resolve, 100));
 
-        console.log('Capturing with html2canvas...');
+    const canvas = await html2canvas(container, {
+        scale: 1.5,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+    });
 
-        // Capture with html2canvas - exact A4 dimensions
-        const canvas = await html2canvas(a4Container, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff',
-            width: 794, // 210mm at 96 DPI
-            height: 1123 // 297mm at 96 DPI
-        });
+    document.body.removeChild(container);
+    return canvas;
+}
 
-        console.log('Creating PDF document...');
+// Generate full PDF
+async function generatePDF() {
+    generateBtn.disabled = true;
+    loading.classList.add('active');
+    successMessage.classList.remove('show');
 
-        // Create PDF
+    try {
+        const selectedFont = fontSelect.value;
+        const selectedContent = contentSelect.value;
+        const selectedSize = parseFloat(sizeSelect.value);
+        const totalPages = parseInt(pagesSelect.value);
+
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a4'
+            format: 'a4',
+            compress: true
         });
 
-        const imgData = canvas.toDataURL('image/png');
-        pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-        
-        const fileName = `handwriting-practice-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${selectedSize}cm.pdf`;
-        
-        console.log('Saving PDF:', fileName);
-        console.log('Total lines created:', numberOfLines);
+        for (let i = 0; i < totalPages; i++) {
+            loading.textContent = `Generating page ${i + 1} of ${totalPages}...`;
+            
+            const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, i);
+            const imgData = canvas.toDataURL('image/jpeg', 0.7);
+            
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+
+        const fileName = `handwriting-practice-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${totalPages}pages.pdf`;
         pdf.save(fileName);
 
-        // Show success message
         successMessage.classList.add('show');
-        setTimeout(() => {
-            successMessage.classList.remove('show');
-        }, 5000);
+        setTimeout(() => successMessage.classList.remove('show'), 5000);
 
-        // Clear container
-        a4Container.innerHTML = '';
-
-        // Show Buy Me a Coffee modal after successful download
-        setTimeout(() => {
-            showCoffeeModal();
-        }, 1000);
+        setTimeout(() => showCoffeeModal(), 1000);
 
     } catch (error) {
         console.error('Error generating PDF:', error);
-        alert('Sorry, there was an error generating your worksheet. Please try again.');
+        alert('Error generating worksheet. Please try again.');
     } finally {
         generateBtn.disabled = false;
         loading.classList.remove('active');
+        loading.textContent = 'Processing...';
     }
 }
 
-// Buy Me a Coffee Modal
+// Coffee Modal
 const coffeeModal = document.getElementById('coffee-modal');
 const coffeeCloseBtn = document.getElementById('coffee-close-btn');
 
 function showCoffeeModal() {
-    // Check if user has dismissed the modal in the last 24 hours
     const lastDismissed = localStorage.getItem('coffeeDismissed');
     const now = Date.now();
-    const oneDayMs = 24 * 60 * 60 * 1000;
-
-    if (!lastDismissed || (now - parseInt(lastDismissed)) > oneDayMs) {
+    if (!lastDismissed || (now - parseInt(lastDismissed)) > 24 * 60 * 60 * 1000) {
         coffeeModal.classList.add('active');
     }
 }
 
 coffeeCloseBtn.addEventListener('click', function() {
     coffeeModal.classList.remove('active');
-    // Remember that user dismissed it
     localStorage.setItem('coffeeDismissed', Date.now().toString());
 });
 
-// Also close if user clicks outside the modal
 coffeeModal.addEventListener('click', function(e) {
     if (e.target === coffeeModal) {
         coffeeModal.classList.remove('active');
@@ -520,10 +505,24 @@ coffeeModal.addEventListener('click', function(e) {
     }
 });
 
+// Get download counter
+async function updateDownloadCount() {
+    try {
+        const response = await fetch('/.netlify/functions/get-stats');
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('download-count').textContent = data.totalDownloads.toLocaleString();
+        } else {
+            document.getElementById('download-count').textContent = '100+';
+        }
+    } catch (error) {
+        document.getElementById('download-count').textContent = '100+';
+    }
+}
+
 // Initialize
 initTheme();
-document.fonts.ready.then(() => {
-    updatePreview();
-});
 updatePreview();
-``
+updateSizeEstimate();
+updateDownloadCount();
+document.fonts.ready.then(() => updatePreview());
