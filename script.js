@@ -26,40 +26,6 @@ const handwritingFonts = [
     'Borel', 'Gideon Roman', 'Handlee', 'Julee', 'Klee One'
 ];
 
-// Multi-language text options
-const languageContent = {
-    english: {
-        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
-        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
-        numbers: '0 1 2 3 4 5 6 7 8 9'
-    },
-    spanish: {
-        alphabet: 'A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z',
-        lowercase: 'a b c d e f g h i j k l m n ñ o p q r s t u v w x y z',
-        accents: 'á é í ó ú ü'
-    },
-    french: {
-        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
-        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
-        accents: 'à â é è ê ë î ï ô ù û ü ÿ ç'
-    },
-    german: {
-        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
-        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
-        special: 'ä ö ü ß Ä Ö Ü'
-    },
-    italian: {
-        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
-        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
-        accents: 'à è é ì ò ù'
-    },
-    portuguese: {
-        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
-        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
-        accents: 'á à â ã é ê í ó ô õ ú ü ç'
-    }
-};
-
 // Get all HTML elements
 const fontSelect = document.getElementById('font-select');
 const contentSelect = document.getElementById('content-select');
@@ -70,11 +36,9 @@ const generateBtn = document.getElementById('generate-btn');
 const previewBtn = document.getElementById('preview-btn');
 const loading = document.getElementById('loading');
 const successMessage = document.getElementById('success-message');
-const a4Container = document.getElementById('a4-container');
 const fontCount = document.getElementById('font-count');
 const themeToggle = document.getElementById('theme-toggle');
 const sizeEstimate = document.getElementById('size-estimate');
-const languageSelect = document.getElementById('language-select');
 const pangramSelect = document.getElementById('pangram-select');
 
 // Email modal elements
@@ -199,12 +163,6 @@ function validateEmail(email) {
 // Generate 6-digit verification code
 function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-// Get selected color values
-function getSelectedColor(name) {
-    const selected = document.querySelector(`input[name="${name}"]:checked`);
-    return selected ? selected.value : (name === 'line-color' ? '#000000' : name === 'text-color' ? '#c0c0c0' : '#ffffff');
 }
 
 // Send verification code
@@ -461,17 +419,10 @@ async function generatePreview() {
 
 // Create a single PDF page
 async function createPDFPage(font, contentType, textSize, pageNumber) {
-    console.log(`Creating page ${pageNumber + 1}...`);
-    
-    // Get selected colors
-    const lineColor = getSelectedColor('line-color');
-    const textColor = getSelectedColor('text-color');
-    const bgColor = getSelectedColor('bg-color');
-    
     const container = document.createElement('div');
     container.style.width = '210mm';
     container.style.height = '297mm';
-    container.style.background = bgColor;
+    container.style.background = '#ffffff';
     container.style.padding = '20mm';
     container.style.boxSizing = 'border-box';
     container.style.position = 'absolute';
@@ -510,22 +461,25 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
             practiceTexts = [customText];
         }
     } else {
-        // Get selected language
-        const selectedLanguage = languageSelect ? languageSelect.value : 'english';
-        const langContent = languageContent[selectedLanguage];
-        
         // Get selected pangram
         const selectedPangram = pangramSelect ? pangramSelect.value : 'The quick brown fox jumps over the lazy dog';
         
-        // Use preset content based on language and pangram
+        // Use preset content based on pangram
         if (contentType === 'combined') {
-            practiceTexts = [selectedPangram, ...Object.values(langContent)];
+            practiceTexts = [
+                selectedPangram,
+                'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+                'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+                '0 1 2 3 4 5 6 7 8 9'
+            ];
         } else if (contentType === 'pangram') {
             practiceTexts = [selectedPangram];
-        } else if (langContent[contentType]) {
-            practiceTexts = [langContent[contentType]];
-        } else {
-            practiceTexts = Object.values(langContent);
+        } else if (contentType === 'alphabet') {
+            practiceTexts = ['A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'];
+        } else if (contentType === 'lowercase') {
+            practiceTexts = ['a b c d e f g h i j k l m n o p q r s t u v w x y z'];
+        } else if (contentType === 'numbers') {
+            practiceTexts = ['0 1 2 3 4 5 6 7 8 9'];
         }
     }
 
@@ -544,7 +498,7 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
             const textDiv = document.createElement('div');
             textDiv.style.fontFamily = `'${font}', cursive`;
             textDiv.style.fontSize = `${fontSizePx}px`;
-            textDiv.style.color = textColor;
+            textDiv.style.color = '#c0c0c0';
             textDiv.style.lineHeight = `${textLineHeightMm}mm`;
             textDiv.style.height = `${textLineHeightMm}mm`;
             textDiv.style.overflow = 'hidden';
@@ -558,7 +512,7 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
             guideLine.style.left = '0';
             guideLine.style.right = '0';
             guideLine.style.height = '1.5px';
-            guideLine.style.backgroundColor = lineColor;
+            guideLine.style.backgroundColor = '#000';
 
             lineContainer.appendChild(textDiv);
             lineContainer.appendChild(guideLine);
@@ -588,7 +542,7 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
         scale: 1.5,
         useCORS: true,
         logging: false,
-        backgroundColor: bgColor,
+        backgroundColor: '#ffffff',
         width: 794,
         height: 1123
     });
@@ -599,8 +553,6 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
 
 // Generate full PDF
 async function generatePDF() {
-    console.log('=== PDF GENERATION START ===');
-    
     if (generateBtn) generateBtn.disabled = true;
     if (loading) {
         loading.classList.add('active');

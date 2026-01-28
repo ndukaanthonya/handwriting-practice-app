@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Handwriting Practice Generator</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
     <!-- Google Fonts - 100+ Handwriting/Cursive Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,18 +38,6 @@
                 <!-- Fonts will be populated by JavaScript -->
             </select>
             <div class="font-count" id="font-count"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="language-select">Language/Alphabet</label>
-            <select id="language-select">
-                <option value="english">English</option>
-                <option value="spanish">Spanish (Español)</option>
-                <option value="french">French (Français)</option>
-                <option value="german">German (Deutsch)</option>
-                <option value="italian">Italian (Italiano)</option>
-                <option value="portuguese">Portuguese (Português)</option>
-            </select>
         </div>
 
         <div class="form-group">
@@ -106,69 +99,6 @@
                 <option value="0.9" selected>0.9 cm (Recommended)</option>
                 <option value="1.0">1.0 cm (Large)</option>
             </select>
-        </div>
-
-        <div class="form-group">
-            <label>Line Color</label>
-            <div class="color-options">
-                <label class="color-option">
-                    <input type="radio" name="line-color" value="#000000" checked>
-                    <span class="color-swatch" style="background: #000000;"></span>
-                    <span class="color-label">Black</span>
-                </label>
-                <label class="color-option">
-                    <input type="radio" name="line-color" value="#2a5298">
-                    <span class="color-swatch" style="background: #2a5298;"></span>
-                    <span class="color-label">Blue</span>
-                </label>
-                <label class="color-option">
-                    <input type="radio" name="line-color" value="#666666">
-                    <span class="color-swatch" style="background: #666666;"></span>
-                    <span class="color-label">Gray</span>
-                </label>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Text Color</label>
-            <div class="color-options">
-                <label class="color-option">
-                    <input type="radio" name="text-color" value="#c0c0c0" checked>
-                    <span class="color-swatch" style="background: #c0c0c0;"></span>
-                    <span class="color-label">Light Gray</span>
-                </label>
-                <label class="color-option">
-                    <input type="radio" name="text-color" value="#d3d3d3">
-                    <span class="color-swatch" style="background: #d3d3d3;"></span>
-                    <span class="color-label">Very Light</span>
-                </label>
-                <label class="color-option">
-                    <input type="radio" name="text-color" value="#a8c5e6">
-                    <span class="color-swatch" style="background: #a8c5e6;"></span>
-                    <span class="color-label">Light Blue</span>
-                </label>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Background Color</label>
-            <div class="color-options">
-                <label class="color-option">
-                    <input type="radio" name="bg-color" value="#ffffff" checked>
-                    <span class="color-swatch" style="background: #ffffff; border: 1px solid #ddd;"></span>
-                    <span class="color-label">White</span>
-                </label>
-                <label class="color-option">
-                    <input type="radio" name="bg-color" value="#fffef0">
-                    <span class="color-swatch" style="background: #fffef0;"></span>
-                    <span class="color-label">Cream</span>
-                </label>
-                <label class="color-option">
-                    <input type="radio" name="bg-color" value="#f0f8ff">
-                    <span class="color-swatch" style="background: #f0f8ff;"></span>
-                    <span class="color-label">Light Blue</span>
-                </label>
-            </div>
         </div>
 
         <div class="preview-section">
