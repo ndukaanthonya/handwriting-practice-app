@@ -29,44 +29,38 @@ const handwritingFonts = [
 // Multi-language text options
 const languageContent = {
     english: {
-        pangram: 'The quick brown fox jumps over the lazy dog',
         alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
         lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
         numbers: '0 1 2 3 4 5 6 7 8 9'
     },
     spanish: {
-        pangram: 'El veloz murciélago hindú comía feliz cardillo y kiwi',
         alphabet: 'A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z',
         lowercase: 'a b c d e f g h i j k l m n ñ o p q r s t u v w x y z',
         accents: 'á é í ó ú ü'
     },
     french: {
-        pangram: 'Portez ce vieux whisky au juge blond qui fume',
         alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
         lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
         accents: 'à â é è ê ë î ï ô ù û ü ÿ ç'
     },
     german: {
-        pangram: 'Franz jagt im komplett verwahrlosten Taxi quer durch Bayern',
         alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
         lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
         special: 'ä ö ü ß Ä Ö Ü'
     },
     italian: {
-        pangram: 'Quel fez sghembo copre davanti',
         alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
         lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
         accents: 'à è é ì ò ù'
     },
     portuguese: {
-        pangram: 'Vê Júlia, pequena, com saudade do fuzil, boxer e whisky',
         alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
         lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
         accents: 'á à â ã é ê í ó ô õ ú ü ç'
     }
 };
 
-// Get all HTML elements (with null checks)
+// Get all HTML elements
 const fontSelect = document.getElementById('font-select');
 const contentSelect = document.getElementById('content-select');
 const pagesSelect = document.getElementById('pages-select');
@@ -80,9 +74,8 @@ const a4Container = document.getElementById('a4-container');
 const fontCount = document.getElementById('font-count');
 const themeToggle = document.getElementById('theme-toggle');
 const sizeEstimate = document.getElementById('size-estimate');
-
-// Language select
 const languageSelect = document.getElementById('language-select');
+const pangramSelect = document.getElementById('pangram-select');
 
 // Email modal elements
 const emailModal = document.getElementById('email-modal');
@@ -113,24 +106,17 @@ const customTextGroup = document.getElementById('custom-text-group');
 const customTextInput = document.getElementById('custom-text-input');
 const charCount = document.getElementById('char-count');
 
-// AI Analysis elements
-const uploadArea = document.getElementById('upload-area');
-const handwritingUpload = document.getElementById('handwriting-upload');
-const imagePreview = document.getElementById('image-preview');
-const previewImage = document.getElementById('preview-image');
-const analyzeBtn = document.getElementById('analyze-btn');
-const analysisResult = document.getElementById('analysis-result');
-const analysisContent = document.getElementById('analysis-content');
-
 // Toggle custom text input visibility
 if (textModeSelect && customTextGroup) {
     textModeSelect.addEventListener('change', function() {
         if (this.value === 'custom') {
             customTextGroup.style.display = 'block';
             if (contentSelect) contentSelect.disabled = true;
+            if (pangramSelect) pangramSelect.disabled = true;
         } else {
             customTextGroup.style.display = 'none';
             if (contentSelect) contentSelect.disabled = false;
+            if (pangramSelect) pangramSelect.disabled = false;
         }
     });
 }
@@ -147,95 +133,6 @@ if (customTextInput && charCount) {
         }
     });
 }
-
-// AI Analysis - File upload handler
-if (handwritingUpload) {
-    handwritingUpload.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB');
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                previewImage.src = event.target.result;
-                imagePreview.style.display = 'block';
-                analysisResult.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-}
-
-// AI Analysis - Analyze button handler
-if (analyzeBtn) {
-    analyzeBtn.addEventListener('click', async function() {
-        analyzeBtn.disabled = true;
-        analyzeBtn.textContent = '🔍 Analyzing...';
-        
-        try {
-            const imageData = previewImage.src.split(',')[1]; // Get base64 part
-            
-            const response = await fetch('/.netlify/functions/analyze-handwriting', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageData })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                analysisContent.innerHTML = `<p>${data.analysis.replace(/\n/g, '<br>')}</p>`;
-                analysisResult.style.display = 'block';
-            } else {
-                alert('Error analyzing handwriting: ' + data.error);
-            }
-        } catch (error) {
-            alert('Error: ' + error.message);
-        } finally {
-            analyzeBtn.disabled = false;
-            analyzeBtn.textContent = '🔍 Analyze Handwriting';
-        }
-    });
-}
-
-// AI Analysis - Drag and drop
-if (uploadArea) {
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('drag-over');
-    });
-    
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('drag-over');
-    });
-    
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('drag-over');
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
-            handwritingUpload.files = e.dataTransfer.files;
-            handwritingUpload.dispatchEvent(new Event('change'));
-        }
-    });
-}
-
-// Text options for practice (legacy - keeping for backward compatibility)
-const textOptions = {
-    pangram: 'The quick brown fox jumps over the lazy dog',
-    alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
-    numbers: '0 1 2 3 4 5 6 7 8 9',
-    lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
-    common: 'the and for are but not you all can her was one our',
-    combined: [
-        'The quick brown fox jumps over the lazy dog',
-        'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
-        'a b c d e f g h i j k l m n o p q r s t u v w x y z',
-        '0 1 2 3 4 5 6 7 8 9'
-    ]
-};
 
 // Store verification data temporarily
 let verificationData = {
@@ -562,7 +459,7 @@ async function generatePreview() {
     }
 }
 
-// Create a single PDF page (with proper spacing to prevent overlap)
+// Create a single PDF page
 async function createPDFPage(font, contentType, textSize, pageNumber) {
     console.log(`Creating page ${pageNumber + 1}...`);
     
@@ -574,26 +471,22 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
     const container = document.createElement('div');
     container.style.width = '210mm';
     container.style.height = '297mm';
-    container.style.background = bgColor; // Use selected background color
+    container.style.background = bgColor;
     container.style.padding = '20mm';
     container.style.boxSizing = 'border-box';
     container.style.position = 'absolute';
     container.style.left = '-9999px';
     document.body.appendChild(container);
 
-    // Calculate spacing to ensure 16 lines per page
     const TARGET_LINES = 16;
     const titleHeightMm = 15;
     const watermarkHeightMm = 10;
     const usableHeightMm = 297 - 40 - titleHeightMm - watermarkHeightMm;
-    
     const spacePerLineMm = usableHeightMm / TARGET_LINES;
     const fontSizePx = textSize * 37.8;
     const lineHeightMultiplier = 1.4;
     const textLineHeightMm = textSize * 10 * lineHeightMultiplier;
     const guideLinePositionMm = spacePerLineMm - 2;
-
-    console.log(`Space per line: ${spacePerLineMm.toFixed(2)}mm, Font size: ${fontSizePx}px, Line height: ${textLineHeightMm.toFixed(2)}mm`);
 
     // Title
     const title = document.createElement('div');
@@ -621,23 +514,20 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
         const selectedLanguage = languageSelect ? languageSelect.value : 'english';
         const langContent = languageContent[selectedLanguage];
         
-        // Use preset content based on language
+        // Get selected pangram
+        const selectedPangram = pangramSelect ? pangramSelect.value : 'The quick brown fox jumps over the lazy dog';
+        
+        // Use preset content based on language and pangram
         if (contentType === 'combined') {
-            practiceTexts = Object.values(langContent);
+            practiceTexts = [selectedPangram, ...Object.values(langContent)];
+        } else if (contentType === 'pangram') {
+            practiceTexts = [selectedPangram];
         } else if (langContent[contentType]) {
             practiceTexts = [langContent[contentType]];
         } else {
-            // Fallback to English if content type not available
-            const englishContent = languageContent.english;
-            if (englishContent[contentType]) {
-                practiceTexts = [englishContent[contentType]];
-            } else {
-                practiceTexts = Object.values(englishContent);
-            }
+            practiceTexts = Object.values(langContent);
         }
     }
-
-    console.log(`Practice texts:`, practiceTexts.length, 'types');
 
     // Create exactly 16 lines
     let lineCount = 0;
@@ -654,7 +544,7 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
             const textDiv = document.createElement('div');
             textDiv.style.fontFamily = `'${font}', cursive`;
             textDiv.style.fontSize = `${fontSizePx}px`;
-            textDiv.style.color = textColor; // Use selected text color
+            textDiv.style.color = textColor;
             textDiv.style.lineHeight = `${textLineHeightMm}mm`;
             textDiv.style.height = `${textLineHeightMm}mm`;
             textDiv.style.overflow = 'hidden';
@@ -668,7 +558,7 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
             guideLine.style.left = '0';
             guideLine.style.right = '0';
             guideLine.style.height = '1.5px';
-            guideLine.style.backgroundColor = lineColor; // Use selected line color
+            guideLine.style.backgroundColor = lineColor;
 
             lineContainer.appendChild(textDiv);
             lineContainer.appendChild(guideLine);
@@ -676,8 +566,6 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
             lineCount++;
         }
     }
-
-    console.log(`Created ${lineCount} lines`);
 
     // Watermark
     const watermark = document.createElement('div');
@@ -696,18 +584,16 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
     await document.fonts.ready;
     await new Promise(resolve => setTimeout(resolve, 200));
 
-    console.log('Capturing with html2canvas...');
     const canvas = await html2canvas(container, {
         scale: 1.5,
         useCORS: true,
         logging: false,
-        backgroundColor: bgColor, // Use selected background color
+        backgroundColor: bgColor,
         width: 794,
         height: 1123
     });
 
     document.body.removeChild(container);
-    console.log(`Page ${pageNumber + 1} canvas created:`, canvas.width, 'x', canvas.height);
     return canvas;
 }
 
@@ -728,13 +614,6 @@ async function generatePDF() {
         const selectedSize = sizeSelect ? parseFloat(sizeSelect.value) : 0.9;
         const totalPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
 
-        console.log('Settings:', {
-            font: selectedFont,
-            content: selectedContent,
-            size: selectedSize,
-            pages: totalPages
-        });
-
         if (!window.jspdf) {
             throw new Error('jsPDF library not loaded. Please refresh the page.');
         }
@@ -747,12 +626,9 @@ async function generatePDF() {
             compress: true
         });
 
-        console.log('PDF document created');
-
         // Generate pages
         for (let i = 0; i < totalPages; i++) {
             if (loading) loading.textContent = `Generating page ${i + 1} of ${totalPages}...`;
-            console.log(`--- Page ${i + 1}/${totalPages} ---`);
             
             const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, i);
             const imgData = canvas.toDataURL('image/jpeg', 0.7);
@@ -764,10 +640,7 @@ async function generatePDF() {
         }
 
         const fileName = `handwriting-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${totalPages}p.pdf`;
-        console.log('Saving as:', fileName);
-        
         pdf.save(fileName);
-        console.log('=== PDF SAVED SUCCESSFULLY ===');
 
         if (successMessage) {
             successMessage.classList.add('show');
@@ -779,9 +652,7 @@ async function generatePDF() {
         setTimeout(() => showCoffeeModal(), 1000);
 
     } catch (error) {
-        console.error('=== PDF GENERATION FAILED ===');
-        console.error('Error:', error.message);
-        console.error('Stack:', error.stack);
+        console.error('PDF generation failed:', error);
         alert(`Error generating PDF: ${error.message}\n\nPlease try with fewer pages or refresh the page.`);
     } finally {
         if (generateBtn) generateBtn.disabled = false;
@@ -821,29 +692,10 @@ if (coffeeModal) {
     });
 }
 
-// Get download counter
-async function updateDownloadCount() {
-    const downloadCountEl = document.getElementById('download-count');
-    if (!downloadCountEl) return;
-    
-    try {
-        const response = await fetch('/.netlify/functions/get-stats');
-        const data = await response.json();
-        if (data.success) {
-            downloadCountEl.textContent = data.totalDownloads.toLocaleString();
-        } else {
-            downloadCountEl.textContent = '100+';
-        }
-    } catch (error) {
-        downloadCountEl.textContent = '100+';
-    }
-}
-
 // Initialize
 initTheme();
 updatePreview();
 updateSizeEstimate();
-updateDownloadCount();
 if (fontSelect && preview) {
     document.fonts.ready.then(() => updatePreview());
 }

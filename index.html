@@ -26,10 +26,6 @@
     <div class="container">
         <h1>✍️ Handwriting Practice</h1>
         <p class="subtitle">Generate beautiful practice worksheets</p>
-        <div class="stats-badge" id="stats-badge">
-            <span class="stats-icon">📊</span>
-            <span id="download-count">Loading...</span> worksheets generated
-        </div>
 
         <div class="form-group">
             <label for="font-select">Choose Font Style</label>
@@ -48,6 +44,18 @@
                 <option value="german">German (Deutsch)</option>
                 <option value="italian">Italian (Italiano)</option>
                 <option value="portuguese">Portuguese (Português)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="pangram-select">Choose Pangram</label>
+            <select id="pangram-select">
+                <option value="The quick brown fox jumps over the lazy dog">The Quick Brown Fox (Classic)</option>
+                <option value="Sphinx of black quartz, judge my vow">Sphinx of Black Quartz (Cool)</option>
+                <option value="The five boxing wizards jump quickly">The Five Boxing Wizards (Fun)</option>
+                <option value="Pack my box with five dozen liquor jugs">Pack My Box (Short)</option>
+                <option value="How vexingly quick daft zebras jump">How Vexingly Quick (Quirky)</option>
+                <option value="Waltz, bad nymph, for quick jigs vex">Waltz Bad Nymph (Poetic)</option>
             </select>
         </div>
 
@@ -72,7 +80,6 @@
                 <option value="alphabet">Alphabet Only</option>
                 <option value="numbers">Numbers Only</option>
                 <option value="lowercase">Lowercase Only</option>
-                <option value="common">Common Words Only</option>
                 <option value="combined" selected>All Combined (Recommended)</option>
             </select>
             <div class="content-info">💡 "All Combined" includes pangram, alphabet, numbers & lowercase</div>
@@ -171,31 +178,6 @@
 
         <button id="preview-btn" class="btn-secondary" style="margin-bottom: 10px;">👁️ Preview PDF</button>
         <button id="generate-btn">📄 Download PDF Worksheet</button>
-
-        <!-- AI Handwriting Analysis Section -->
-        <div class="ai-analysis-section">
-            <h2>📸 AI Handwriting Analysis (Beta)</h2>
-            <p class="ai-subtitle">Upload a photo of your handwriting to get AI feedback</p>
-            
-            <div class="upload-area" id="upload-area">
-                <input type="file" id="handwriting-upload" accept="image/*" style="display: none;">
-                <label for="handwriting-upload" class="upload-label">
-                    <span class="upload-icon">📤</span>
-                    <span class="upload-text">Click to upload or drag & drop</span>
-                    <span class="upload-hint">JPG, PNG, or HEIC (max 5MB)</span>
-                </label>
-            </div>
-            
-            <div id="image-preview" style="display: none;">
-                <img id="preview-image" alt="Uploaded handwriting">
-                <button id="analyze-btn" class="btn-secondary">🔍 Analyze Handwriting</button>
-            </div>
-            
-            <div id="analysis-result" style="display: none;">
-                <h3>Analysis Results:</h3>
-                <div id="analysis-content"></div>
-            </div>
-        </div>
     </div>
 
     <!-- Email Verification Modal -->
