@@ -26,6 +26,46 @@ const handwritingFonts = [
     'Borel', 'Gideon Roman', 'Handlee', 'Julee', 'Klee One'
 ];
 
+// Multi-language text options
+const languageContent = {
+    english: {
+        pangram: 'The quick brown fox jumps over the lazy dog',
+        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+        numbers: '0 1 2 3 4 5 6 7 8 9'
+    },
+    spanish: {
+        pangram: 'El veloz murciélago hindú comía feliz cardillo y kiwi',
+        alphabet: 'A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z',
+        lowercase: 'a b c d e f g h i j k l m n ñ o p q r s t u v w x y z',
+        accents: 'á é í ó ú ü'
+    },
+    french: {
+        pangram: 'Portez ce vieux whisky au juge blond qui fume',
+        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+        accents: 'à â é è ê ë î ï ô ù û ü ÿ ç'
+    },
+    german: {
+        pangram: 'Franz jagt im komplett verwahrlosten Taxi quer durch Bayern',
+        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+        special: 'ä ö ü ß Ä Ö Ü'
+    },
+    italian: {
+        pangram: 'Quel fez sghembo copre davanti',
+        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+        accents: 'à è é ì ò ù'
+    },
+    portuguese: {
+        pangram: 'Vê Júlia, pequena, com saudade do fuzil, boxer e whisky',
+        alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+        lowercase: 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+        accents: 'á à â ã é ê í ó ô õ ú ü ç'
+    }
+};
+
 // Get all HTML elements (with null checks)
 const fontSelect = document.getElementById('font-select');
 const contentSelect = document.getElementById('content-select');
@@ -40,6 +80,9 @@ const a4Container = document.getElementById('a4-container');
 const fontCount = document.getElementById('font-count');
 const themeToggle = document.getElementById('theme-toggle');
 const sizeEstimate = document.getElementById('size-estimate');
+
+// Language select
+const languageSelect = document.getElementById('language-select');
 
 // Email modal elements
 const emailModal = document.getElementById('email-modal');
@@ -64,7 +107,122 @@ const closePreviewBtn = document.getElementById('close-preview-btn');
 const previewCloseBtn = document.getElementById('preview-close-btn');
 const previewDownloadBtn = document.getElementById('preview-download-btn');
 
-// Text options for practice
+// Custom text elements
+const textModeSelect = document.getElementById('text-mode-select');
+const customTextGroup = document.getElementById('custom-text-group');
+const customTextInput = document.getElementById('custom-text-input');
+const charCount = document.getElementById('char-count');
+
+// AI Analysis elements
+const uploadArea = document.getElementById('upload-area');
+const handwritingUpload = document.getElementById('handwriting-upload');
+const imagePreview = document.getElementById('image-preview');
+const previewImage = document.getElementById('preview-image');
+const analyzeBtn = document.getElementById('analyze-btn');
+const analysisResult = document.getElementById('analysis-result');
+const analysisContent = document.getElementById('analysis-content');
+
+// Toggle custom text input visibility
+if (textModeSelect && customTextGroup) {
+    textModeSelect.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            customTextGroup.style.display = 'block';
+            if (contentSelect) contentSelect.disabled = true;
+        } else {
+            customTextGroup.style.display = 'none';
+            if (contentSelect) contentSelect.disabled = false;
+        }
+    });
+}
+
+// Character counter
+if (customTextInput && charCount) {
+    customTextInput.addEventListener('input', function() {
+        const length = this.value.length;
+        charCount.textContent = length;
+        
+        if (length > 500) {
+            this.value = this.value.substring(0, 500);
+            charCount.textContent = '500';
+        }
+    });
+}
+
+// AI Analysis - File upload handler
+if (handwritingUpload) {
+    handwritingUpload.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                previewImage.src = event.target.result;
+                imagePreview.style.display = 'block';
+                analysisResult.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// AI Analysis - Analyze button handler
+if (analyzeBtn) {
+    analyzeBtn.addEventListener('click', async function() {
+        analyzeBtn.disabled = true;
+        analyzeBtn.textContent = '🔍 Analyzing...';
+        
+        try {
+            const imageData = previewImage.src.split(',')[1]; // Get base64 part
+            
+            const response = await fetch('/.netlify/functions/analyze-handwriting', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageData })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                analysisContent.innerHTML = `<p>${data.analysis.replace(/\n/g, '<br>')}</p>`;
+                analysisResult.style.display = 'block';
+            } else {
+                alert('Error analyzing handwriting: ' + data.error);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        } finally {
+            analyzeBtn.disabled = false;
+            analyzeBtn.textContent = '🔍 Analyze Handwriting';
+        }
+    });
+}
+
+// AI Analysis - Drag and drop
+if (uploadArea) {
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('drag-over');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('drag-over');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            handwritingUpload.files = e.dataTransfer.files;
+            handwritingUpload.dispatchEvent(new Event('change'));
+        }
+    });
+}
+
+// Text options for practice (legacy - keeping for backward compatibility)
 const textOptions = {
     pangram: 'The quick brown fox jumps over the lazy dog',
     alphabet: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
@@ -144,6 +302,12 @@ function validateEmail(email) {
 // Generate 6-digit verification code
 function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Get selected color values
+function getSelectedColor(name) {
+    const selected = document.querySelector(`input[name="${name}"]:checked`);
+    return selected ? selected.value : (name === 'line-color' ? '#000000' : name === 'text-color' ? '#c0c0c0' : '#ffffff');
 }
 
 // Send verification code
@@ -402,10 +566,15 @@ async function generatePreview() {
 async function createPDFPage(font, contentType, textSize, pageNumber) {
     console.log(`Creating page ${pageNumber + 1}...`);
     
+    // Get selected colors
+    const lineColor = getSelectedColor('line-color');
+    const textColor = getSelectedColor('text-color');
+    const bgColor = getSelectedColor('bg-color');
+    
     const container = document.createElement('div');
     container.style.width = '210mm';
     container.style.height = '297mm';
-    container.style.background = 'white';
+    container.style.background = bgColor; // Use selected background color
     container.style.padding = '20mm';
     container.style.boxSizing = 'border-box';
     container.style.position = 'absolute';
@@ -414,22 +583,15 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
 
     // Calculate spacing to ensure 16 lines per page
     const TARGET_LINES = 16;
-    const titleHeightMm = 15; // Space for title
-    const watermarkHeightMm = 10; // Space for watermark
-    const usableHeightMm = 297 - 40 - titleHeightMm - watermarkHeightMm; // 297 - (top+bottom padding) - title - watermark = 232mm
+    const titleHeightMm = 15;
+    const watermarkHeightMm = 10;
+    const usableHeightMm = 297 - 40 - titleHeightMm - watermarkHeightMm;
     
-    // Each line gets equal space
-    const spacePerLineMm = usableHeightMm / TARGET_LINES; // ~14.5mm per line
-    
-    // Font size in pixels (with buffer for ascenders/descenders)
+    const spacePerLineMm = usableHeightMm / TARGET_LINES;
     const fontSizePx = textSize * 37.8;
-    
-    // Line height should be slightly larger than font size to accommodate ascenders/descenders
-    const lineHeightMultiplier = 1.4; // 40% extra space for tall letters
+    const lineHeightMultiplier = 1.4;
     const textLineHeightMm = textSize * 10 * lineHeightMultiplier;
-    
-    // Guide line position (bottom of the allocated space)
-    const guideLinePositionMm = spacePerLineMm - 2; // 2mm from bottom of space
+    const guideLinePositionMm = spacePerLineMm - 2;
 
     console.log(`Space per line: ${spacePerLineMm.toFixed(2)}mm, Font size: ${fontSizePx}px, Line height: ${textLineHeightMm.toFixed(2)}mm`);
 
@@ -445,11 +607,34 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
 
     // Get content for this page
     let practiceTexts = [];
-    if (contentType === 'combined') {
-        practiceTexts = textOptions.combined;
+
+    // Check if using custom text
+    const textMode = textModeSelect ? textModeSelect.value : 'preset';
+    if (textMode === 'custom' && customTextInput && customTextInput.value.trim()) {
+        const customText = customTextInput.value.trim();
+        practiceTexts = customText.split('\n').filter(line => line.trim());
+        if (practiceTexts.length === 0) {
+            practiceTexts = [customText];
+        }
     } else {
-        const textContent = textOptions[contentType];
-        practiceTexts = Array.isArray(textContent) ? textContent : [textContent];
+        // Get selected language
+        const selectedLanguage = languageSelect ? languageSelect.value : 'english';
+        const langContent = languageContent[selectedLanguage];
+        
+        // Use preset content based on language
+        if (contentType === 'combined') {
+            practiceTexts = Object.values(langContent);
+        } else if (langContent[contentType]) {
+            practiceTexts = [langContent[contentType]];
+        } else {
+            // Fallback to English if content type not available
+            const englishContent = languageContent.english;
+            if (englishContent[contentType]) {
+                practiceTexts = [englishContent[contentType]];
+            } else {
+                practiceTexts = Object.values(englishContent);
+            }
+        }
     }
 
     console.log(`Practice texts:`, practiceTexts.length, 'types');
@@ -464,12 +649,12 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
             lineContainer.style.position = 'relative';
             lineContainer.style.height = `${spacePerLineMm}mm`;
             lineContainer.style.marginBottom = '0';
-            lineContainer.style.overflow = 'hidden'; // Prevent any overflow
+            lineContainer.style.overflow = 'hidden';
 
             const textDiv = document.createElement('div');
             textDiv.style.fontFamily = `'${font}', cursive`;
             textDiv.style.fontSize = `${fontSizePx}px`;
-            textDiv.style.color = '#c0c0c0';
+            textDiv.style.color = textColor; // Use selected text color
             textDiv.style.lineHeight = `${textLineHeightMm}mm`;
             textDiv.style.height = `${textLineHeightMm}mm`;
             textDiv.style.overflow = 'hidden';
@@ -483,7 +668,7 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
             guideLine.style.left = '0';
             guideLine.style.right = '0';
             guideLine.style.height = '1.5px';
-            guideLine.style.backgroundColor = '#000';
+            guideLine.style.backgroundColor = lineColor; // Use selected line color
 
             lineContainer.appendChild(textDiv);
             lineContainer.appendChild(guideLine);
@@ -516,7 +701,7 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
         scale: 1.5,
         useCORS: true,
         logging: false,
-        backgroundColor: '#ffffff',
+        backgroundColor: bgColor, // Use selected background color
         width: 794,
         height: 1123
     });

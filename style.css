@@ -80,9 +80,11 @@ body {
     border-radius: 20px;
     box-shadow: var(--shadow);
     padding: 40px;
-    max-width: 500px;
+    max-width: 600px;
     width: 100%;
     transition: all 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 h1 {
@@ -122,6 +124,47 @@ select, input[type="email"], input[type="text"] {
     transition: all 0.3s ease;
 }
 
+/* Custom Text Input */
+textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--text-color);
+    background-color: var(--input-bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    resize: vertical;
+    min-height: 100px;
+    transition: all 0.3s ease;
+}
+
+textarea:hover {
+    border-color: #2a5298;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #2a5298;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+}
+
+.char-count {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+#custom-text-group {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 select {
     cursor: pointer;
 }
@@ -149,6 +192,51 @@ input[type="email"].error, input[type="text"].error {
 
 .error-message.show {
     display: block;
+}
+
+/* Color Options */
+.color-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.color-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.color-option:hover {
+    border-color: #2a5298;
+    background: var(--preview-bg);
+}
+
+.color-option input[type="radio"] {
+    display: none;
+}
+
+.color-option input[type="radio"]:checked + .color-swatch {
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.3);
+    transform: scale(1.1);
+}
+
+.color-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.color-label {
+    font-size: 13px;
+    color: var(--text-color);
 }
 
 .preview-section {
@@ -577,4 +665,108 @@ button:disabled {
 .preview-info span {
     color: var(--text-color);
     font-weight: 500;
+}
+
+/* AI Analysis Section */
+.ai-analysis-section {
+    margin-top: 40px;
+    padding: 30px;
+    background: var(--preview-bg);
+    border-radius: 15px;
+    border: 2px dashed var(--border-color);
+}
+
+.ai-analysis-section h2 {
+    font-size: 20px;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+.ai-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.upload-area {
+    border: 3px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover, .upload-area.drag-over {
+    border-color: #2a5298;
+    background: var(--input-bg);
+}
+
+.upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.upload-icon {
+    font-size: 48px;
+}
+
+.upload-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.upload-hint {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+#image-preview {
+    margin-top: 20px;
+}
+
+#preview-image {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#analysis-result {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--container-bg);
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+}
+
+#analysis-result h3 {
+    color: var(--text-color);
+    margin-bottom: 15px;
+}
+
+#analysis-content p {
+    color: var(--text-color);
+    line-height: 1.8;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        max-height: 95vh;
+    }
+
+    .color-options {
+        flex-direction: column;
+    }
+
+    .color-option {
+        justify-content: center;
+    }
 }
