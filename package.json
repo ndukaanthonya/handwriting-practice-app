@@ -5,7 +5,6 @@
     "dependencies": {
       "resend": "^3.0.0",
       "google-spreadsheet": "^4.1.2",
-      "google-auth-library": "^9.0.0",
-      "@anthropic-ai/sdk": "^0.20.0"
+      "google-auth-library": "^9.0.0"
     }
   }

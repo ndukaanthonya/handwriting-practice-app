@@ -20,10 +20,16 @@ exports.handler = async (event) => {
       };
     }
 
+    console.log('=== RESEND EMAIL START ===');
+    console.log('To:', email);
+    console.log('Code:', code);
+    console.log('API Key exists:', !!process.env.RESEND_API_KEY);
+
     // Initialize Resend with API key
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     // Send email
+    console.log('Sending email via Resend...');
     const data = await resend.emails.send({
       from: 'admin@trayce.xyz',
       to: email,
@@ -79,6 +85,9 @@ exports.handler = async (event) => {
       `
     });
 
+    console.log('✅ Email sent! ID:', data.id);
+    console.log('=== RESEND EMAIL SUCCESS ===');
+
     return {
       statusCode: 200,
       body: JSON.stringify({ 
@@ -89,7 +98,10 @@ exports.handler = async (event) => {
     };
 
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('❌ ERROR sending email:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return {
       statusCode: 500,
       body: JSON.stringify({ 
