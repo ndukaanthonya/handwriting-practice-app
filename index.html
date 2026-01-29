@@ -1,189 +1,257 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handwriting Practice Generator</title>
+    <title>Trayce - Handwriting Practice Worksheets</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="alternate icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     
-    <!-- Google Fonts - 100+ Handwriting/Cursive Fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- 105+ Handwriting Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Allura&family=Arizonia&family=Alex+Brush&family=Architects+Daughter&family=Bad+Script&family=Ballet&family=Berkshire+Swash&family=Bilbo&family=Bilbo+Swash+Caps&family=Caveat&family=Charm&family=Courgette&family=Damion&family=Dancing+Script&family=Dawning+of+a+New+Day&family=Dekko&family=Delius&family=Devonshire&family=Dr+Sugiyama&family=Eagle+Lake&family=Engagement&family=Ephesis&family=Euphoria+Script&family=Felipa&family=Fondamento&family=Give+You+Glory&family=Gloria+Hallelujah&family=Grand+Hotel&family=Great+Vibes&family=Homemade+Apple&family=Indie+Flower&family=Italianno&family=Just+Another+Hand&family=Kalam&family=Kaushan+Script&family=Kristi&family=La+Belle+Aurore&family=League+Script&family=Leckerli+One&family=Liu+Jian+Mao+Cao&family=Lobster&family=Lobster+Two&family=Long+Cang&family=Loved+by+the+King&family=Lovers+Quarrel&family=Ma+Shan+Zheng&family=Marck+Script&family=Meddon&family=Meie+Script&family=Merienda&family=Miss+Fajardose&family=Monsieur+La+Doulaise&family=Montez&family=Mr+Dafoe&family=Mr+De+Haviland&family=Mrs+Saint+Delafield&family=Mrs+Sheppards&family=Nanum+Pen+Script&family=Neucha&family=Norican&family=Nothing+You+Could+Do&family=Over+the+Rainbow&family=Pacifico&family=Parisienne&family=Passero+One&family=Patrick+Hand&family=Permanent+Marker&family=Petit+Formal+Script&family=Pinyon+Script&family=Princess+Sofia&family=Qwigley&family=Rancho&family=Reenie+Beanie&family=Rochester&family=Rock+Salt&family=Rosarivo&family=Rouge+Script&family=Ruge+Boogie&family=Ruthie&family=Sacramento&family=Satisfy&family=Schoolbell&family=Sedgwick+Ave&family=Shadows+Into+Light&family=Shojumaru&family=Smooch&family=Snippet&family=Sofadi+One&family=Sofia&family=Stalemate&family=Sue+Ellen+Francisco&family=Sunshiney&family=Swanky+and+Moo+Moo&family=Tangerine&family=The+Girl+Next+Door&family=Tillana&family=Vibur&family=Vollkorn&family=Walter+Turncoat&family=Yellowtail&family=Yeseva+One&family=Zeyada&family=Zhi+Mang+Xing&family=Playwrite+AU+NSW&family=Playwrite+AU+VIC&family=Playwrite+BE+VLG&family=Playwrite+CL&family=Playwrite+CU&family=Playwrite+DE+Grund&family=Playwrite+GB+S&family=Playwrite+IN&family=Playwrite+IT+Moderna&family=Playwrite+MX&family=Playwrite+NZ&family=Playwrite+US+Modern&family=Borel&family=Gideon+Roman&family=Handlee&family=Julee&family=Klee+One&display=swap" rel="stylesheet">
     
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <!-- Dark Mode Toggle -->
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-        <span class="sun-icon">☀️</span>
-        <span class="moon-icon">🌙</span>
-    </button>
-
-    <div class="container">
-        <h1>✍️ Handwriting Practice</h1>
-        <p class="subtitle">Generate beautiful practice worksheets</p>
-
-        <div class="form-group">
-            <label for="font-select">Choose Font Style</label>
-            <select id="font-select">
-                <!-- Fonts will be populated by JavaScript -->
-            </select>
-            <div class="font-count" id="font-count"></div>
+    
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-icon">
+                <span class="material-symbols-outlined">edit_note</span>
+            </div>
+            <h2 class="logo-title">Trayce</h2>
         </div>
-
-        <div class="form-group">
-            <label for="pangram-select">Choose Pangram</label>
-            <select id="pangram-select">
-                <option value="The quick brown fox jumps over the lazy dog">The Quick Brown Fox (Classic)</option>
-                <option value="Sphinx of black quartz, judge my vow">Sphinx of Black Quartz (Cool)</option>
-                <option value="The five boxing wizards jump quickly">The Five Boxing Wizards (Fun)</option>
-                <option value="Pack my box with five dozen liquor jugs">Pack My Box (Short)</option>
-                <option value="How vexingly quick daft zebras jump">How Vexingly Quick (Quirky)</option>
-                <option value="Waltz, bad nymph, for quick jigs vex">Waltz Bad Nymph (Poetic)</option>
-            </select>
+        
+        <div class="header-right">
+            <button id="download-btn" class="btn-download">
+                <span class="material-symbols-outlined">download</span>
+                <span>Download PDF</span>
+            </button>
+            
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <div class="theme-slider">
+                    <span class="material-symbols-outlined icon-moon">dark_mode</span>
+                </div>
+            </button>
         </div>
+    </header>
 
-        <div class="form-group">
-            <label for="text-mode-select">Text Mode</label>
-            <select id="text-mode-select">
-                <option value="preset">Preset Content</option>
-                <option value="custom">Custom Text</option>
-            </select>
-        </div>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-inner">
+                
+                <!-- Header -->
+                <div class="sidebar-header">
+                    <h1 class="sidebar-title">Worksheet Settings</h1>
+                    <p class="sidebar-subtitle">Customize appearance and content.</p>
+                </div>
+                
+                <!-- Font Selection (Your 105+ Fonts) -->
+                <div class="form-group">
+                    <label class="form-label">Choose Font</label>
+                    <select id="font-select" class="form-select">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                    <div id="font-count" class="form-hint"></div>
+                </div>
+                
+                <!-- Pangram Selection -->
+                <div class="form-group">
+                    <label class="form-label">Choose Pangram</label>
+                    <select id="pangram-select" class="form-select">
+                        <option value="The quick brown fox jumps over the lazy dog">The Quick Brown Fox (Classic)</option>
+                        <option value="Sphinx of black quartz, judge my vow">Sphinx of Black Quartz (Cool)</option>
+                        <option value="The five boxing wizards jump quickly">The Five Boxing Wizards (Fun)</option>
+                        <option value="Pack my box with five dozen liquor jugs">Pack My Box (Short)</option>
+                        <option value="How vexingly quick daft zebras jump">How Vexingly Quick (Quirky)</option>
+                        <option value="Waltz, bad nymph, for quick jigs vex">Waltz Bad Nymph (Poetic)</option>
+                    </select>
+                </div>
+                
+                <!-- Text Mode -->
+                <div class="form-group">
+                    <label class="form-label">Text Mode</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="text-mode" value="preset" id="mode-preset" checked>
+                            <span>Preset</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="text-mode" value="custom" id="mode-custom">
+                            <span>Custom</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Custom Text Input -->
+                <div id="custom-text-group" class="form-group" style="display: none;">
+                    <div class="form-label-row">
+                        <label class="form-label">Your Custom Text</label>
+                        <span class="char-count"><span id="char-count">0</span>/500</span>
+                    </div>
+                    <textarea id="custom-text-input" class="form-textarea" placeholder="Type your text here..."></textarea>
+                </div>
+                
+                <!-- Practice Content -->
+                <div class="form-group">
+                    <label class="form-label">Practice Content</label>
+                    <select id="content-select" class="form-select">
+                        <option value="pangram">Pangram Only</option>
+                        <option value="alphabet">Alphabet Only</option>
+                        <option value="numbers">Numbers Only</option>
+                        <option value="lowercase">Lowercase Only</option>
+                        <option value="combined" selected>All Combined (Recommended)</option>
+                    </select>
+                </div>
+                
+                <!-- Number of Pages -->
+                <div class="form-group">
+                    <label class="form-label">Number of Pages</label>
+                    <select id="pages-select" class="form-select">
+                        <option value="1">1 Page</option>
+                        <option value="5">5 Pages</option>
+                        <option value="10" selected>10 Pages (Recommended)</option>
+                        <option value="20">20 Pages (Full Workbook)</option>
+                    </select>
+                    <div class="form-hint">📄 Estimated size: <span id="size-estimate">~2 MB</span></div>
+                </div>
+                
+                <!-- Text Size -->
+                <div class="form-group">
+                    <label class="form-label">Text Size</label>
+                    <select id="size-select" class="form-select">
+                        <option value="0.5">0.5 cm (Small)</option>
+                        <option value="0.6">0.6 cm</option>
+                        <option value="0.7">0.7 cm</option>
+                        <option value="0.8">0.8 cm</option>
+                        <option value="0.9" selected>0.9 cm (Recommended)</option>
+                        <option value="1.0">1.0 cm (Large)</option>
+                    </select>
+                </div>
+                
+            </div>
+        </aside>
+        
+        <!-- PREVIEW SECTION -->
+        <section class="preview-area">
+            
+            <!-- Preview Badge -->
+            <div class="preview-badge">
+                <span class="badge-text">Live Preview</span>
+                <span class="badge-divider"></span>
+                <span class="badge-format">A4 Portrait</span>
+            </div>
+            
+            <!-- Preview Sheet -->
+            <div class="preview-container">
+                <div class="preview-sheet" id="preview-sheet">
+                    
+                    <!-- Sheet Header -->
+                    <div class="sheet-header">
+                        <div class="sheet-field">
+                            <span class="field-label">Name:</span>
+                            <div class="field-line"></div>
+                        </div>
+                        <div class="sheet-field sheet-field-right">
+                            <span class="field-label">Date:</span>
+                            <div class="field-line field-line-small"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Practice Lines -->
+                    <div class="sheet-content" id="sheet-content">
+                        <!-- Lines will be generated dynamically -->
+                    </div>
+                    
+                    <!-- Watermark -->
+                    <div class="sheet-footer">
+                        <p class="watermark">Made by Annaelechukwu</p>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </section>
+        
+    </main>
 
-        <div class="form-group" id="custom-text-group" style="display: none;">
-            <label for="custom-text-input">Your Custom Text</label>
-            <textarea id="custom-text-input" placeholder="Type your text here... (e.g., practice sentences, names, vocabulary words)" rows="4"></textarea>
-            <div class="char-count"><span id="char-count">0</span> / 500 characters</div>
-        </div>
+    <!-- Hidden A4 Container for PDF Generation -->
+    <div id="a4-container"></div>
 
-        <div class="form-group">
-            <label for="content-select">Practice Content</label>
-            <select id="content-select">
-                <option value="pangram">Pangram Only</option>
-                <option value="alphabet">Alphabet Only</option>
-                <option value="numbers">Numbers Only</option>
-                <option value="lowercase">Lowercase Only</option>
-                <option value="combined" selected>All Combined (Recommended)</option>
-            </select>
-            <div class="content-info">💡 "All Combined" includes pangram, alphabet, numbers & lowercase</div>
-        </div>
-
-        <div class="form-group">
-            <label for="pages-select">Number of Pages</label>
-            <select id="pages-select">
-                <option value="1">1 Page</option>
-                <option value="5">5 Pages</option>
-                <option value="10" selected>10 Pages (Recommended)</option>
-                <option value="20">20 Pages (Full Workbook)</option>
-            </select>
-            <div class="pages-info">📄 Estimated size: <span id="size-estimate">~2 MB</span></div>
-        </div>
-
-        <div class="form-group">
-            <label for="size-select">Text Height Size</label>
-            <select id="size-select">
-                <option value="0.5">0.5 cm (Small)</option>
-                <option value="0.6">0.6 cm</option>
-                <option value="0.7">0.7 cm</option>
-                <option value="0.8">0.8 cm</option>
-                <option value="0.9" selected>0.9 cm (Recommended)</option>
-                <option value="1.0">1.0 cm (Large)</option>
-            </select>
-        </div>
-
-        <div class="preview-section">
-            <div class="preview-label">Font Preview</div>
-            <div class="preview-text" id="preview">The quick brown fox</div>
-        </div>
-
-        <button id="preview-btn" class="btn-secondary" style="margin-bottom: 10px;">👁️ Preview PDF</button>
-        <button id="generate-btn">📄 Download PDF Worksheet</button>
-    </div>
-
-    <!-- Email Verification Modal -->
-    <div class="modal" id="email-modal">
+    <!-- EMAIL MODAL -->
+    <div id="email-modal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">📧 Verify Your Email</h2>
             <p class="modal-subtitle">Enter your email to receive a verification code</p>
             
-            <div class="form-group">
-                <label for="user-email">Email Address</label>
-                <input type="email" id="user-email" placeholder="your@email.com" required>
-                <div class="error-message" id="email-error">Please enter a valid email address</div>
+            <div class="form-group-modal">
+                <label class="form-label-modal">Email Address</label>
+                <input type="email" id="user-email" class="form-input-modal" placeholder="your@email.com">
+                <div id="email-error" class="error-message">Please enter a valid email</div>
+            </div>
+
+            <div class="email-tip">
+                <p class="email-tip-title">📌 Important:</p>
+                <ul class="email-tip-list">
+                    <li>Check your spam/junk folder</li>
+                    <li>Add <strong>admin@trayce.xyz</strong> to contacts</li>
+                    <li>Mark email as "Not Spam" if needed</li>
+                </ul>
             </div>
 
             <div class="modal-buttons">
-                <button class="btn-secondary" id="cancel-btn">Cancel</button>
-                <button id="send-code-btn">Send Code</button>
+                <button id="cancel-btn" class="btn-modal-secondary">Cancel</button>
+                <button id="send-code-btn" class="btn-modal-primary">Send Code</button>
             </div>
         </div>
     </div>
 
-    <!-- Verification Code Modal -->
-    <div class="modal" id="code-modal">
+    <!-- CODE MODAL -->
+    <div id="code-modal" class="modal">
         <div class="modal-content">
-            <h2 class="modal-title">🔐 Enter Verification Code</h2>
+            <h2 class="modal-title">🔐 Enter Code</h2>
             <p class="modal-subtitle">We sent a 6-digit code to <strong id="display-email"></strong></p>
             
-            <div class="form-group">
-                <label for="verification-code">Verification Code</label>
-                <input type="text" id="verification-code" placeholder="000000" maxlength="6" inputmode="numeric" pattern="[0-9]*" required>
-                <div class="error-message" id="code-error">Invalid code. Please try again.</div>
+            <div class="form-group-modal">
+                <label class="form-label-modal">Verification Code</label>
+                <input type="text" id="verification-code" class="form-input-modal code-input" placeholder="000000" maxlength="6" inputmode="numeric">
+                <div id="code-error" class="error-message">Invalid code</div>
             </div>
 
             <div class="resend-code">
-                Didn't receive code? <button class="link-btn" id="resend-code-btn">Resend</button>
+                Didn't receive code? <button id="resend-code-btn" class="link-btn">Resend</button>
             </div>
 
             <div class="modal-buttons">
-                <button class="btn-secondary" id="code-cancel-btn">Cancel</button>
-                <button id="verify-code-btn">Verify & Download</button>
+                <button id="code-cancel-btn" class="btn-modal-secondary">Cancel</button>
+                <button id="verify-code-btn" class="btn-modal-primary">Verify & Download</button>
             </div>
         </div>
     </div>
 
-    <!-- PDF Preview Modal -->
-    <div class="modal" id="preview-modal">
-        <div class="modal-content preview-modal-content">
-            <div class="preview-header">
-                <h2 class="modal-title">📄 PDF Preview</h2>
-                <button class="close-preview" id="close-preview-btn">✕</button>
-            </div>
-            
-            <div class="preview-container">
-                <div class="preview-watermark-overlay">PREVIEW</div>
-                <canvas id="preview-canvas"></canvas>
-            </div>
-            
-            <div class="preview-info">
-                <p><strong>Font:</strong> <span id="preview-font-name"></span></p>
-                <p><strong>Content:</strong> <span id="preview-content-name"></span></p>
-                <p><strong>Pages:</strong> <span id="preview-pages-name"></span></p>
-                <p><strong>Text Size:</strong> <span id="preview-size-name"></span></p>
-                <p><strong>Estimated File Size:</strong> <span id="preview-file-size"></span></p>
-            </div>
-
-            <div class="modal-buttons">
-                <button class="btn-secondary" id="preview-close-btn">Close Preview</button>
-                <button id="preview-download-btn">✅ Looks Good - Download</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Buy Me a Coffee Modal -->
-    <div id="a4-container"></div>
-    <div class="modal" id="coffee-modal">
-        <div class="modal-content coffee-content">
+    <!-- COFFEE MODAL -->
+    <div id="coffee-modal" class="modal">
+        <div class="modal-content">
             <h2 class="modal-title">☕ Enjoying the app?</h2>
             <p class="modal-subtitle">Your worksheet is ready! If you found this helpful, consider buying me a coffee!</p>
             
@@ -192,16 +260,17 @@
             </div>
 
             <div class="modal-buttons">
-                <button class="btn-secondary" id="coffee-close-btn">Maybe Later</button>
-                <a href="https://www.buymeacoffee.com/ndukaanthonya" target="_blank" rel="noopener noreferrer">
-                    <button id="coffee-support-btn">☕ Buy Me a Coffee</button>
+                <button id="coffee-close-btn" class="btn-modal-secondary">Maybe Later</button>
+                <a href="https://www.buymeacoffee.com/ndukaanthonya" target="_blank" class="btn-coffee-link">
+                    <button class="btn-coffee">☕ Buy Me a Coffee</button>
                 </a>
             </div>
-
+            
             <p class="coffee-footer">Thank you for your support! 🙏</p>
         </div>
     </div>
-    
+
     <script src="script.js"></script>
+
 </body>
 </html>

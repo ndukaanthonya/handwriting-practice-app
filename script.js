@@ -1,4 +1,12 @@
-// 100+ Handwriting Fonts Collection
+// ===================================
+// TRAYCE - HANDWRITING PRACTICE APP
+// Live Preview - All Changes Update Instantly
+// ===================================
+
+// ===================================
+// HANDWRITING FONTS COLLECTION (105+)
+// ===================================
+
 const handwritingFonts = [
     'Allura', 'Arizonia', 'Alex Brush', 'Architects Daughter', 'Bad Script',
     'Ballet', 'Berkshire Swash', 'Bilbo', 'Bilbo Swash Caps', 'Caveat',
@@ -26,29 +34,37 @@ const handwritingFonts = [
     'Borel', 'Gideon Roman', 'Handlee', 'Julee', 'Klee One'
 ];
 
-// Get all HTML elements
+// ===================================
+// DOM ELEMENTS
+// ===================================
+
 const fontSelect = document.getElementById('font-select');
+const pangramSelect = document.getElementById('pangram-select');
+const customTextInput = document.getElementById('custom-text-input');
+const charCount = document.getElementById('char-count');
 const contentSelect = document.getElementById('content-select');
 const pagesSelect = document.getElementById('pages-select');
 const sizeSelect = document.getElementById('size-select');
-const preview = document.getElementById('preview');
-const generateBtn = document.getElementById('generate-btn');
-const previewBtn = document.getElementById('preview-btn');
-const loading = document.getElementById('loading');
-const successMessage = document.getElementById('success-message');
 const fontCount = document.getElementById('font-count');
-const themeToggle = document.getElementById('theme-toggle');
 const sizeEstimate = document.getElementById('size-estimate');
-const pangramSelect = document.getElementById('pangram-select');
+const customTextGroup = document.getElementById('custom-text-group');
+const sheetContent = document.getElementById('sheet-content');
 
-// Email modal elements
+// Buttons
+const downloadBtn = document.getElementById('download-btn');
+const themeToggle = document.getElementById('theme-toggle');
+
+// Text mode radios
+const modePreset = document.getElementById('mode-preset');
+const modeCustom = document.getElementById('mode-custom');
+
+// Modals
 const emailModal = document.getElementById('email-modal');
 const userEmailInput = document.getElementById('user-email');
 const emailError = document.getElementById('email-error');
 const sendCodeBtn = document.getElementById('send-code-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 
-// Code modal elements
 const codeModal = document.getElementById('code-modal');
 const displayEmail = document.getElementById('display-email');
 const verificationCodeInput = document.getElementById('verification-code');
@@ -57,93 +73,206 @@ const verifyCodeBtn = document.getElementById('verify-code-btn');
 const codeCancelBtn = document.getElementById('code-cancel-btn');
 const resendCodeBtn = document.getElementById('resend-code-btn');
 
-// Preview modal elements
-const previewModal = document.getElementById('preview-modal');
-const previewCanvas = document.getElementById('preview-canvas');
-const closePreviewBtn = document.getElementById('close-preview-btn');
-const previewCloseBtn = document.getElementById('preview-close-btn');
-const previewDownloadBtn = document.getElementById('preview-download-btn');
+const coffeeModal = document.getElementById('coffee-modal');
+const coffeeCloseBtn = document.getElementById('coffee-close-btn');
 
-// Custom text elements
-const textModeSelect = document.getElementById('text-mode-select');
-const customTextGroup = document.getElementById('custom-text-group');
-const customTextInput = document.getElementById('custom-text-input');
-const charCount = document.getElementById('char-count');
+// ===================================
+// VERIFICATION DATA
+// ===================================
 
-// Toggle custom text input visibility
-if (textModeSelect && customTextGroup) {
-    textModeSelect.addEventListener('change', function() {
-        if (this.value === 'custom') {
-            customTextGroup.style.display = 'block';
-            if (contentSelect) contentSelect.disabled = true;
-            if (pangramSelect) pangramSelect.disabled = true;
-        } else {
-            customTextGroup.style.display = 'none';
-            if (contentSelect) contentSelect.disabled = false;
-            if (pangramSelect) pangramSelect.disabled = false;
-        }
-    });
-}
-
-// Character counter
-if (customTextInput && charCount) {
-    customTextInput.addEventListener('input', function() {
-        const length = this.value.length;
-        charCount.textContent = length;
-        
-        if (length > 500) {
-            this.value = this.value.substring(0, 500);
-            charCount.textContent = '500';
-        }
-    });
-}
-
-// Store verification data temporarily
 let verificationData = {
     email: '',
     code: '',
     timestamp: null
 };
 
-// Initialize theme
+// ===================================
+// INITIALIZATION
+// ===================================
+
+function init() {
+    console.log('🚀 Trayce App Starting...');
+    initTheme();
+    populateFonts();
+    updateLivePreview();
+    updateSizeEstimate();
+    setupEventListeners();
+    console.log('✅ Trayce App Ready!');
+}
+
+// ===================================
+// THEME MANAGEMENT
+// ===================================
+
 function initTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
 }
 
-// Toggle theme
-if (themeToggle) {
-    themeToggle.addEventListener('click', function() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-    });
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
 }
 
-// Populate font dropdown
-if (fontSelect) {
+// ===================================
+// FONT MANAGEMENT
+// ===================================
+
+function populateFonts() {
+    if (!fontSelect) return;
+    
+    // Add default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = 'Dancing Script';
+    defaultOption.textContent = 'Dancing Script (Default)';
+    fontSelect.appendChild(defaultOption);
+    
     handwritingFonts.sort().forEach(font => {
-        const option = document.createElement('option');
-        option.value = font;
-        option.textContent = font;
-        fontSelect.appendChild(option);
+        if (font !== 'Dancing Script') {
+            const option = document.createElement('option');
+            option.value = font;
+            option.textContent = font;
+            fontSelect.appendChild(option);
+        }
     });
+    
+    if (fontCount) {
+        fontCount.textContent = `${handwritingFonts.length} handwriting fonts available`;
+    }
 }
 
-if (fontCount) {
-    fontCount.textContent = `${handwritingFonts.length} handwriting fonts available`;
+// ===================================
+// LIVE PREVIEW UPDATE
+// ===================================
+
+function updateLivePreview() {
+    if (!sheetContent) return;
+    
+    // Get current settings
+    const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
+    const selectedPangram = pangramSelect ? pangramSelect.value : 'The quick brown fox jumps over the lazy dog';
+    const selectedContent = contentSelect ? contentSelect.value : 'combined';
+    const isCustomMode = modeCustom && modeCustom.checked;
+    const customText = customTextInput ? customTextInput.value.trim() : '';
+    
+    // Determine what text to display
+    let practiceTexts = [];
+    
+    if (isCustomMode && customText) {
+        // Custom text mode
+        practiceTexts = customText.split('\n').filter(line => line.trim());
+        if (practiceTexts.length === 0) {
+            practiceTexts = [customText];
+        }
+    } else {
+        // Preset mode
+        if (selectedContent === 'combined') {
+            practiceTexts = [
+                selectedPangram,
+                'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+                'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+                '0 1 2 3 4 5 6 7 8 9'
+            ];
+        } else if (selectedContent === 'pangram') {
+            practiceTexts = [selectedPangram];
+        } else if (selectedContent === 'alphabet') {
+            practiceTexts = ['A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'];
+        } else if (selectedContent === 'lowercase') {
+            practiceTexts = ['a b c d e f g h i j k l m n o p q r s t u v w x y z'];
+        } else if (selectedContent === 'numbers') {
+            practiceTexts = ['0 1 2 3 4 5 6 7 8 9'];
+        }
+    }
+    
+    // Clear current content
+    sheetContent.innerHTML = '';
+    
+    // Generate 8 lines (4 text + 4 faded copies)
+    const totalLines = 8;
+    let lineIndex = 0;
+    
+    for (let i = 0; i < practiceTexts.length && lineIndex < totalLines; i++) {
+        const text = practiceTexts[i];
+        
+        // Main text line
+        if (lineIndex < totalLines) {
+            const lineGroup1 = document.createElement('div');
+            lineGroup1.className = 'handwriting-line-group';
+            
+            const textElement1 = document.createElement('p');
+            textElement1.className = 'practice-text';
+            textElement1.style.fontFamily = `'${selectedFont}', cursive`;
+            textElement1.textContent = text;
+            
+            lineGroup1.appendChild(textElement1);
+            sheetContent.appendChild(lineGroup1);
+            lineIndex++;
+        }
+        
+        // Faded text line
+        if (lineIndex < totalLines) {
+            const lineGroup2 = document.createElement('div');
+            lineGroup2.className = 'handwriting-line-group';
+            
+            const textElement2 = document.createElement('p');
+            textElement2.className = 'practice-text practice-text-faded';
+            textElement2.style.fontFamily = `'${selectedFont}', cursive`;
+            textElement2.textContent = text;
+            
+            lineGroup2.appendChild(textElement2);
+            sheetContent.appendChild(lineGroup2);
+            lineIndex++;
+        }
+    }
+    
+    // Fill remaining lines with empty line groups
+    while (lineIndex < totalLines) {
+        const emptyLine = document.createElement('div');
+        emptyLine.className = 'handwriting-line-group';
+        sheetContent.appendChild(emptyLine);
+        lineIndex++;
+    }
 }
 
-// Update preview
-function updatePreview() {
-    if (!fontSelect || !preview) return;
-    const selectedFont = fontSelect.value;
-    preview.style.fontFamily = `'${selectedFont}', cursive`;
-    preview.textContent = 'The quick brown fox jumps over the lazy dog'.substring(0, 40);
+// ===================================
+// CUSTOM TEXT MANAGEMENT
+// ===================================
+
+function toggleCustomText() {
+    if (!modePreset || !modeCustom || !customTextGroup) return;
+    
+    if (modeCustom.checked) {
+        customTextGroup.style.display = 'block';
+        if (contentSelect) contentSelect.disabled = true;
+        if (pangramSelect) pangramSelect.disabled = true;
+    } else {
+        customTextGroup.style.display = 'none';
+        if (contentSelect) contentSelect.disabled = false;
+        if (pangramSelect) pangramSelect.disabled = false;
+    }
+    
+    updateLivePreview();
 }
 
-// Update file size estimate
+function updateCharCount() {
+    if (!customTextInput || !charCount) return;
+    const length = customTextInput.value.length;
+    charCount.textContent = length;
+    
+    if (length > 500) {
+        customTextInput.value = customTextInput.value.substring(0, 500);
+        charCount.textContent = '500';
+    }
+    
+    updateLivePreview();
+}
+
+// ===================================
+// SIZE ESTIMATE
+// ===================================
+
 function updateSizeEstimate() {
     if (!pagesSelect || !sizeEstimate) return;
     const pages = parseInt(pagesSelect.value);
@@ -151,21 +280,23 @@ function updateSizeEstimate() {
     sizeEstimate.textContent = `~${estimatedSize} MB`;
 }
 
-if (fontSelect) fontSelect.addEventListener('change', updatePreview);
-if (pagesSelect) pagesSelect.addEventListener('change', updateSizeEstimate);
+// ===================================
+// EMAIL VALIDATION
+// ===================================
 
-// Email validation
 function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
 }
 
-// Generate 6-digit verification code
 function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Send verification code
+// ===================================
+// API CALLS
+// ===================================
+
 async function sendVerificationCode(email) {
     try {
         const code = generateVerificationCode();
@@ -187,7 +318,6 @@ async function sendVerificationCode(email) {
     }
 }
 
-// Save email data
 async function saveEmailData(email, font, contentType, pages, textSize) {
     try {
         const response = await fetch('/api/save-email', {
@@ -212,213 +342,58 @@ async function saveEmailData(email, font, contentType, pages, textSize) {
     }
 }
 
-// Show email modal
-if (generateBtn && emailModal) {
-    generateBtn.addEventListener('click', function() {
-        emailModal.classList.add('active');
-        if (userEmailInput) userEmailInput.value = '';
-        if (emailError) emailError.classList.remove('show');
-        if (userEmailInput) userEmailInput.classList.remove('error');
-    });
+// ===================================
+// MODAL MANAGEMENT
+// ===================================
+
+function openEmailModal() {
+    if (!emailModal) return;
+    emailModal.classList.add('active');
+    if (userEmailInput) userEmailInput.value = '';
+    if (emailError) emailError.classList.remove('show');
 }
 
-if (cancelBtn && emailModal) {
-    cancelBtn.addEventListener('click', () => emailModal.classList.remove('active'));
+function closeEmailModal() {
+    if (!emailModal) return;
+    emailModal.classList.remove('active');
 }
 
-// Send verification code
-if (sendCodeBtn) {
-    sendCodeBtn.addEventListener('click', async function() {
-        const email = userEmailInput ? userEmailInput.value.trim() : '';
-        
-        if (!validateEmail(email)) {
-            if (emailError) {
-                emailError.textContent = 'Please enter a valid email address';
-                emailError.classList.add('show');
-            }
-            if (userEmailInput) userEmailInput.classList.add('error');
-            return;
-        }
-
-        sendCodeBtn.disabled = true;
-        sendCodeBtn.textContent = 'Sending...';
-
-        const result = await sendVerificationCode(email);
-
-        if (result.success) {
-            if (emailModal) emailModal.classList.remove('active');
-            if (codeModal) codeModal.classList.add('active');
-            if (displayEmail) displayEmail.textContent = email;
-            if (verificationCodeInput) verificationCodeInput.value = '';
-            if (codeError) codeError.classList.remove('show');
-        } else {
-            if (emailError) {
-                emailError.textContent = 'Failed to send code. Please try again.';
-                emailError.classList.add('show');
-            }
-        }
-
-        sendCodeBtn.disabled = false;
-        sendCodeBtn.textContent = 'Send Code';
-    });
+function openCodeModal() {
+    if (!codeModal) return;
+    codeModal.classList.add('active');
+    if (displayEmail) displayEmail.textContent = verificationData.email;
+    if (verificationCodeInput) verificationCodeInput.value = '';
+    if (codeError) codeError.classList.remove('show');
 }
 
-if (resendCodeBtn) {
-    resendCodeBtn.addEventListener('click', async function() {
-        resendCodeBtn.disabled = true;
-        resendCodeBtn.textContent = 'Sending...';
-        const result = await sendVerificationCode(verificationData.email);
-        if (result.success) alert('New code sent!');
-        else alert('Failed to send code.');
-        resendCodeBtn.disabled = false;
-        resendCodeBtn.textContent = 'Resend';
-    });
+function closeCodeModal() {
+    if (!codeModal) return;
+    codeModal.classList.remove('active');
+    verificationData = { email: '', code: '', timestamp: null };
 }
 
-if (codeCancelBtn && codeModal) {
-    codeCancelBtn.addEventListener('click', function() {
-        codeModal.classList.remove('active');
-        verificationData = { email: '', code: '', timestamp: null };
-    });
-}
-
-if (verifyCodeBtn) {
-    verifyCodeBtn.addEventListener('click', async function() {
-        const enteredCode = verificationCodeInput ? verificationCodeInput.value.trim() : '';
-        
-        if (enteredCode.length !== 6) {
-            if (codeError) {
-                codeError.textContent = 'Please enter a 6-digit code';
-                codeError.classList.add('show');
-            }
-            return;
-        }
-
-        const codeAge = Date.now() - verificationData.timestamp;
-        if (codeAge > 10 * 60 * 1000) {
-            if (codeError) {
-                codeError.textContent = 'Code expired. Request a new code.';
-                codeError.classList.add('show');
-            }
-            return;
-        }
-
-        if (enteredCode !== verificationData.code) {
-            if (codeError) {
-                codeError.textContent = 'Invalid code. Try again.';
-                codeError.classList.add('show');
-            }
-            return;
-        }
-
-        if (codeModal) codeModal.classList.remove('active');
-        
-        const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
-        const selectedContent = contentSelect ? contentSelect.value : 'pangram';
-        const selectedPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
-        const selectedSize = sizeSelect ? sizeSelect.value : '0.9';
-        
-        await saveEmailData(verificationData.email, selectedFont, selectedContent, selectedPages, selectedSize);
-        await generatePDF();
-        
-        verificationData = { email: '', code: '', timestamp: null };
-    });
-}
-
-if (verificationCodeInput) {
-    verificationCodeInput.addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        if (codeError) codeError.classList.remove('show');
-    });
-}
-
-if (userEmailInput) {
-    userEmailInput.addEventListener('keypress', e => { 
-        if (e.key === 'Enter' && sendCodeBtn) sendCodeBtn.click(); 
-    });
-    userEmailInput.addEventListener('input', () => {
-        if (emailError) emailError.classList.remove('show');
-        userEmailInput.classList.remove('error');
-    });
-}
-
-if (verificationCodeInput) {
-    verificationCodeInput.addEventListener('keypress', e => { 
-        if (e.key === 'Enter' && verifyCodeBtn) verifyCodeBtn.click(); 
-    });
-}
-
-// Preview PDF
-if (previewBtn) {
-    previewBtn.addEventListener('click', async function() {
-        await generatePreview();
-    });
-}
-
-if (closePreviewBtn && previewModal) {
-    closePreviewBtn.addEventListener('click', () => previewModal.classList.remove('active'));
-}
-
-if (previewCloseBtn && previewModal) {
-    previewCloseBtn.addEventListener('click', () => previewModal.classList.remove('active'));
-}
-
-if (previewDownloadBtn && previewModal && generateBtn) {
-    previewDownloadBtn.addEventListener('click', () => {
-        previewModal.classList.remove('active');
-        generateBtn.click();
-    });
-}
-
-async function generatePreview() {
-    if (!previewBtn) return;
-    
-    previewBtn.disabled = true;
-    previewBtn.textContent = 'Generating Preview...';
-
-    try {
-        const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
-        const selectedContent = contentSelect ? contentSelect.value : 'pangram';
-        const selectedSize = sizeSelect ? parseFloat(sizeSelect.value) : 0.9;
-        const pages = pagesSelect ? parseInt(pagesSelect.value) : 1;
-
-        const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, 0);
-        
-        if (previewCanvas) {
-            const ctx = previewCanvas.getContext('2d');
-            previewCanvas.width = canvas.width;
-            previewCanvas.height = canvas.height;
-            ctx.drawImage(canvas, 0, 0);
-        }
-
-        const previewFontName = document.getElementById('preview-font-name');
-        const previewContentName = document.getElementById('preview-content-name');
-        const previewPagesName = document.getElementById('preview-pages-name');
-        const previewSizeName = document.getElementById('preview-size-name');
-        const previewFileSize = document.getElementById('preview-file-size');
-
-        if (previewFontName) previewFontName.textContent = selectedFont;
-        if (previewContentName && contentSelect) {
-            previewContentName.textContent = contentSelect.options[contentSelect.selectedIndex].text;
-        }
-        if (previewPagesName) previewPagesName.textContent = pages;
-        if (previewSizeName) previewSizeName.textContent = selectedSize + ' cm';
-        if (previewFileSize && sizeEstimate) {
-            previewFileSize.textContent = sizeEstimate.textContent;
-        }
-
-        if (previewModal) previewModal.classList.add('active');
-    } catch (error) {
-        console.error('Preview error:', error);
-        alert('Error generating preview: ' + error.message);
-    } finally {
-        previewBtn.disabled = false;
-        previewBtn.textContent = '👁️ Preview PDF';
+function showCoffeeModal() {
+    if (!coffeeModal) return;
+    const lastDismissed = localStorage.getItem('coffeeDismissed');
+    const now = Date.now();
+    if (!lastDismissed || (now - parseInt(lastDismissed)) > 24 * 60 * 60 * 1000) {
+        coffeeModal.classList.add('active');
     }
 }
 
-// Create a single PDF page
+function closeCoffeeModal() {
+    if (!coffeeModal) return;
+    coffeeModal.classList.remove('active');
+    localStorage.setItem('coffeeDismissed', Date.now().toString());
+}
+
+// ===================================
+// PDF GENERATION
+// ===================================
+
 async function createPDFPage(font, contentType, textSize, pageNumber) {
+    console.log(`Creating page ${pageNumber + 1}...`);
+    
     const container = document.createElement('div');
     container.style.width = '210mm';
     container.style.height = '297mm';
@@ -446,25 +421,24 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
     title.style.fontWeight = 'bold';
     title.style.marginBottom = '8mm';
     title.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    title.style.color = '#000';
     title.textContent = `Handwriting Practice - Page ${pageNumber + 1}`;
     container.appendChild(title);
 
-    // Get content for this page
+    // Get content
     let practiceTexts = [];
+    
+    const isCustomMode = modeCustom && modeCustom.checked;
+    const customText = customTextInput ? customTextInput.value.trim() : '';
 
-    // Check if using custom text
-    const textMode = textModeSelect ? textModeSelect.value : 'preset';
-    if (textMode === 'custom' && customTextInput && customTextInput.value.trim()) {
-        const customText = customTextInput.value.trim();
+    if (isCustomMode && customText) {
         practiceTexts = customText.split('\n').filter(line => line.trim());
         if (practiceTexts.length === 0) {
             practiceTexts = [customText];
         }
     } else {
-        // Get selected pangram
         const selectedPangram = pangramSelect ? pangramSelect.value : 'The quick brown fox jumps over the lazy dog';
         
-        // Use preset content based on pangram
         if (contentType === 'combined') {
             practiceTexts = [
                 selectedPangram,
@@ -551,14 +525,13 @@ async function createPDFPage(font, contentType, textSize, pageNumber) {
     return canvas;
 }
 
-// Generate full PDF
 async function generatePDF() {
-    if (generateBtn) generateBtn.disabled = true;
-    if (loading) {
-        loading.classList.add('active');
-        loading.textContent = 'Starting PDF generation...';
+    console.log('=== PDF GENERATION START ===');
+    
+    if (downloadBtn) {
+        downloadBtn.disabled = true;
+        downloadBtn.innerHTML = '<span class="material-symbols-outlined">refresh</span><span>Generating...</span>';
     }
-    if (successMessage) successMessage.classList.remove('show');
 
     try {
         const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
@@ -578,10 +551,7 @@ async function generatePDF() {
             compress: true
         });
 
-        // Generate pages
         for (let i = 0; i < totalPages; i++) {
-            if (loading) loading.textContent = `Generating page ${i + 1} of ${totalPages}...`;
-            
             const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, i);
             const imgData = canvas.toDataURL('image/jpeg', 0.7);
             
@@ -594,60 +564,187 @@ async function generatePDF() {
         const fileName = `handwriting-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${totalPages}p.pdf`;
         pdf.save(fileName);
 
-        if (successMessage) {
-            successMessage.classList.add('show');
-            setTimeout(() => {
-                if (successMessage) successMessage.classList.remove('show');
-            }, 5000);
-        }
-
         setTimeout(() => showCoffeeModal(), 1000);
 
     } catch (error) {
         console.error('PDF generation failed:', error);
         alert(`Error generating PDF: ${error.message}\n\nPlease try with fewer pages or refresh the page.`);
     } finally {
-        if (generateBtn) generateBtn.disabled = false;
-        if (loading) {
-            loading.classList.remove('active');
-            loading.textContent = 'Processing...';
+        if (downloadBtn) {
+            downloadBtn.disabled = false;
+            downloadBtn.innerHTML = '<span class="material-symbols-outlined">download</span><span>Download PDF</span>';
         }
     }
 }
 
-// Coffee Modal
-const coffeeModal = document.getElementById('coffee-modal');
-const coffeeCloseBtn = document.getElementById('coffee-close-btn');
+// ===================================
+// EVENT LISTENERS
+// ===================================
 
-function showCoffeeModal() {
-    if (!coffeeModal) return;
-    const lastDismissed = localStorage.getItem('coffeeDismissed');
-    const now = Date.now();
-    if (!lastDismissed || (now - parseInt(lastDismissed)) > 24 * 60 * 60 * 1000) {
-        coffeeModal.classList.add('active');
+function setupEventListeners() {
+    // Theme toggle
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
     }
+
+    // Font selection - LIVE UPDATE
+    if (fontSelect) {
+        fontSelect.addEventListener('change', updateLivePreview);
+    }
+
+    // Pangram selection - LIVE UPDATE
+    if (pangramSelect) {
+        pangramSelect.addEventListener('change', updateLivePreview);
+    }
+
+    // Content selection - LIVE UPDATE
+    if (contentSelect) {
+        contentSelect.addEventListener('change', updateLivePreview);
+    }
+
+    // Text mode toggle
+    if (modePreset) modePreset.addEventListener('change', toggleCustomText);
+    if (modeCustom) modeCustom.addEventListener('change', toggleCustomText);
+
+    // Custom text - LIVE UPDATE
+    if (customTextInput) {
+        customTextInput.addEventListener('input', updateCharCount);
+    }
+
+    // Size estimate
+    if (pagesSelect) {
+        pagesSelect.addEventListener('change', updateSizeEstimate);
+    }
+
+    // Download button
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', openEmailModal);
+    }
+
+    // Email modal
+    if (cancelBtn) cancelBtn.addEventListener('click', closeEmailModal);
+
+    if (sendCodeBtn) {
+        sendCodeBtn.addEventListener('click', async function() {
+            const email = userEmailInput ? userEmailInput.value.trim() : '';
+            
+            if (!validateEmail(email)) {
+                if (emailError) {
+                    emailError.textContent = 'Please enter a valid email address';
+                    emailError.classList.add('show');
+                }
+                return;
+            }
+
+            sendCodeBtn.disabled = true;
+            sendCodeBtn.textContent = 'Sending...';
+
+            const result = await sendVerificationCode(email);
+
+            if (result.success) {
+                closeEmailModal();
+                openCodeModal();
+            } else {
+                if (emailError) {
+                    emailError.textContent = 'Failed to send code. Please try again.';
+                    emailError.classList.add('show');
+                }
+            }
+
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.textContent = 'Send Code';
+        });
+    }
+
+    // Code modal
+    if (codeCancelBtn) codeCancelBtn.addEventListener('click', closeCodeModal);
+
+    if (resendCodeBtn) {
+        resendCodeBtn.addEventListener('click', async function() {
+            resendCodeBtn.disabled = true;
+            resendCodeBtn.textContent = 'Sending...';
+            const result = await sendVerificationCode(verificationData.email);
+            if (result.success) alert('New code sent!');
+            else alert('Failed to send code.');
+            resendCodeBtn.disabled = false;
+            resendCodeBtn.textContent = 'Resend';
+        });
+    }
+
+    if (verifyCodeBtn) {
+        verifyCodeBtn.addEventListener('click', async function() {
+            const enteredCode = verificationCodeInput ? verificationCodeInput.value.trim() : '';
+            
+            if (enteredCode.length !== 6) {
+                if (codeError) {
+                    codeError.textContent = 'Please enter a 6-digit code';
+                    codeError.classList.add('show');
+                }
+                return;
+            }
+
+            const codeAge = Date.now() - verificationData.timestamp;
+            if (codeAge > 10 * 60 * 1000) {
+                if (codeError) {
+                    codeError.textContent = 'Code expired. Request a new code.';
+                    codeError.classList.add('show');
+                }
+                return;
+            }
+
+            if (enteredCode !== verificationData.code) {
+                if (codeError) {
+                    codeError.textContent = 'Invalid code. Try again.';
+                    codeError.classList.add('show');
+                }
+                return;
+            }
+
+            closeCodeModal();
+            
+            const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
+            const selectedContent = contentSelect ? contentSelect.value : 'pangram';
+            const selectedPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
+            const selectedSize = sizeSelect ? sizeSelect.value : '0.9';
+            
+            await saveEmailData(verificationData.email, selectedFont, selectedContent, selectedPages, selectedSize);
+            await generatePDF();
+        });
+    }
+
+    // Code input - numbers only
+    if (verificationCodeInput) {
+        verificationCodeInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (codeError) codeError.classList.remove('show');
+        });
+        
+        verificationCodeInput.addEventListener('keypress', e => { 
+            if (e.key === 'Enter' && verifyCodeBtn) verifyCodeBtn.click(); 
+        });
+    }
+
+    // Email input
+    if (userEmailInput) {
+        userEmailInput.addEventListener('keypress', e => { 
+            if (e.key === 'Enter' && sendCodeBtn) sendCodeBtn.click(); 
+        });
+        
+        userEmailInput.addEventListener('input', () => {
+            if (emailError) emailError.classList.remove('show');
+        });
+    }
+
+    // Coffee modal
+    if (coffeeCloseBtn) coffeeCloseBtn.addEventListener('click', closeCoffeeModal);
 }
 
-if (coffeeCloseBtn && coffeeModal) {
-    coffeeCloseBtn.addEventListener('click', function() {
-        coffeeModal.classList.remove('active');
-        localStorage.setItem('coffeeDismissed', Date.now().toString());
-    });
-}
+// ===================================
+// START APP
+// ===================================
 
-if (coffeeModal) {
-    coffeeModal.addEventListener('click', function(e) {
-        if (e.target === coffeeModal) {
-            coffeeModal.classList.remove('active');
-            localStorage.setItem('coffeeDismissed', Date.now().toString());
-        }
-    });
-}
-
-// Initialize
-initTheme();
-updatePreview();
-updateSizeEstimate();
-if (fontSelect && preview) {
-    document.fonts.ready.then(() => updatePreview());
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
 }
