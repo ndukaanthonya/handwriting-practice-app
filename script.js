@@ -173,7 +173,7 @@ async function sendVerificationCode(email) {
         verificationData.code = code;
         verificationData.timestamp = Date.now();
 
-        const response = await fetch('/.netlify/functions/send-verification', {
+        const response = await fetch('/api/send-verification', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, code })
@@ -190,7 +190,7 @@ async function sendVerificationCode(email) {
 // Save email data
 async function saveEmailData(email, font, contentType, pages, textSize) {
     try {
-        const response = await fetch('/.netlify/functions/save-email', {
+        const response = await fetch('/api/save-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
