@@ -1,35 +1,34 @@
 const { Resend } = require('resend');
 
-exports.handler = async (event) => {
-  // Only allow POST requests
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { email, code } = JSON.parse(event.body);
+    const { email, code } = req.body;
 
-    // Validate inputs
     if (!email || !code) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Email and code are required' })
-      };
+      return res.status(400).json({ error: 'Email and code are required' });
     }
 
     console.log('=== RESEND EMAIL START ===');
     console.log('To:', email);
     console.log('Code:', code);
-    console.log('API Key exists:', !!process.env.RESEND_API_KEY);
 
-    // Initialize Resend with API key
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    // Send email
-    console.log('Sending email via Resend...');
     const data = await resend.emails.send({
       from: 'admin@trayce.xyz',
       to: email,
@@ -86,28 +85,18 @@ exports.handler = async (event) => {
     });
 
     console.log('✅ Email sent! ID:', data.id);
-    console.log('=== RESEND EMAIL SUCCESS ===');
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ 
-        success: true, 
-        message: 'Verification code sent',
-        id: data.id 
-      })
-    };
+    return res.status(200).json({ 
+      success: true, 
+      message: 'Verification code sent',
+      id: data.id 
+    });
 
   } catch (error) {
-    console.error('❌ ERROR sending email:', error);
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
-    
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ 
-        error: 'Failed to send verification code',
-        details: error.message 
-      })
-    };
+    console.error('❌ Error sending email:', error);
+    return res.status(500).json({ 
+      error: 'Failed to send verification code',
+      details: error.message 
+    });
   }
 };
