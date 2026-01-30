@@ -98,6 +98,7 @@ function init() {
     updateSizeEstimate();
     setupEventListeners();
     initModeToggle();
+    restoreVerificationState();  // ← ADD THIS LINE
     console.log('✅ Trayce App Ready!');
 }
 
@@ -297,18 +298,19 @@ function generateVerificationCode() {
 // ===================================
 // API CALLS
 // ===================================
-
+// 2. UPDATE sendVerificationCode() - ADD saveVerificationState()
 async function sendVerificationCode(email) {
     try {
         const code = generateVerificationCode();
         
-        // Store email in verificationData
         verificationData.email = email;
         verificationData.code = code;
         verificationData.timestamp = Date.now();
 
         console.log('📧 Email stored:', verificationData.email);
         console.log('🔢 Code generated:', code);
+        
+        saveVerificationState();  // ← ADD THIS LINE
 
         const response = await fetch('/api/send-verification', {
             method: 'POST',
@@ -322,6 +324,58 @@ async function sendVerificationCode(email) {
         console.error('Error sending code:', error);
         return { success: false, error: error.message };
     }
+}
+
+// Save verification data to sessionStorage to survive page refresh
+function saveVerificationState() {
+    if (verificationData.email && verificationData.code) {
+        sessionStorage.setItem('verificationData', JSON.stringify({
+            email: verificationData.email,
+            code: verificationData.code,
+            timestamp: verificationData.timestamp
+        }));
+        console.log('✅ Verification state saved');
+    }
+}
+
+// Restore verification data after page refresh
+function restoreVerificationState() {
+    const saved = sessionStorage.getItem('verificationData');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            
+            // Check if code is still valid (within 10 minutes)
+            const codeAge = Date.now() - data.timestamp;
+            if (codeAge < 10 * 60 * 1000) {
+                verificationData = data;
+                console.log('✅ Verification state restored');
+                
+                // If user was on code modal, reopen it
+                const codeModalWasOpen = sessionStorage.getItem('codeModalOpen');
+                if (codeModalWasOpen === 'true') {
+                    openCodeModal();
+                    sessionStorage.removeItem('codeModalOpen');
+                }
+                
+                return true;
+            } else {
+                // Code expired, clear it
+                sessionStorage.removeItem('verificationData');
+                console.log('⏰ Verification code expired');
+            }
+        } catch (e) {
+            console.error('Error restoring verification:', e);
+        }
+    }
+    return false;
+}
+
+// Clear verification state after successful verification
+function clearVerificationState() {
+    sessionStorage.removeItem('verificationData');
+    sessionStorage.removeItem('codeModalOpen');
+    console.log('🗑️ Verification state cleared');
 }
 
 async function saveEmailData(email, font, contentType, pages, textSize) {
@@ -403,13 +457,38 @@ function openCodeModal() {
     if (displayEmail) displayEmail.textContent = verificationData.email;
     if (verificationCodeInput) verificationCodeInput.value = '';
     if (codeError) codeError.classList.remove('show');
+    
+    sessionStorage.setItem('codeModalOpen', 'true');  // ← ADD THIS LINE
+}
+// ===================================
+// BONUS: AUTO-FOCUS CODE INPUT
+// Helps user immediately enter code after returning
+// ===================================
+
+// Add this to your openCodeModal function
+function openCodeModal() {
+    if (!codeModal) return;
+    codeModal.classList.add('active');
+    if (displayEmail) displayEmail.textContent = verificationData.email;
+    if (verificationCodeInput) {
+        verificationCodeInput.value = '';
+        // Auto-focus after a short delay
+        setTimeout(() => {
+            verificationCodeInput.focus();
+        }, 300);
+    }
+    if (codeError) codeError.classList.remove('show');
+    
+    sessionStorage.setItem('codeModalOpen', 'true');
 }
 
+// 4. UPDATE closeCodeModal() - CLEAR sessionStorage
 function closeCodeModal() {
     if (!codeModal) return;
     codeModal.classList.remove('active');
+    
+    sessionStorage.removeItem('codeModalOpen');  // ← ADD THIS LINE
 }
-
 function showCoffeeModal() {
     if (!coffeeModal) {
         console.error('Coffee modal not found');
@@ -713,98 +792,113 @@ function setupEventListeners() {
         });
     }
 
-    if (verifyCodeBtn) {
-        verifyCodeBtn.addEventListener('click', async function() {
-            const enteredCode = verificationCodeInput ? verificationCodeInput.value.trim() : '';
-            
-            console.log('=== VERIFY CODE CLICKED ===');
-            console.log('Entered code:', enteredCode);
-            console.log('Stored code:', verificationData.code);
-            console.log('Stored email:', verificationData.email);
-            
-            if (enteredCode.length !== 6) {
-                if (codeError) {
-                    codeError.textContent = 'Please enter a 6-digit code';
-                    codeError.classList.add('show');
-                }
-                return;
+  // 5. UPDATE verifyCodeBtn handler - ADD clearVerificationState() after success
+if (verifyCodeBtn) {
+    verifyCodeBtn.addEventListener('click', async function() {
+        const enteredCode = verificationCodeInput ? verificationCodeInput.value.trim() : '';
+        
+        console.log('=== VERIFY CODE CLICKED ===');
+        console.log('Entered code:', enteredCode);
+        console.log('Stored code:', verificationData.code);
+        console.log('Stored email:', verificationData.email);
+        
+        if (enteredCode.length !== 6) {
+            if (codeError) {
+                codeError.textContent = 'Please enter a 6-digit code';
+                codeError.classList.add('show');
             }
-    
-            const codeAge = Date.now() - verificationData.timestamp;
-            if (codeAge > 10 * 60 * 1000) {
-                if (codeError) {
-                    codeError.textContent = 'Code expired. Request a new code.';
-                    codeError.classList.add('show');
-                }
-                return;
+            return;
+        }
+
+        const codeAge = Date.now() - verificationData.timestamp;
+        if (codeAge > 10 * 60 * 1000) {
+            if (codeError) {
+                codeError.textContent = 'Code expired. Request a new code.';
+                codeError.classList.add('show');
             }
-    
-            if (enteredCode !== verificationData.code) {
-                if (codeError) {
-                    codeError.textContent = 'Invalid code. Try again.';
-                    codeError.classList.add('show');
-                }
-                return;
+            return;
+        }
+
+        if (enteredCode !== verificationData.code) {
+            if (codeError) {
+                codeError.textContent = 'Invalid code. Try again.';
+                codeError.classList.add('show');
             }
-    
-            // Code is correct!
-            console.log('✅ Code verified!');
-            closeCodeModal();
+            return;
+        }
+
+        console.log('✅ Code verified!');
+        closeCodeModal();
+        clearVerificationState();  // ← ADD THIS LINE
+        
+        const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
+        const selectedContent = contentSelect ? contentSelect.value : 'pangram';
+        const selectedPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
+        const selectedSize = sizeSelect ? sizeSelect.value : '0.9';
+        
+        const userEmail = verificationData.email;
+        
+        console.log('🎨 Settings:');
+        console.log('  Font:', selectedFont);
+        console.log('  Content:', selectedContent);
+        console.log('  Pages:', selectedPages);
+        console.log('  Size:', selectedSize);
+        console.log('📧 User Email:', userEmail);
+        
+        if (!userEmail || userEmail.trim() === '') {
+            console.error('❌ ERROR: Email is empty!');
+            alert('Error: Email not found. Please try again.');
+            return;
+        }
+        
+        console.log('💾 About to call saveEmailData...');
+        
+        try {
+            const saveResult = await saveEmailData(userEmail, selectedFont, selectedContent, selectedPages, selectedSize);
+            console.log('💾 saveEmailData returned:', saveResult);
             
-            // Get current settings
-            const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
-            const selectedContent = contentSelect ? contentSelect.value : 'pangram';
-            const selectedPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
-            const selectedSize = sizeSelect ? sizeSelect.value : '0.9';
-            
-            // Get email
-            const userEmail = verificationData.email;
-            
-            console.log('🎨 Settings:');
-            console.log('  Font:', selectedFont);
-            console.log('  Content:', selectedContent);
-            console.log('  Pages:', selectedPages);
-            console.log('  Size:', selectedSize);
-            console.log('📧 User Email:', userEmail);
-            
-            // Check if email exists
-            if (!userEmail || userEmail.trim() === '') {
-                console.error('❌ ERROR: Email is empty!');
-                alert('Error: Email not found. Please try again.');
-                return;
-            }
-            
-            // Save email data FIRST
-            console.log('💾 About to call saveEmailData...');
-            
-            try {
-                const saveResult = await saveEmailData(userEmail, selectedFont, selectedContent, selectedPages, selectedSize);
-                console.log('💾 saveEmailData returned:', saveResult);
-                
-                if (saveResult && saveResult.success) {
-                    console.log('✅ Email save confirmed successful');
-                } else {
-                    console.error('⚠️ Email save may have failed:', saveResult);
-                }
-            } catch (saveError) {
-                console.error('❌ Exception calling saveEmailData:', saveError);
-            }
-            
-            // Then generate PDF
-            console.log('📄 Checking download type...');
-            
-            if (window.pendingSignatureDownload) {
-                console.log('📝 Signature download');
-                await generateSignaturePDF();
-                window.pendingSignatureDownload = null;
+            if (saveResult && saveResult.success) {
+                console.log('✅ Email save confirmed successful');
             } else {
-                console.log('📄 Handwriting download');
-                await generatePDF();
+                console.error('⚠️ Email save may have failed:', saveResult);
             }
-            
-            console.log('=== VERIFICATION PROCESS COMPLETE ===');
-        });
+        } catch (saveError) {
+            console.error('❌ Exception calling saveEmailData:', saveError);
+        }
+        
+        console.log('📄 Checking download type...');
+        
+        if (window.pendingSignatureDownload) {
+            console.log('📝 Signature download');
+            await generateSignaturePDF();
+            window.pendingSignatureDownload = null;
+        } else {
+            console.log('📄 Handwriting download');
+            await generatePDF();
+        }
+        
+        console.log('=== VERIFICATION PROCESS COMPLETE ===');
+    });
+}
+
+// ===================================
+// ALSO ADD PAGE VISIBILITY LISTENER
+// Saves state when page goes to background
+// ===================================
+
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        // Page is going to background - save state
+        if (verificationData.email && verificationData.code) {
+            saveVerificationState();
+            console.log('📱 App minimized - state saved');
+        }
+    } else {
+        // Page is back in foreground
+        console.log('📱 App restored');
     }
+});
+
 
     // Code input - numbers only
     if (verificationCodeInput) {
