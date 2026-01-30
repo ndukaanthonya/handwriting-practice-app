@@ -77,14 +77,14 @@ const coffeeModal = document.getElementById('coffee-modal');
 const coffeeCloseBtn = document.getElementById('coffee-close-btn');
 
 // ===================================
-// VERIFICATION DATA
+// 1. VERIFICATION DATA
 // ===================================
-
 let verificationData = {
     email: '',
     code: '',
     timestamp: null
 };
+
 
 // ===================================
 // INITIALIZATION
@@ -296,13 +296,16 @@ function generateVerificationCode() {
 // ===================================
 // API CALLS
 // ===================================
-
 async function sendVerificationCode(email) {
     try {
         const code = generateVerificationCode();
+        
+        // CRITICAL: Store email in verificationData
         verificationData.email = email;
         verificationData.code = code;
         verificationData.timestamp = Date.now();
+
+        console.log('Stored in verificationData:', verificationData);  // DEBUG
 
         const response = await fetch('/api/send-verification', {
             method: 'POST',
@@ -321,15 +324,26 @@ async function sendVerificationCode(email) {
 
 async function saveEmailData(email, font, contentType, pages, textSize) {
     try {
-        console.log('Saving email data...');
+        console.log('=== SAVING EMAIL DATA ===');
+        console.log('Email:', email);
+        console.log('Font:', font);
+        console.log('Content Type:', contentType);
+        console.log('Pages:', pages);
+        console.log('Text Size:', textSize);
 
-        const response = await fetch('/api/save-email-db', {  // ← Changed to save-email-db
+        // CRITICAL: Make sure email is not empty
+        if (!email || email.trim() === '') {
+            console.error('❌ Email is empty! Cannot save.');
+            return { success: false, error: 'Email is empty' };
+        }
+
+        const response = await fetch('/api/save-email-db', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json' 
             },
             body: JSON.stringify({
-                email: email,
+                email: email,  // Pass email directly
                 font: font,
                 textType: contentType,
                 pages: pages + ' pages',
@@ -340,20 +354,22 @@ async function saveEmailData(email, font, contentType, pages, textSize) {
         });
 
         const result = await response.json();
-        
+        console.log('API Response:', result);
+
         if (response.ok && result.success) {
             console.log('✅ Email saved successfully!');
             return { success: true };
         } else {
-            console.error('Failed to save:', result.error);
-            return { success: false };
+            console.error('❌ Failed to save:', result.error);
+            return { success: false, error: result.error };
         }
 
     } catch (error) {
-        console.error('Error saving email:', error);
-        return { success: false };
+        console.error('❌ Error saving email:', error);
+        return { success: false, error: error.message };
     }
 }
+
 
 // ===================================
 // MODAL MANAGEMENT
@@ -642,6 +658,9 @@ function setupEventListeners() {
         sendCodeBtn.addEventListener('click', async function() {
             const email = userEmailInput ? userEmailInput.value.trim() : '';
             
+            console.log('=== SEND CODE CLICKED ===');
+            console.log('Email entered:', email);
+            
             if (!validateEmail(email)) {
                 if (emailError) {
                     emailError.textContent = 'Please enter a valid email address';
@@ -649,13 +668,14 @@ function setupEventListeners() {
                 }
                 return;
             }
-
+    
             sendCodeBtn.disabled = true;
             sendCodeBtn.textContent = 'Sending...';
-
+    
             const result = await sendVerificationCode(email);
-
+    
             if (result.success) {
+                console.log('✅ Code sent, email stored:', verificationData.email);  // DEBUG
                 closeEmailModal();
                 openCodeModal();
             } else {
@@ -664,7 +684,7 @@ function setupEventListeners() {
                     emailError.classList.add('show');
                 }
             }
-
+    
             sendCodeBtn.disabled = false;
             sendCodeBtn.textContent = 'Send Code';
         });
@@ -689,6 +709,11 @@ function setupEventListeners() {
         verifyCodeBtn.addEventListener('click', async function() {
             const enteredCode = verificationCodeInput ? verificationCodeInput.value.trim() : '';
             
+            console.log('=== VERIFY CODE CLICKED ===');
+            console.log('Entered code:', enteredCode);
+            console.log('Stored code:', verificationData.code);
+            console.log('Stored email:', verificationData.email);  // DEBUG
+            
             if (enteredCode.length !== 6) {
                 if (codeError) {
                     codeError.textContent = 'Please enter a 6-digit code';
@@ -696,7 +721,7 @@ function setupEventListeners() {
                 }
                 return;
             }
-
+    
             const codeAge = Date.now() - verificationData.timestamp;
             if (codeAge > 10 * 60 * 1000) {
                 if (codeError) {
@@ -705,7 +730,7 @@ function setupEventListeners() {
                 }
                 return;
             }
-
+    
             if (enteredCode !== verificationData.code) {
                 if (codeError) {
                     codeError.textContent = 'Invalid code. Try again.';
@@ -713,15 +738,26 @@ function setupEventListeners() {
                 }
                 return;
             }
-
+    
+            // Code is correct!
+            console.log('✅ Code verified!');
             closeCodeModal();
             
+            // Get current settings
             const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
             const selectedContent = contentSelect ? contentSelect.value : 'pangram';
             const selectedPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
             const selectedSize = sizeSelect ? sizeSelect.value : '0.9';
             
-            await saveEmailData(verificationData.email, selectedFont, selectedContent, selectedPages, selectedSize);
+            // CRITICAL: Use verificationData.email (not a new variable)
+            const userEmail = verificationData.email;
+            
+            console.log('About to save with email:', userEmail);  // DEBUG
+            
+            // Save email data FIRST
+            await saveEmailData(userEmail, selectedFont, selectedContent, selectedPages, selectedSize);
+            
+            // Then generate PDF
             await generatePDF();
         });
     }
