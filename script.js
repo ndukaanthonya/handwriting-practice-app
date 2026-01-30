@@ -318,27 +318,56 @@ async function sendVerificationCode(email) {
     }
 }
 
+// Add this AFTER the existing saveEmailData function in script.js
+// Replace the existing saveEmailData function with this:
+
 async function saveEmailData(email, font, contentType, pages, textSize) {
     try {
+        console.log('=== SAVING EMAIL DATA ===');
+        console.log('Email:', email);
+        console.log('Font:', font);
+        console.log('Content Type:', contentType);
+        console.log('Pages:', pages);
+        console.log('Text Size:', textSize);
+
+        const data = {
+            email: email,
+            font: font,
+            textType: contentType,
+            pages: pages + ' pages',
+            textSize: textSize,
+            timestamp: new Date().toISOString(),
+            verified: true
+        };
+
+        console.log('Sending to API:', data);
+
         const response = await fetch('/api/save-email', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email,
-                font,
-                textType: contentType,
-                pages: pages + ' pages',
-                textSize,
-                timestamp: new Date().toISOString(),
-                verified: true
-            })
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
 
-        if (!response.ok) throw new Error('Failed to save email data');
+        console.log('API Response Status:', response.status);
+
+        const result = await response.json();
+        console.log('API Response Data:', result);
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to save email data');
+        }
+
+        console.log('✅ Email saved successfully!');
         return { success: true };
+
     } catch (error) {
-        console.error('Error saving email:', error);
-        return { success: false };
+        console.error('❌ Error saving email:', error);
+        console.error('Error details:', error.message);
+        // Don't fail the download if email save fails
+        return { success: false, error: error.message };
     }
 }
 
