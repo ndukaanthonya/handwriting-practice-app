@@ -26,10 +26,20 @@ module.exports = async (req, res) => {
     console.log('=== RESEND EMAIL START ===');
     console.log('To:', email);
     console.log('Code:', code);
+    console.log('API Key exists:', !!process.env.RESEND_API_KEY);
+    console.log('API Key starts with:', process.env.RESEND_API_KEY?.substring(0, 5));
+
+    if (!process.env.RESEND_API_KEY) {
+      console.error('❌ RESEND_API_KEY not found!');
+      return res.status(500).json({ error: 'RESEND_API_KEY not configured' });
+    }
 
     const resend = new Resend(process.env.RESEND_API_KEY);
+    console.log('✅ Resend instance created');
 
-    const data = await resend.emails.send({
+    console.log('📧 Attempting to send email...');
+
+    const { data, error } = await resend.emails.send({
       from: 'admin@trayce.xyz',
       to: email,
       subject: 'Your Verification Code - Handwriting Practice',
@@ -84,7 +94,20 @@ module.exports = async (req, res) => {
       `
     });
 
-    console.log('✅ Email sent! ID:', data.id);
+    if (error) {
+      console.error('❌ Resend API Error:', error);
+      return res.status(400).json({ 
+        error: 'Resend API error',
+        details: error.message || error
+      });
+    }
+
+    if (!data || !data.id) {
+      console.error('❌ No data returned from Resend');
+      return res.status(500).json({ error: 'No response from email service' });
+    }
+
+    console.log('✅ Email sent successfully! ID:', data.id);
 
     return res.status(200).json({ 
       success: true, 
@@ -93,10 +116,15 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error sending email:', error);
+    console.error('❌ Unexpected error:', error);
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return res.status(500).json({ 
       error: 'Failed to send verification code',
-      details: error.message 
+      details: error.message,
+      type: error.constructor.name
     });
   }
 };

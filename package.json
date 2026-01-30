@@ -1,9 +1,8 @@
 {
     "name": "handwriting-practice",
     "version": "1.0.0",
-    "description": "Handwriting practice worksheet generator",
     "dependencies": {
-      "resend": "^3.0.0",
+      "resend": "^4.0.0",
       "google-spreadsheet": "^4.1.2",
       "google-auth-library": "^9.0.0"
     }
