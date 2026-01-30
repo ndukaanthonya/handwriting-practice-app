@@ -54,198 +54,369 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-        
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="sidebar-inner">
-                
-                <!-- Header -->
-                <div class="sidebar-header">
-                    <h1 class="sidebar-title">Worksheet Settings</h1>
-                    <p class="sidebar-subtitle">Customize appearance and content.</p>
-                </div>
-                
-                <!-- Font Selection (Your 105+ Fonts) -->
-                <div class="form-group">
-                    <label class="form-label">Choose Font</label>
-                    <select id="font-select" class="form-select">
-                        <!-- Populated by JavaScript -->
-                    </select>
-                    <div id="font-count" class="form-hint"></div>
-                </div>
-                
-                <!-- Pangram Selection -->
-                <div class="form-group">
-                    <label class="form-label">Choose Pangram</label>
-                    <select id="pangram-select" class="form-select">
-                        <option value="The quick brown fox jumps over the lazy dog">The Quick Brown Fox (Classic)</option>
-                        <option value="Sphinx of black quartz, judge my vow">Sphinx of Black Quartz (Cool)</option>
-                        <option value="The five boxing wizards jump quickly">The Five Boxing Wizards (Fun)</option>
-                        <option value="Pack my box with five dozen liquor jugs">Pack My Box (Short)</option>
-                        <option value="How vexingly quick daft zebras jump">How Vexingly Quick (Quirky)</option>
-                        <option value="Waltz, bad nymph, for quick jigs vex">Waltz Bad Nymph (Poetic)</option>
-                    </select>
-                </div>
-                
-                <!-- Text Mode -->
-                <div class="form-group">
-                    <label class="form-label">Text Mode</label>
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="text-mode" value="preset" id="mode-preset" checked>
-                            <span>Preset</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="text-mode" value="custom" id="mode-custom">
-                            <span>Custom</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- Custom Text Input -->
-                <div id="custom-text-group" class="form-group" style="display: none;">
-                    <div class="form-label-row">
-                        <label class="form-label">Your Custom Text</label>
-                        <span class="char-count"><span id="char-count">0</span>/500</span>
-                    </div>
-                    <textarea id="custom-text-input" class="form-textarea" placeholder="Type your text here..."></textarea>
-                </div>
-                
-                <!-- Practice Content -->
-                <div class="form-group">
-                    <label class="form-label">Practice Content</label>
-                    <select id="content-select" class="form-select">
-                        <option value="pangram">Pangram Only</option>
-                        <option value="alphabet">Alphabet Only</option>
-                        <option value="numbers">Numbers Only</option>
-                        <option value="lowercase">Lowercase Only</option>
-                        <option value="combined" selected>All Combined (Recommended)</option>
-                    </select>
-                </div>
-                
-                <!-- Number of Pages -->
-                <div class="form-group">
-                    <label class="form-label">Number of Pages</label>
-                    <select id="pages-select" class="form-select">
-                        <option value="1">1 Page</option>
-                        <option value="5">5 Pages</option>
-                        <option value="10" selected>10 Pages (Recommended)</option>
-                        <option value="20">20 Pages (Full Workbook)</option>
-                    </select>
-                    <div class="form-hint">📄 Estimated size: <span id="size-estimate">~2 MB</span></div>
-                </div>
-                
-                <!-- Text Size -->
-                <div class="form-group">
-                    <label class="form-label">Text Size</label>
-                    <select id="size-select" class="form-select">
-                        <option value="0.5">0.5 cm (Small)</option>
-                        <option value="0.6">0.6 cm</option>
-                        <option value="0.7">0.7 cm</option>
-                        <option value="0.8">0.8 cm</option>
-                        <option value="0.9" selected>0.9 cm (Recommended)</option>
-                        <option value="1.0">1.0 cm (Large)</option>
-                    </select>
-                </div>
-                
-            </div>
-        </aside>
-        
-        <!-- PREVIEW SECTION -->
-        <section class="preview-area">
-            
-            <!-- Preview Badge -->
-            <div class="preview-badge">
-                <span class="badge-text">Live Preview</span>
-                <span class="badge-divider"></span>
-                <span class="badge-format">A4 Portrait</span>
-            </div>
-            
-            <!-- Preview Sheet -->
-            <div class="preview-container">
-                <div class="preview-sheet" id="preview-sheet">
-                    
-                    <!-- Sheet Header -->
-                    <div class="sheet-header">
-                        <div class="sheet-field">
-                            <span class="field-label">Name:</span>
-                            <div class="field-line"></div>
-                        </div>
-                        <div class="sheet-field sheet-field-right">
-                            <span class="field-label">Date:</span>
-                            <div class="field-line field-line-small"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Practice Lines -->
-                    <div class="sheet-content" id="sheet-content">
-                        <!-- Lines will be generated dynamically -->
-                    </div>
-                    
-                    <!-- Watermark -->
-                    <div class="sheet-footer">
-                        <p class="watermark">Made by Annaelechukwu</p>
-                    </div>
-                    
-                </div>
-            </div>
-            
-        </section>
-        
-    </main>
+    <!-- MODE TOGGLE -->
+    <div class="mode-toggle-container">
+        <div class="mode-toggle">
+            <button id="mode-handwriting" class="mode-btn active">
+                <span class="material-symbols-outlined">edit_note</span>
+                <span>Handwriting Practice</span>
+            </button>
+            <button id="mode-signature" class="mode-btn">
+                <span class="material-symbols-outlined">draw</span>
+                <span>Signature Generator</span>
+            </button>
+        </div>
+    </div>
 
-    <!-- Hidden A4 Container for PDF Generation -->
-    <div id="a4-container"></div>
+    <!-- HANDWRITING SECTION -->
+    <div id="handwriting-section" class="content-section active">
+        <div class="main-content">
+            
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <div class="sidebar-inner">
+                    <div class="sidebar-header">
+                        <h3 class="sidebar-title">Settings</h3>
+                        <p class="sidebar-subtitle">Customize your worksheet</p>
+                    </div>
+
+                    <!-- Font Selection -->
+                    <div class="form-group">
+                        <label class="form-label">Font Style</label>
+                        <select id="font-select" class="form-select"></select>
+                        <p id="font-count" class="form-hint"></p>
+                    </div>
+
+                    <!-- Text Mode -->
+                    <div class="form-group">
+                        <label class="form-label">Text Mode</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="text-mode" id="mode-preset" value="preset" checked>
+                                <span>Preset Text</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="text-mode" id="mode-custom" value="custom">
+                                <span>Custom Text</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pangram Selection -->
+                    <div class="form-group">
+                        <label class="form-label">Pangram</label>
+                        <select id="pangram-select" class="form-select">
+                            <option value="The quick brown fox jumps over the lazy dog">The quick brown fox jumps over the lazy dog</option>
+                            <option value="Pack my box with five dozen liquor jugs">Pack my box with five dozen liquor jugs</option>
+                            <option value="How vexingly quick daft zebras jump">How vexingly quick daft zebras jump</option>
+                            <option value="Sphinx of black quartz, judge my vow">Sphinx of black quartz, judge my vow</option>
+                            <option value="The five boxing wizards jump quickly">The five boxing wizards jump quickly</option>
+                            <option value="Waltz, bad nymph, for quick jigs vex">Waltz, bad nymph, for quick jigs vex</option>
+                        </select>
+                    </div>
+
+                    <!-- Custom Text -->
+                    <div id="custom-text-group" class="form-group" style="display: none;">
+                        <div class="form-label-row">
+                            <label class="form-label">Custom Text</label>
+                            <span id="char-count" class="char-count">0</span>
+                        </div>
+                        <textarea id="custom-text-input" class="form-textarea" placeholder="Enter your custom text here..."></textarea>
+                        <p class="form-hint">Each line creates a practice line (max 500 characters)</p>
+                    </div>
+
+                    <!-- Practice Content -->
+                    <div class="form-group">
+                        <label class="form-label">Practice Content</label>
+                        <select id="content-select" class="form-select">
+                            <option value="combined">Combined (Pangram + Alphabet + Numbers)</option>
+                            <option value="pangram">Pangram Only</option>
+                            <option value="alphabet">Uppercase Alphabet</option>
+                            <option value="lowercase">Lowercase Alphabet</option>
+                            <option value="numbers">Numbers</option>
+                        </select>
+                    </div>
+
+                    <!-- Pages -->
+                    <div class="form-group">
+                        <label class="form-label">Number of Pages</label>
+                        <select id="pages-select" class="form-select">
+                            <option value="1">1 Page</option>
+                            <option value="5">5 Pages</option>
+                            <option value="10" selected>10 Pages</option>
+                            <option value="20">20 Pages</option>
+                        </select>
+                        <p id="size-estimate" class="form-hint"></p>
+                    </div>
+
+                    <!-- Text Size -->
+                    <div class="form-group">
+                        <label class="form-label">Text Size</label>
+                        <select id="size-select" class="form-select">
+                            <option value="0.5">Extra Small (0.5cm)</option>
+                            <option value="0.6">Small (0.6cm)</option>
+                            <option value="0.7">Medium-Small (0.7cm)</option>
+                            <option value="0.8">Medium (0.8cm)</option>
+                            <option value="0.9" selected>Medium-Large (0.9cm)</option>
+                            <option value="1.0">Large (1.0cm)</option>
+                        </select>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- PREVIEW AREA -->
+            <div class="preview-area">
+                <div class="preview-badge">
+                    <span>Preview Mode</span>
+                    <div class="badge-divider"></div>
+                    <span>A4 Portrait</span>
+                </div>
+
+                <div class="preview-container">
+                    <div class="preview-sheet">
+                        <!-- Sheet Header -->
+                        <div class="sheet-header">
+                            <div class="sheet-field">
+                                <span class="field-label">Name</span>
+                                <div class="field-line"></div>
+                            </div>
+                            <div class="sheet-field sheet-field-right">
+                                <span class="field-label">Date</span>
+                                <div class="field-line field-line-small"></div>
+                            </div>
+                        </div>
+
+                        <!-- Sheet Content -->
+                        <div id="sheet-content" class="sheet-content"></div>
+
+                        <!-- Watermark -->
+                        <div class="sheet-footer">
+                            <p class="watermark">Made by Annaelechukwu</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SIGNATURE SECTION -->
+    <div id="signature-section" class="content-section hidden">
+        <div class="signature-container">
+            
+            <div class="signature-header">
+                <h1 class="signature-title">Signature Generator</h1>
+                <p class="signature-subtitle">Create your unique signature in seconds</p>
+            </div>
+
+            <div class="signature-input-section">
+                <div class="form-group">
+                    <label class="form-label">Enter Your Full Name</label>
+                    <input type="text" id="full-name-input" class="form-input" placeholder="e.g., John Smith" maxlength="50">
+                    <p class="form-hint">Your signature will be generated from your name</p>
+                </div>
+
+                <div class="signature-method-toggle">
+                    <label class="radio-option">
+                        <input type="radio" name="signature-method" value="generate" checked>
+                        <span>Generate Signature</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="signature-method" value="draw">
+                        <span>Draw My Own</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="generated-signatures" class="signature-options">
+                <h3 class="section-subtitle">Choose Your Signature Style</h3>
+                
+                <div class="signature-grid">
+                    <div class="signature-card" data-font="Allura">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Allura', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Allura</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Alex Brush">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Alex Brush', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Alex Brush</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Great Vibes">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Great Vibes', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Great Vibes</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Tangerine">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Tangerine', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Tangerine</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Mr De Haviland">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Mr De Haviland', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Mr De Haviland</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Pinyon Script">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Pinyon Script', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Pinyon Script</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Parisienne">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Parisienne', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Parisienne</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Sacramento">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Sacramento', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Sacramento</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Satisfy">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Satisfy', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Satisfy</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Dancing Script">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Dancing Script', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Dancing Script</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Arizonia">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Arizonia', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Arizonia</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+
+                    <div class="signature-card" data-font="Yellowtail">
+                        <div class="signature-preview">
+                            <span class="signature-text" style="font-family: 'Yellowtail', cursive;">Your Name</span>
+                        </div>
+                        <p class="signature-font-name">Yellowtail</p>
+                        <button class="btn-select-signature">Select</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="draw-signature" class="draw-section hidden">
+                <h3 class="section-subtitle">Draw Your Signature</h3>
+                
+                <div class="canvas-container">
+                    <canvas id="signature-canvas" width="800" height="300"></canvas>
+                </div>
+
+                <div class="canvas-controls">
+                    <button id="clear-canvas" class="btn-secondary">
+                        <span class="material-symbols-outlined">delete</span>
+                        <span>Clear</span>
+                    </button>
+                    <button id="undo-canvas" class="btn-secondary">
+                        <span class="material-symbols-outlined">undo</span>
+                        <span>Undo</span>
+                    </button>
+                    <div class="stroke-width-control">
+                        <label>Pen Size:</label>
+                        <input type="range" id="stroke-width" min="1" max="10" value="3">
+                        <span id="stroke-value">3px</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="signature-preview-section" class="signature-final-preview hidden">
+                <h3 class="section-subtitle">Your Signature</h3>
+                <div class="final-signature-display">
+                    <canvas id="final-signature-canvas"></canvas>
+                </div>
+                <button id="download-signature-btn" class="btn-download-signature">
+                    <span class="material-symbols-outlined">download</span>
+                    <span>Download Signature Sheet</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
 
     <!-- EMAIL MODAL -->
     <div id="email-modal" class="modal">
         <div class="modal-content">
-            <h2 class="modal-title">📧 Verify Your Email</h2>
+            <h2 class="modal-title">Download Your Worksheet</h2>
             <p class="modal-subtitle">Enter your email to receive a verification code</p>
-            
+
+            <div class="error-message" id="email-error"></div>
+
             <div class="form-group-modal">
                 <label class="form-label-modal">Email Address</label>
-                <input type="email" id="user-email" class="form-input-modal" placeholder="your@email.com">
-                <div id="email-error" class="error-message">Please enter a valid email</div>
+                <input type="email" id="user-email" class="form-input-modal" placeholder="you@example.com" autocomplete="email">
             </div>
 
             <div class="email-tip">
-                <p class="email-tip-title">📌 Important:</p>
+                <p class="email-tip-title">📧 Can't find the email?</p>
                 <ul class="email-tip-list">
                     <li>Check your spam/junk folder</li>
-                    <li>Add <strong>admin@trayce.xyz</strong> to contacts</li>
-                    <li>Mark email as "Not Spam" if needed</li>
+                    <li>Wait 1-2 minutes for delivery</li>
+                    <li>Make sure you entered the correct email</li>
                 </ul>
             </div>
 
             <div class="modal-buttons">
-                <button id="cancel-btn" class="btn-modal-secondary">Cancel</button>
                 <button id="send-code-btn" class="btn-modal-primary">Send Code</button>
+                <button id="cancel-btn" class="btn-modal-secondary">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- CODE MODAL -->
+    <!-- CODE VERIFICATION MODAL -->
     <div id="code-modal" class="modal">
         <div class="modal-content">
-            <h2 class="modal-title">🔐 Enter Code</h2>
+            <h2 class="modal-title">Enter Verification Code</h2>
             <p class="modal-subtitle">We sent a 6-digit code to <strong id="display-email"></strong></p>
-            
+
+            <div class="error-message" id="code-error"></div>
+
             <div class="form-group-modal">
                 <label class="form-label-modal">Verification Code</label>
-                <input type="text" id="verification-code" class="form-input-modal code-input" placeholder="000000" maxlength="6" inputmode="numeric">
-                <div id="code-error" class="error-message">Invalid code</div>
+                <input type="text" id="verification-code" class="form-input-modal code-input" placeholder="000000" maxlength="6" autocomplete="one-time-code">
             </div>
 
             <div class="resend-code">
-                Didn't receive code? <button id="resend-code-btn" class="link-btn">Resend</button>
+                Didn't receive it? <button id="resend-code-btn" class="link-btn">Resend</button>
             </div>
 
             <div class="modal-buttons">
-                <button id="code-cancel-btn" class="btn-modal-secondary">Cancel</button>
                 <button id="verify-code-btn" class="btn-modal-primary">Verify & Download</button>
+                <button id="code-cancel-btn" class="btn-modal-secondary">Cancel</button>
             </div>
         </div>
     </div>
@@ -253,25 +424,28 @@
     <!-- COFFEE MODAL -->
     <div id="coffee-modal" class="modal">
         <div class="modal-content">
-            <h2 class="modal-title">☕ Enjoying the app?</h2>
-            <p class="modal-subtitle">Your worksheet is ready! If you found this helpful, consider buying me a coffee!</p>
-            
+            <h2 class="modal-title">☕ Enjoy Your Worksheet!</h2>
+            <p class="modal-subtitle">Your download is complete</p>
+
             <div class="coffee-message">
-                <p>Creating and maintaining this free tool takes time and effort. Your support helps keep it running and ad-free! 💖</p>
+                <p>If Trayce helped you, consider buying me a coffee! Your support helps keep this tool free and ad-free. ❤️</p>
             </div>
 
             <div class="modal-buttons">
-                <button id="coffee-close-btn" class="btn-modal-secondary">Maybe Later</button>
-                <a href="https://www.buymeacoffee.com/ndukaanthonya" target="_blank" class="btn-coffee-link">
+                <a href="https://www.buymeacoffee.com/annaelechukwu" target="_blank" class="btn-coffee-link">
                     <button class="btn-coffee">☕ Buy Me a Coffee</button>
                 </a>
+                <button id="coffee-close-btn" class="btn-modal-secondary">Maybe Later</button>
             </div>
-            
-            <p class="coffee-footer">Thank you for your support! 🙏</p>
+
+            <p class="coffee-footer">Thank you for using Trayce! 🎉</p>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Hidden container for PDF generation -->
+    <div id="a4-container" style="position: absolute; left: -9999px;"></div>
 
+    <!-- JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>

@@ -97,6 +97,7 @@ function init() {
     updateLivePreview();
     updateSizeEstimate();
     setupEventListeners();
+    initModeToggle();
     console.log('✅ Trayce App Ready!');
 }
 
@@ -790,8 +791,16 @@ function setupEventListeners() {
             }
             
             // Then generate PDF
-            console.log('📄 About to call generatePDF...');
-            await generatePDF();
+            console.log('📄 Checking download type...');
+            
+            if (window.pendingSignatureDownload) {
+                console.log('📝 Signature download');
+                await generateSignaturePDF();
+                window.pendingSignatureDownload = null;
+            } else {
+                console.log('📄 Handwriting download');
+                await generatePDF();
+            }
             
             console.log('=== VERIFICATION PROCESS COMPLETE ===');
         });
@@ -832,4 +841,323 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
     init();
+}
+
+// ===================================
+// SIGNATURE GENERATOR
+// ===================================
+
+// Signature State
+let signatureState = {
+    method: 'generate',
+    fullName: '',
+    selectedFont: '',
+    canvas: null,
+    ctx: null,
+    isDrawing: false,
+    lastX: 0,
+    lastY: 0,
+    strokes: []
+};
+
+// Mode Toggle
+function initModeToggle() {
+    const handwritingBtn = document.getElementById('mode-handwriting');
+    const signatureBtn = document.getElementById('mode-signature');
+    const handwritingSection = document.getElementById('handwriting-section');
+    const signatureSection = document.getElementById('signature-section');
+
+    if (handwritingBtn && signatureBtn) {
+        handwritingBtn.addEventListener('click', () => {
+            handwritingBtn.classList.add('active');
+            signatureBtn.classList.remove('active');
+            if (handwritingSection) {
+                handwritingSection.classList.add('active');
+                handwritingSection.classList.remove('hidden');
+            }
+            if (signatureSection) {
+                signatureSection.classList.remove('active');
+                signatureSection.classList.add('hidden');
+            }
+        });
+
+        signatureBtn.addEventListener('click', () => {
+            signatureBtn.classList.add('active');
+            handwritingBtn.classList.remove('active');
+            if (signatureSection) {
+                signatureSection.classList.add('active');
+                signatureSection.classList.remove('hidden');
+            }
+            if (handwritingSection) {
+                handwritingSection.classList.remove('active');
+                handwritingSection.classList.add('hidden');
+            }
+            initSignatureGenerator();
+        });
+    }
+}
+
+// Initialize Signature Generator
+function initSignatureGenerator() {
+    const fullNameInput = document.getElementById('full-name-input');
+    const methodRadios = document.querySelectorAll('input[name="signature-method"]');
+    const generatedSection = document.getElementById('generated-signatures');
+    const drawSection = document.getElementById('draw-signature');
+
+    if (fullNameInput) {
+        fullNameInput.addEventListener('input', (e) => {
+            signatureState.fullName = e.target.value;
+            updateSignaturePreviews();
+        });
+    }
+
+    methodRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            signatureState.method = e.target.value;
+            
+            if (signatureState.method === 'generate') {
+                if (generatedSection) generatedSection.classList.remove('hidden');
+                if (drawSection) drawSection.classList.add('hidden');
+            } else {
+                if (generatedSection) generatedSection.classList.add('hidden');
+                if (drawSection) drawSection.classList.remove('hidden');
+                initCanvas();
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-select-signature').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const card = e.target.closest('.signature-card');
+            const font = card.dataset.font;
+            
+            document.querySelectorAll('.signature-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            
+            signatureState.selectedFont = font;
+            showFinalSignature();
+        });
+    });
+
+    const clearBtn = document.getElementById('clear-canvas');
+    const undoBtn = document.getElementById('undo-canvas');
+    
+    if (clearBtn) clearBtn.addEventListener('click', clearCanvas);
+    if (undoBtn) undoBtn.addEventListener('click', undoStroke);
+    
+    const strokeWidth = document.getElementById('stroke-width');
+    const strokeValue = document.getElementById('stroke-value');
+    if (strokeWidth && strokeValue) {
+        strokeWidth.addEventListener('input', (e) => {
+            strokeValue.textContent = e.target.value + 'px';
+        });
+    }
+
+    const downloadBtn = document.getElementById('download-signature-btn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', downloadSignatureSheet);
+    }
+}
+
+function updateSignaturePreviews() {
+    const name = signatureState.fullName || 'Your Name';
+    document.querySelectorAll('.signature-text').forEach(el => {
+        el.textContent = name;
+    });
+}
+
+function initCanvas() {
+    const canvas = document.getElementById('signature-canvas');
+    if (!canvas) return;
+
+    signatureState.canvas = canvas;
+    signatureState.ctx = canvas.getContext('2d');
+    
+    const ctx = signatureState.ctx;
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+
+    canvas.addEventListener('touchstart', handleTouch, { passive: false });
+    canvas.addEventListener('touchmove', handleTouch, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
+}
+
+function startDrawing(e) {
+    signatureState.isDrawing = true;
+    const rect = signatureState.canvas.getBoundingClientRect();
+    signatureState.lastX = e.clientX - rect.left;
+    signatureState.lastY = e.clientY - rect.top;
+    signatureState.strokes.push([]);
+}
+
+function draw(e) {
+    if (!signatureState.isDrawing) return;
+    e.preventDefault();
+    
+    const rect = signatureState.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const ctx = signatureState.ctx;
+    const strokeWidth = document.getElementById('stroke-width')?.value || 3;
+    
+    ctx.beginPath();
+    ctx.moveTo(signatureState.lastX, signatureState.lastY);
+    ctx.lineTo(x, y);
+    ctx.lineWidth = strokeWidth;
+    ctx.stroke();
+    
+    const currentStroke = signatureState.strokes[signatureState.strokes.length - 1];
+    currentStroke.push({
+        x1: signatureState.lastX,
+        y1: signatureState.lastY,
+        x2: x,
+        y2: y,
+        width: strokeWidth
+    });
+    
+    signatureState.lastX = x;
+    signatureState.lastY = y;
+}
+
+function stopDrawing() {
+    if (signatureState.isDrawing) {
+        signatureState.isDrawing = false;
+        showFinalSignature();
+    }
+}
+
+function handleTouch(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    signatureState.canvas.dispatchEvent(mouseEvent);
+}
+
+function clearCanvas() {
+    if (!signatureState.ctx) return;
+    signatureState.ctx.clearRect(0, 0, signatureState.canvas.width, signatureState.canvas.height);
+    signatureState.strokes = [];
+    const previewSection = document.getElementById('signature-preview-section');
+    if (previewSection) previewSection.classList.add('hidden');
+}
+
+function undoStroke() {
+    if (signatureState.strokes.length === 0) return;
+    
+    signatureState.strokes.pop();
+    
+    const ctx = signatureState.ctx;
+    ctx.clearRect(0, 0, signatureState.canvas.width, signatureState.canvas.height);
+    
+    signatureState.strokes.forEach(stroke => {
+        stroke.forEach(point => {
+            ctx.beginPath();
+            ctx.moveTo(point.x1, point.y1);
+            ctx.lineTo(point.x2, point.y2);
+            ctx.lineWidth = point.width;
+            ctx.stroke();
+        });
+    });
+}
+
+function showFinalSignature() {
+    const previewSection = document.getElementById('signature-preview-section');
+    const finalCanvas = document.getElementById('final-signature-canvas');
+    
+    if (!previewSection || !finalCanvas) return;
+    
+    previewSection.classList.remove('hidden');
+    
+    const ctx = finalCanvas.getContext('2d');
+    
+    if (signatureState.method === 'generate' && signatureState.selectedFont) {
+        finalCanvas.width = 600;
+        finalCanvas.height = 200;
+        
+        ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
+        ctx.font = `72px '${signatureState.selectedFont}', cursive`;
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(signatureState.fullName || 'Your Name', finalCanvas.width / 2, finalCanvas.height / 2);
+        
+    } else if (signatureState.method === 'draw' && signatureState.strokes.length > 0) {
+        const sourceCanvas = signatureState.canvas;
+        finalCanvas.width = sourceCanvas.width;
+        finalCanvas.height = sourceCanvas.height;
+        ctx.drawImage(sourceCanvas, 0, 0);
+    }
+}
+
+function downloadSignatureSheet() {
+    openEmailModal();
+    
+    window.pendingSignatureDownload = {
+        method: signatureState.method,
+        fullName: signatureState.fullName,
+        font: signatureState.selectedFont,
+        canvas: document.getElementById('final-signature-canvas')
+    };
+}
+
+async function generateSignaturePDF() {
+    console.log('=== SIGNATURE PDF GENERATION START ===');
+    
+    const data = window.pendingSignatureDownload;
+    if (!data) return;
+    
+    if (!window.jspdf) {
+        alert('PDF library not loaded. Please refresh the page.');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+    
+    pdf.setFontSize(20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Signature Practice Sheet', pageWidth / 2, 20, { align: 'center' });
+    
+    const signatureImg = data.canvas.toDataURL('image/png');
+    
+    let yPos = 40;
+    const lineSpacing = 40;
+    const linesPerPage = 6;
+    
+    for (let i = 0; i < linesPerPage; i++) {
+        pdf.addImage(signatureImg, 'PNG', 30, yPos, 150, 30);
+        pdf.setDrawColor(200);
+        pdf.setLineWidth(0.5);
+        pdf.line(30, yPos + 35, 180, yPos + 35);
+        yPos += lineSpacing;
+    }
+    
+    pdf.setFontSize(8);
+    pdf.setTextColor(150);
+    pdf.text('Made by Annaelechukwu - trayce.xyz', pageWidth / 2, pageHeight - 10, { align: 'center' });
+    
+    const fileName = `signature-practice-${(data.fullName || 'signature').replace(/\s+/g, '-').toLowerCase()}.pdf`;
+    pdf.save(fileName);
+    
+    setTimeout(() => showCoffeeModal(), 1000);
+    
+    console.log('=== SIGNATURE PDF GENERATION COMPLETE ===');
 }
