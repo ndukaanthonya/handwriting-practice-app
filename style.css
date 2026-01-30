@@ -1174,3 +1174,42 @@ body {
         padding: 1rem;
     }
 }
+
+/* ===================================
+   SCROLLING FIX - Add to style.css
+   =================================== */
+
+/* Fix body/html to allow scrolling */
+html, body {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Fix content sections */
+.content-section {
+    height: auto;
+    min-height: calc(100vh - 120px);
+    overflow-y: visible;
+}
+
+/* Fix main content */
+.main-content {
+    height: auto;
+    min-height: 100%;
+    overflow-y: visible;
+}
+
+/* Fix signature container */
+.signature-container {
+    height: auto;
+    overflow-y: visible;
+}
+
+/* Fix preview area if it exists */
+.preview-area {
+    height: auto;
+    min-height: auto;
+    overflow-y: visible;
+}
