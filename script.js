@@ -337,7 +337,7 @@ async function saveEmailData(email, font, contentType, pages, textSize) {
             return { success: false, error: 'Email is empty' };
         }
 
-        const response = await fetch('/api/save-email-db', {
+        const response = await fetch('/api/save-email', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json' 
