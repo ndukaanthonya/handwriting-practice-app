@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Trayce</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #137fec;
+            --primary-hover: #0d6edb;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f6f7f8;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #111418;
+            --text-secondary: #475569;
+            --text-tertiary: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --font-primary: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #020617;
+            --bg-tertiary: #1e293b;
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #64748b;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            background: rgba(19, 127, 236, 0.1);
+            color: var(--primary);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            font-size: 1.5rem;
+        }
+
+        .logo-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .admin-badge {
+            padding: 0.25rem 0.75rem;
+            background: rgba(19, 127, 236, 0.1);
+            color: var(--primary);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-family: var(--font-primary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+        }
+
+        .theme-toggle {
+            width: 3rem;
+            height: 1.75rem;
+            border-radius: 9999px;
+            border: none;
+            background: #cbd5e1;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: var(--primary);
+        }
+
+        .theme-slider {
+            width: 1.25rem;
+            height: 1.25rem;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 0.25rem;
+            left: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-slider {
+            transform: translateX(1.25rem);
+        }
+
+        .theme-slider .material-symbols-outlined {
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .icon-sun { display: none; }
+        [data-theme="dark"] .icon-moon { display: none; }
+        [data-theme="dark"] .icon-sun { display: block; }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            background: rgba(19, 127, 236, 0.1);
+            color: var(--primary);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon .material-symbols-outlined {
+            font-size: 1.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        /* Data Section */
+        .data-section {
+            background: var(--bg-primary);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .btn-export {
+            padding: 0.5rem 1rem;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-family: var(--font-primary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-export:hover {
+            background: #059669;
+        }
+
+        .table-controls {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: var(--font-primary);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(19, 127, 236, 0.1);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background: var(--bg-tertiary);
+        }
+
+        .data-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .email-cell {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .verified-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #d1fae5;
+            color: #065f46;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        [data-theme="dark"] .verified-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .loading, .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1.5rem;
+        }
+
+        .page-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-family: var(--font-primary);
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-icon">
+                <span class="material-symbols-outlined">edit_note</span>
+            </div>
+            <h2 class="logo-title">Trayce</h2>
+            <span class="admin-badge">Admin</span>
+        </div>
+        
+        <div class="header-right">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <div class="theme-slider">
+                    <span class="material-symbols-outlined icon-moon">dark_mode</span>
+                    <span class="material-symbols-outlined icon-sun">light_mode</span>
+                </div>
+            </button>
+            
+            <button class="btn-logout" id="logout-btn">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="dashboard-title">Dashboard</h1>
+        <p class="dashboard-subtitle">Monitor user activity and downloads</p>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-value" id="total-users">-</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <span class="material-symbols-outlined">download</span>
+                    </div>
+                    <div class="stat-label">Total Downloads</div>
+                </div>
+                <div class="stat-value" id="total-downloads">-</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <span class="material-symbols-outlined">today</span>
+                    </div>
+                    <div class="stat-label">Today's Downloads</div>
+                </div>
+                <div class="stat-value" id="today-downloads">-</div>
+            </div>
+        </div>
+        
+        <!-- Data Table -->
+        <div class="data-section">
+            <div class="section-header">
+                <h2 class="section-title">User Data</h2>
+                <button class="btn-export" id="export-btn">
+                    <span class="material-symbols-outlined">download</span>
+                    <span>Export CSV</span>
+                </button>
+            </div>
+            
+            <div class="table-controls">
+                <input type="text" class="search-box" id="search-box" placeholder="Search by email, font, or content type...">
+            </div>
+            
+            <div id="loading" class="loading">
+                <p>Loading data...</p>
+            </div>
+            
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <p>No data found</p>
+            </div>
+            
+            <div class="table-wrapper" id="table-wrapper" style="display: none;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Font</th>
+                            <th>Content Type</th>
+                            <th>Pages</th>
+                            <th>Text Size</th>
+                            <th>Timestamp</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+            
+            <div class="pagination" id="pagination" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Check authentication
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = '/admin/login.html';
+        }
+        
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const itemsPerPage = 20;
+        
+        // Load data
+        async function loadData() {
+            try {
+                const response = await fetch('/api/admin-data', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+                
+                const result = await response.json();
+                allData = result.data || [];
+                filteredData = allData;
+                
+                updateStats();
+                renderTable();
+                
+                document.getElementById('loading').style.display = 'none';
+                
+                if (allData.length === 0) {
+                    document.getElementById('empty-state').style.display = 'block';
+                } else {
+                    document.getElementById('table-wrapper').style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').innerHTML = '<p style="color: #ef4444;">Error loading data</p>';
+            }
+        }
+        
+        // Update stats
+        function updateStats() {
+            const uniqueEmails = new Set(allData.map(item => item.email)).size;
+            document.getElementById('total-users').textContent = uniqueEmails;
+            document.getElementById('total-downloads').textContent = allData.length;
+            
+            const today = new Date().toDateString();
+            const todayCount = allData.filter(item => {
+                const itemDate = new Date(item.timestamp).toDateString();
+                return itemDate === today;
+            }).length;
+            document.getElementById('today-downloads').textContent = todayCount;
+        }
+        
+        // Render table
+        function renderTable() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            pageData.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="email-cell">${item.email}</td>
+                    <td>${item.font}</td>
+                    <td>${item.textType}</td>
+                    <td>${item.pages}</td>
+                    <td>${item.textSize}</td>
+                    <td>${new Date(item.timestamp).toLocaleString()}</td>
+                    <td><span class="verified-badge">✓ Verified</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            renderPagination();
+        }
+        
+        // Render pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            pagination.style.display = 'flex';
+            pagination.innerHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+                btn.textContent = i;
+                btn.onclick = () => {
+                    currentPage = i;
+                    renderTable();
+                };
+                pagination.appendChild(btn);
+            }
+        }
+        
+        // Search
+        document.getElementById('search-box').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            filteredData = allData.filter(item => 
+                item.email.toLowerCase().includes(query) ||
+                item.font.toLowerCase().includes(query) ||
+                item.textType.toLowerCase().includes(query)
+            );
+            currentPage = 1;
+            renderTable();
+        });
+        
+        // Export CSV
+        document.getElementById('export-btn').addEventListener('click', () => {
+            const csv = [
+                ['Email', 'Font', 'Content Type', 'Pages', 'Text Size', 'Timestamp', 'Verified'],
+                ...allData.map(item => [
+                    item.email,
+                    item.font,
+                    item.textType,
+                    item.pages,
+                    item.textSize,
+                    new Date(item.timestamp).toISOString(),
+                    'Yes'
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trayce-data-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        });
+        
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login.html';
+        });
+        
+        // Load data
+        loadData();
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>

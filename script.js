@@ -317,57 +317,41 @@ async function sendVerificationCode(email) {
         return { success: false, error: error.message };
     }
 }
-
-// Add this AFTER the existing saveEmailData function in script.js
-// Replace the existing saveEmailData function with this:
+// saveEmailData function:
 
 async function saveEmailData(email, font, contentType, pages, textSize) {
     try {
-        console.log('=== SAVING EMAIL DATA ===');
-        console.log('Email:', email);
-        console.log('Font:', font);
-        console.log('Content Type:', contentType);
-        console.log('Pages:', pages);
-        console.log('Text Size:', textSize);
+        console.log('Saving email data...');
 
-        const data = {
-            email: email,
-            font: font,
-            textType: contentType,
-            pages: pages + ' pages',
-            textSize: textSize,
-            timestamp: new Date().toISOString(),
-            verified: true
-        };
-
-        console.log('Sending to API:', data);
-
-        const response = await fetch('/api/save-email', {
+        const response = await fetch('/api/save-email-db', {  // ← Changed to save-email-db
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Content-Type': 'application/json' 
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({
+                email: email,
+                font: font,
+                textType: contentType,
+                pages: pages + ' pages',
+                textSize: textSize,
+                timestamp: new Date().toISOString(),
+                verified: true
+            })
         });
 
-        console.log('API Response Status:', response.status);
-
         const result = await response.json();
-        console.log('API Response Data:', result);
-
-        if (!response.ok) {
-            throw new Error(result.error || 'Failed to save email data');
+        
+        if (response.ok && result.success) {
+            console.log('✅ Email saved successfully!');
+            return { success: true };
+        } else {
+            console.error('Failed to save:', result.error);
+            return { success: false };
         }
 
-        console.log('✅ Email saved successfully!');
-        return { success: true };
-
     } catch (error) {
-        console.error('❌ Error saving email:', error);
-        console.error('Error details:', error.message);
-        // Don't fail the download if email save fails
-        return { success: false, error: error.message };
+        console.error('Error saving email:', error);
+        return { success: false };
     }
 }
 
@@ -402,18 +386,19 @@ function closeCodeModal() {
 }
 
 function showCoffeeModal() {
-    if (!coffeeModal) return;
-    const lastDismissed = localStorage.getItem('coffeeDismissed');
-    const now = Date.now();
-    if (!lastDismissed || (now - parseInt(lastDismissed)) > 24 * 60 * 60 * 1000) {
-        coffeeModal.classList.add('active');
+    if (!coffeeModal) {
+        console.error('Coffee modal element not found');
+        return;
     }
+    
+    console.log('Showing coffee modal...');
+    coffeeModal.classList.add('active');
 }
 
 function closeCoffeeModal() {
     if (!coffeeModal) return;
     coffeeModal.classList.remove('active');
-    localStorage.setItem('coffeeDismissed', Date.now().toString());
+    console.log('Coffee modal closed');
 }
 
 // ===================================

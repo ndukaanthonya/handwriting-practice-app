@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Trayce</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #137fec;
+            --primary-hover: #0d6edb;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f6f7f8;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #111418;
+            --text-secondary: #475569;
+            --text-tertiary: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --font-primary: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #020617;
+            --bg-tertiary: #1e293b;
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header - Same as main app */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            background: rgba(19, 127, 236, 0.1);
+            color: var(--primary);
+        }
+
+        .logo-icon .material-symbols-outlined {
+            font-size: 1.5rem;
+        }
+
+        .logo-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle {
+            width: 3rem;
+            height: 1.75rem;
+            border-radius: 9999px;
+            border: none;
+            background: #cbd5e1;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: var(--primary);
+        }
+
+        .theme-slider {
+            width: 1.25rem;
+            height: 1.25rem;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 0.25rem;
+            left: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-slider {
+            transform: translateX(1.25rem);
+        }
+
+        .theme-slider .material-symbols-outlined {
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .icon-sun {
+            display: none;
+        }
+
+        [data-theme="dark"] .icon-moon {
+            display: none;
+        }
+
+        [data-theme="dark"] .icon-sun {
+            display: block;
+        }
+
+        /* Login Container */
+        .login-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-box {
+            background: var(--bg-primary);
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid var(--border-color);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-icon {
+            width: 4rem;
+            height: 4rem;
+            margin: 0 auto 1rem;
+            background: rgba(19, 127, 236, 0.1);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-icon .material-symbols-outlined {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .login-header h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            color: var(--text-primary);
+            font-family: var(--font-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(19, 127, 236, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 0 0 4px rgba(19, 127, 236, 0.2);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+            border: 1px solid #fcc;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .security-note {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--primary);
+            border-radius: 0.5rem;
+        }
+
+        .security-note p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-icon">
+                <span class="material-symbols-outlined">edit_note</span>
+            </div>
+            <h2 class="logo-title">Trayce</h2>
+        </div>
+        
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+            <div class="theme-slider">
+                <span class="material-symbols-outlined icon-moon">dark_mode</span>
+                <span class="material-symbols-outlined icon-sun">light_mode</span>
+            </div>
+        </button>
+    </header>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="login-icon">
+                    <span class="material-symbols-outlined">admin_panel_settings</span>
+                </div>
+                <h1>Admin Access</h1>
+                <p>Secure login to dashboard</p>
+            </div>
+            
+            <div class="error-message" id="error-message"></div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="username" class="form-input" placeholder="Enter username" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn-login" id="login-btn">
+                    <span class="material-symbols-outlined">login</span>
+                    <span>Login to Dashboard</span>
+                </button>
+            </form>
+            
+            <div class="security-note">
+                <p>🛡️ Protected with SHA-256 encryption and rate limiting. All login attempts are logged.</p>
+            </div>
+
+            <div class="back-link">
+                <a href="/">← Back to Trayce</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Login form
+        const loginForm = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+        const loginBtn = document.getElementById('login-btn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        
+        // Rate limiting
+        let loginAttempts = parseInt(localStorage.getItem('loginAttempts') || '0');
+        let lastAttempt = parseInt(localStorage.getItem('lastAttempt') || '0');
+        
+        function checkLockout() {
+            const now = Date.now();
+            if (loginAttempts >= 5 && (now - lastAttempt) < 15 * 60 * 1000) {
+                const remaining = Math.ceil((15 * 60 * 1000 - (now - lastAttempt)) / 60000);
+                showError(`Too many failed attempts. Try again in ${remaining} minutes.`);
+                loginBtn.disabled = true;
+                return true;
+            }
+            loginBtn.disabled = false;
+            return false;
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+        
+        function hideError() {
+            errorMessage.classList.remove('show');
+        }
+        
+        checkLockout();
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (checkLockout()) return;
+            
+            hideError();
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="material-symbols-outlined">refresh</span><span>Verifying...</span>';
+            
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            
+            try {
+                const response = await fetch('/api/admin-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    localStorage.setItem('adminToken', data.token);
+                    localStorage.setItem('loginAttempts', '0');
+                    window.location.href = '/admin/dashboard.html';
+                } else {
+                    loginAttempts++;
+                    localStorage.setItem('loginAttempts', loginAttempts.toString());
+                    localStorage.setItem('lastAttempt', Date.now().toString());
+                    
+                    showError(data.error || 'Invalid credentials');
+                    
+                    if (loginAttempts >= 5) {
+                        checkLockout();
+                    }
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span class="material-symbols-outlined">login</span><span>Login to Dashboard</span>';
+            }
+        });
+
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loginForm.dispatchEvent(new Event('submit'));
+        });
+    </script>
+</body>
+</html>
