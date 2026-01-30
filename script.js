@@ -1,6 +1,7 @@
 // ===================================
 // TRAYCE - HANDWRITING PRACTICE APP
 // Live Preview - All Changes Update Instantly
+// COMPLETE FIXED VERSION
 // ===================================
 
 // ===================================
@@ -77,14 +78,13 @@ const coffeeModal = document.getElementById('coffee-modal');
 const coffeeCloseBtn = document.getElementById('coffee-close-btn');
 
 // ===================================
-// 1. VERIFICATION DATA
+// VERIFICATION DATA
 // ===================================
 let verificationData = {
     email: '',
     code: '',
     timestamp: null
 };
-
 
 // ===================================
 // INITIALIZATION
@@ -296,16 +296,18 @@ function generateVerificationCode() {
 // ===================================
 // API CALLS
 // ===================================
+
 async function sendVerificationCode(email) {
     try {
         const code = generateVerificationCode();
         
-        // CRITICAL: Store email in verificationData
+        // Store email in verificationData
         verificationData.email = email;
         verificationData.code = code;
         verificationData.timestamp = Date.now();
 
-        console.log('Stored in verificationData:', verificationData);  // DEBUG
+        console.log('📧 Email stored:', verificationData.email);
+        console.log('🔢 Code generated:', code);
 
         const response = await fetch('/api/send-verification', {
             method: 'POST',
@@ -320,56 +322,63 @@ async function sendVerificationCode(email) {
         return { success: false, error: error.message };
     }
 }
-// saveEmailData function:
 
 async function saveEmailData(email, font, contentType, pages, textSize) {
     try {
         console.log('=== SAVING EMAIL DATA ===');
-        console.log('Email:', email);
-        console.log('Font:', font);
-        console.log('Content Type:', contentType);
-        console.log('Pages:', pages);
-        console.log('Text Size:', textSize);
+        console.log('📧 Email:', email);
+        console.log('🎨 Font:', font);
+        console.log('📝 Content Type:', contentType);
+        console.log('📄 Pages:', pages);
+        console.log('📏 Text Size:', textSize);
 
-        // CRITICAL: Make sure email is not empty
+        // Validate email
         if (!email || email.trim() === '') {
-            console.error('❌ Email is empty! Cannot save.');
+            console.error('❌ Email is empty!');
             return { success: false, error: 'Email is empty' };
         }
+
+        // Prepare data
+        const data = {
+            email: email,
+            font: font,
+            textType: contentType,
+            pages: pages + ' pages',
+            textSize: textSize,
+            timestamp: new Date().toISOString(),
+            verified: true
+        };
+
+        console.log('📦 Sending data to API:', data);
+        console.log('🌐 Endpoint: /api/save-email');
 
         const response = await fetch('/api/save-email', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json' 
             },
-            body: JSON.stringify({
-                email: email,  // Pass email directly
-                font: font,
-                textType: contentType,
-                pages: pages + ' pages',
-                textSize: textSize,
-                timestamp: new Date().toISOString(),
-                verified: true
-            })
+            body: JSON.stringify(data)
         });
 
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
+
         const result = await response.json();
-        console.log('API Response:', result);
+        console.log('📡 Response data:', result);
 
         if (response.ok && result.success) {
-            console.log('✅ Email saved successfully!');
+            console.log('✅ Email saved to database!');
             return { success: true };
         } else {
-            console.error('❌ Failed to save:', result.error);
+            console.error('❌ API returned error:', result.error);
             return { success: false, error: result.error };
         }
 
     } catch (error) {
-        console.error('❌ Error saving email:', error);
+        console.error('❌ Exception in saveEmailData:', error);
         return { success: false, error: error.message };
     }
 }
-
 
 // ===================================
 // MODAL MANAGEMENT
@@ -398,23 +407,21 @@ function openCodeModal() {
 function closeCodeModal() {
     if (!codeModal) return;
     codeModal.classList.remove('active');
-    verificationData = { email: '', code: '', timestamp: null };
 }
 
 function showCoffeeModal() {
     if (!coffeeModal) {
-        console.error('Coffee modal element not found');
+        console.error('Coffee modal not found');
         return;
     }
-    
-    console.log('Showing coffee modal...');
+    console.log('☕ Showing coffee modal');
     coffeeModal.classList.add('active');
 }
 
 function closeCoffeeModal() {
     if (!coffeeModal) return;
     coffeeModal.classList.remove('active');
-    console.log('Coffee modal closed');
+    console.log('☕ Coffee modal closed');
 }
 
 // ===================================
@@ -675,7 +682,7 @@ function setupEventListeners() {
             const result = await sendVerificationCode(email);
     
             if (result.success) {
-                console.log('✅ Code sent, email stored:', verificationData.email);  // DEBUG
+                console.log('✅ Code sent successfully');
                 closeEmailModal();
                 openCodeModal();
             } else {
@@ -712,7 +719,7 @@ function setupEventListeners() {
             console.log('=== VERIFY CODE CLICKED ===');
             console.log('Entered code:', enteredCode);
             console.log('Stored code:', verificationData.code);
-            console.log('Stored email:', verificationData.email);  // DEBUG
+            console.log('Stored email:', verificationData.email);
             
             if (enteredCode.length !== 6) {
                 if (codeError) {
@@ -749,16 +756,44 @@ function setupEventListeners() {
             const selectedPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
             const selectedSize = sizeSelect ? sizeSelect.value : '0.9';
             
-            // CRITICAL: Use verificationData.email (not a new variable)
+            // Get email
             const userEmail = verificationData.email;
             
-            console.log('About to save with email:', userEmail);  // DEBUG
+            console.log('🎨 Settings:');
+            console.log('  Font:', selectedFont);
+            console.log('  Content:', selectedContent);
+            console.log('  Pages:', selectedPages);
+            console.log('  Size:', selectedSize);
+            console.log('📧 User Email:', userEmail);
+            
+            // Check if email exists
+            if (!userEmail || userEmail.trim() === '') {
+                console.error('❌ ERROR: Email is empty!');
+                alert('Error: Email not found. Please try again.');
+                return;
+            }
             
             // Save email data FIRST
-            await saveEmailData(userEmail, selectedFont, selectedContent, selectedPages, selectedSize);
+            console.log('💾 About to call saveEmailData...');
+            
+            try {
+                const saveResult = await saveEmailData(userEmail, selectedFont, selectedContent, selectedPages, selectedSize);
+                console.log('💾 saveEmailData returned:', saveResult);
+                
+                if (saveResult && saveResult.success) {
+                    console.log('✅ Email save confirmed successful');
+                } else {
+                    console.error('⚠️ Email save may have failed:', saveResult);
+                }
+            } catch (saveError) {
+                console.error('❌ Exception calling saveEmailData:', saveError);
+            }
             
             // Then generate PDF
+            console.log('📄 About to call generatePDF...');
             await generatePDF();
+            
+            console.log('=== VERIFICATION PROCESS COMPLETE ===');
         });
     }
 
