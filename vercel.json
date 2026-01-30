@@ -1,3 +1,20 @@
 {
-    "version": 2
-  }
+  "routes": [
+    {
+      "src": "/admin/login.html",
+      "dest": "/admin/login.html"
+    },
+    {
+      "src": "/admin/dashboard.html",
+      "dest": "/admin/dashboard.html"
+    },
+    {
+      "src": "/admin/login",
+      "dest": "/admin/login.html"
+    },
+    {
+      "src": "/admin/dashboard",
+      "dest": "/admin/dashboard.html"
+    }
+  ]
+}
