@@ -201,172 +201,198 @@
     </div>
 
     <!-- SIGNATURE SECTION -->
-    <div id="signature-section" class="content-section hidden">
-        <div class="signature-container">
-            
-            <div class="signature-header">
-                <h1 class="signature-title">Signature Generator</h1>
-                <p class="signature-subtitle">Create your unique signature in seconds</p>
-            </div>
+   <!-- REPLACE THE ENTIRE SIGNATURE SECTION IN YOUR INDEX.HTML -->
+<!-- Find the section starting with <div id="signature-section"> and replace it with this -->
 
-            <div class="signature-input-section">
-                <div class="form-group">
-                    <label class="form-label">Enter Your Full Name</label>
-                    <input type="text" id="full-name-input" class="form-input" placeholder="e.g., John Smith" maxlength="50">
-                    <p class="form-hint">Your signature will be generated from your name</p>
-                </div>
-
-                <div class="signature-method-toggle">
-                    <label class="radio-option">
-                        <input type="radio" name="signature-method" value="generate" checked>
-                        <span>Generate Signature</span>
-                    </label>
-                    <label class="radio-option">
-                        <input type="radio" name="signature-method" value="draw">
-                        <span>Draw My Own</span>
-                    </label>
-                </div>
-            </div>
-
-            <div id="generated-signatures" class="signature-options">
-                <h3 class="section-subtitle">Choose Your Signature Style</h3>
-                
-                <div class="signature-grid">
-                    <div class="signature-card" data-font="Allura">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Allura', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Allura</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Alex Brush">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Alex Brush', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Alex Brush</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Great Vibes">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Great Vibes', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Great Vibes</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Tangerine">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Tangerine', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Tangerine</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Mr De Haviland">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Mr De Haviland', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Mr De Haviland</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Pinyon Script">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Pinyon Script', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Pinyon Script</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Parisienne">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Parisienne', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Parisienne</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Sacramento">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Sacramento', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Sacramento</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Satisfy">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Satisfy', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Satisfy</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Dancing Script">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Dancing Script', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Dancing Script</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Arizonia">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Arizonia', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Arizonia</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-
-                    <div class="signature-card" data-font="Yellowtail">
-                        <div class="signature-preview">
-                            <span class="signature-text" style="font-family: 'Yellowtail', cursive;">Your Name</span>
-                        </div>
-                        <p class="signature-font-name">Yellowtail</p>
-                        <button class="btn-select-signature">Select</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="draw-signature" class="draw-section hidden">
-                <h3 class="section-subtitle">Draw Your Signature</h3>
-                
-                <div class="canvas-container">
-                    <canvas id="signature-canvas" width="800" height="300"></canvas>
-                </div>
-
-                <div class="canvas-controls">
-                    <button id="clear-canvas" class="btn-secondary">
-                        <span class="material-symbols-outlined">delete</span>
-                        <span>Clear</span>
-                    </button>
-                    <button id="undo-canvas" class="btn-secondary">
-                        <span class="material-symbols-outlined">undo</span>
-                        <span>Undo</span>
-                    </button>
-                    <div class="stroke-width-control">
-                        <label>Pen Size:</label>
-                        <input type="range" id="stroke-width" min="1" max="10" value="3">
-                        <span id="stroke-value">3px</span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="signature-preview-section" class="signature-final-preview hidden">
-                <h3 class="section-subtitle">Your Signature</h3>
-                <div class="final-signature-display">
-                    <canvas id="final-signature-canvas"></canvas>
-                </div>
-                <button id="download-signature-btn" class="btn-download-signature">
-                    <span class="material-symbols-outlined">download</span>
-                    <span>Download Signature Sheet</span>
-                </button>
-            </div>
-
+<div id="signature-section" class="content-section hidden">
+    <div class="signature-container">
+        
+        <div class="signature-header">
+            <h1 class="signature-title">Signature Generator</h1>
+            <p class="signature-subtitle">Create your unique signature in seconds</p>
         </div>
+
+        <div class="signature-input-section">
+            <div class="form-group">
+                <label class="form-label">Enter Your Full Name</label>
+                <input type="text" id="full-name-input" class="form-input" placeholder="e.g., John Smith" maxlength="50">
+                <p class="form-hint">Your signature will be generated from your name</p>
+            </div>
+
+            <div class="signature-method-toggle">
+                <label class="radio-option">
+                    <input type="radio" name="signature-method" value="generate" checked>
+                    <span>Generate Signature</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="signature-method" value="draw">
+                    <span>Draw My Own</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- GENERATED SIGNATURES -->
+        <div id="generated-signatures" class="signature-options">
+            <h3 class="section-subtitle">Choose Your Signature Style</h3>
+            
+            <div class="signature-grid">
+                <div class="signature-card" data-font="Allura">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Allura', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Allura</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Alex Brush">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Alex Brush', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Alex Brush</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Great Vibes">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Great Vibes', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Great Vibes</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Tangerine">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Tangerine', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Tangerine</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Mr De Haviland">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Mr De Haviland', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Mr De Haviland</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Pinyon Script">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Pinyon Script', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Pinyon Script</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Parisienne">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Parisienne', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Parisienne</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Sacramento">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Sacramento', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Sacramento</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Satisfy">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Satisfy', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Satisfy</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Dancing Script">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Dancing Script', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Dancing Script</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Arizonia">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Arizonia', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Arizonia</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+
+                <div class="signature-card" data-font="Yellowtail">
+                    <div class="signature-preview">
+                        <span class="signature-text" style="font-family: 'Yellowtail', cursive;">Your Name</span>
+                    </div>
+                    <p class="signature-font-name">Yellowtail</p>
+                    <button class="btn-select-signature">Select</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DRAW SIGNATURE - NEW LAYOUT -->
+        <div id="draw-signature" class="draw-section hidden">
+            <h3 class="section-subtitle">Draw Your Signature</h3>
+            
+            <div class="draw-layout">
+                <!-- LEFT: Canvas + Controls -->
+                <div class="draw-left">
+                    <div class="canvas-container-a6">
+                        <canvas id="signature-canvas" width="560" height="397"></canvas>
+                    </div>
+                    
+                    <div class="canvas-controls">
+                        <button id="clear-canvas" class="btn-secondary">
+                            <span class="material-symbols-outlined">delete</span>
+                            <span>Clear</span>
+                        </button>
+                        <button id="undo-canvas" class="btn-secondary">
+                            <span class="material-symbols-outlined">undo</span>
+                            <span>Undo</span>
+                        </button>
+                        <div class="stroke-width-control">
+                            <label>Pen Size:</label>
+                            <input type="range" id="stroke-width" min="1" max="10" value="3">
+                            <span id="stroke-value">3px</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Preview with 4 copies -->
+                <div class="draw-right">
+                    <div class="preview-grid">
+                        <canvas id="preview-canvas-1" class="preview-mini-canvas"></canvas>
+                        <canvas id="preview-canvas-2" class="preview-mini-canvas"></canvas>
+                        <canvas id="preview-canvas-3" class="preview-mini-canvas"></canvas>
+                        <canvas id="preview-canvas-4" class="preview-mini-canvas"></canvas>
+                    </div>
+                    
+                    <button id="download-signature-btn" class="btn-download-signature">
+                        <span class="material-symbols-outlined">download</span>
+                        <span>Download Signature Sheet</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FINAL PREVIEW FOR GENERATED SIGNATURES -->
+        <div id="signature-preview-section" class="signature-final-preview hidden">
+            <h3 class="section-subtitle">Your Signature</h3>
+            <div class="final-signature-display">
+                <canvas id="final-signature-canvas"></canvas>
+            </div>
+            <button id="download-generated-btn" class="btn-download-signature">
+                <span class="material-symbols-outlined">download</span>
+                <span>Download Signature Sheet</span>
+            </button>
+        </div>
+
     </div>
+</div>
 
     <!-- EMAIL MODAL -->
     <div id="email-modal" class="modal">

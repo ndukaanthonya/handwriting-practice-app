@@ -897,7 +897,7 @@ function initModeToggle() {
     }
 }
 
-// Initialize Signature Generator
+// 5. UPDATE initSignatureGenerator to handle both download buttons
 function initSignatureGenerator() {
     const fullNameInput = document.getElementById('full-name-input');
     const methodRadios = document.querySelectorAll('input[name="signature-method"]');
@@ -953,9 +953,16 @@ function initSignatureGenerator() {
         });
     }
 
-    const downloadBtn = document.getElementById('download-signature-btn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', downloadSignatureSheet);
+    // Handle both download buttons
+    const downloadDrawBtn = document.getElementById('download-signature-btn');
+    const downloadGenBtn = document.getElementById('download-generated-btn');
+    
+    if (downloadDrawBtn) {
+        downloadDrawBtn.addEventListener('click', downloadSignatureSheet);
+    }
+    
+    if (downloadGenBtn) {
+        downloadGenBtn.addEventListener('click', downloadSignatureSheet);
     }
 }
 
@@ -1030,7 +1037,45 @@ function draw(e) {
 function stopDrawing() {
     if (signatureState.isDrawing) {
         signatureState.isDrawing = false;
-        showFinalSignature();
+        updatePreviewCanvases(); // Add this line
+    }
+}
+
+// 2. ADD THIS NEW FUNCTION - Update 4 preview canvases
+function updatePreviewCanvases() {
+    if (!signatureState.canvas || signatureState.strokes.length === 0) return;
+    
+    for (let i = 1; i <= 4; i++) {
+        const previewCanvas = document.getElementById(`preview-canvas-${i}`);
+        if (!previewCanvas) continue;
+        
+        const ctx = previewCanvas.getContext('2d');
+        
+        // Set canvas size to match A6 aspect ratio
+        previewCanvas.width = 280;
+        previewCanvas.height = 198;
+        
+        // Clear
+        ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+        
+        // Calculate scale to fit signature
+        const scale = Math.min(
+            previewCanvas.width / signatureState.canvas.width,
+            previewCanvas.height / signatureState.canvas.height
+        );
+        
+        // Center the signature
+        const scaledWidth = signatureState.canvas.width * scale;
+        const scaledHeight = signatureState.canvas.height * scale;
+        const offsetX = (previewCanvas.width - scaledWidth) / 2;
+        const offsetY = (previewCanvas.height - scaledHeight) / 2;
+        
+        // Draw signature
+        ctx.save();
+        ctx.translate(offsetX, offsetY);
+        ctx.scale(scale, scale);
+        ctx.drawImage(signatureState.canvas, 0, 0);
+        ctx.restore();
     }
 }
 
@@ -1048,10 +1093,21 @@ function clearCanvas() {
     if (!signatureState.ctx) return;
     signatureState.ctx.clearRect(0, 0, signatureState.canvas.width, signatureState.canvas.height);
     signatureState.strokes = [];
+    
+    // Clear preview canvases
+    for (let i = 1; i <= 4; i++) {
+        const previewCanvas = document.getElementById(`preview-canvas-${i}`);
+        if (previewCanvas) {
+            const ctx = previewCanvas.getContext('2d');
+            ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+        }
+    }
+    
     const previewSection = document.getElementById('signature-preview-section');
     if (previewSection) previewSection.classList.add('hidden');
 }
 
+// 4. UPDATE undoStroke to update previews
 function undoStroke() {
     if (signatureState.strokes.length === 0) return;
     
@@ -1069,6 +1125,8 @@ function undoStroke() {
             ctx.stroke();
         });
     });
+    
+    updatePreviewCanvases(); // Add this line
 }
 
 function showFinalSignature() {
@@ -1111,6 +1169,7 @@ function downloadSignatureSheet() {
     };
 }
 
+// 6. COMPLETELY REPLACE generateSignaturePDF function
 async function generateSignaturePDF() {
     console.log('=== SIGNATURE PDF GENERATION START ===');
     
@@ -1132,27 +1191,75 @@ async function generateSignaturePDF() {
     const pageWidth = 210;
     const pageHeight = 297;
     
-    pdf.setFontSize(20);
+    // Title
+    pdf.setFontSize(18);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('Signature Practice Sheet', pageWidth / 2, 20, { align: 'center' });
+    pdf.text('Signature Practice Sheet', pageWidth / 2, 15, { align: 'center' });
     
-    const signatureImg = data.canvas.toDataURL('image/png');
+    // Get signature image
+    let signatureImg;
     
-    let yPos = 40;
-    const lineSpacing = 40;
-    const linesPerPage = 6;
-    
-    for (let i = 0; i < linesPerPage; i++) {
-        pdf.addImage(signatureImg, 'PNG', 30, yPos, 150, 30);
-        pdf.setDrawColor(200);
-        pdf.setLineWidth(0.5);
-        pdf.line(30, yPos + 35, 180, yPos + 35);
-        yPos += lineSpacing;
+    if (data.method === 'draw') {
+        // For drawn signatures, use the main canvas
+        const canvas = document.getElementById('signature-canvas');
+        signatureImg = canvas.toDataURL('image/png');
+    } else {
+        // For generated signatures, use the final canvas
+        signatureImg = data.canvas.toDataURL('image/png');
     }
     
+    // A4 divided into 4 A6 sections (2x2 grid)
+    // Each A6 is 105mm x 148mm (landscape) = 148mm x 105mm
+    const a6Width = pageWidth / 2; // 105mm
+    const a6Height = (pageHeight - 30) / 2; // ~133mm (leaving space for title)
+    
+    // Each A6 section contains 4 signatures (2x2 grid)
+    const sigWidth = a6Width / 2;
+    const sigHeight = a6Height / 2;
+    
+    let startY = 25;
+    
+    // Create 4 A6 sections
+    for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 2; col++) {
+            const a6X = col * a6Width;
+            const a6Y = startY + (row * a6Height);
+            
+            // Draw A6 border (optional)
+            pdf.setDrawColor(200);
+            pdf.setLineWidth(0.3);
+            pdf.rect(a6X, a6Y, a6Width, a6Height);
+            
+            // Add 4 signatures in each A6 section
+            for (let sigRow = 0; sigRow < 2; sigRow++) {
+                for (let sigCol = 0; sigCol < 2; sigCol++) {
+                    const sigX = a6X + (sigCol * sigWidth) + 5;
+                    const sigY = a6Y + (sigRow * sigHeight) + 5;
+                    
+                    // Add signature image
+                    pdf.addImage(
+                        signatureImg, 
+                        'PNG', 
+                        sigX, 
+                        sigY, 
+                        sigWidth - 10, 
+                        sigHeight - 15
+                    );
+                    
+                    // Add practice line below signature
+                    const lineY = sigY + sigHeight - 12;
+                    pdf.setDrawColor(150);
+                    pdf.setLineWidth(0.5);
+                    pdf.line(sigX, lineY, sigX + sigWidth - 10, lineY);
+                }
+            }
+        }
+    }
+    
+    // Watermark
     pdf.setFontSize(8);
     pdf.setTextColor(150);
-    pdf.text('Made by Annaelechukwu - trayce.xyz', pageWidth / 2, pageHeight - 10, { align: 'center' });
+    pdf.text('Made by Annaelechukwu - trayce.xyz', pageWidth / 2, pageHeight - 5, { align: 'center' });
     
     const fileName = `signature-practice-${(data.fullName || 'signature').replace(/\s+/g, '-').toLowerCase()}.pdf`;
     pdf.save(fileName);
@@ -1160,4 +1267,5 @@ async function generateSignaturePDF() {
     setTimeout(() => showCoffeeModal(), 1000);
     
     console.log('=== SIGNATURE PDF GENERATION COMPLETE ===');
+    console.log('16 signatures generated on A4 page');
 }

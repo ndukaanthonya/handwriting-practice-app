@@ -1213,3 +1213,117 @@ html, body {
     min-height: auto;
     overflow-y: visible;
 }
+/* ===================================
+   SIGNATURE A6 LAYOUT - ADD TO END OF STYLE.CSS
+   =================================== */
+
+/* Draw Section Layout */
+.draw-layout {
+    display: grid;
+    grid-template-columns: 560px 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Left Side - Canvas + Controls */
+.draw-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.canvas-container-a6 {
+    background: #ffffff;
+    border: 2px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#signature-canvas {
+    border: 1px dashed var(--border-color);
+    cursor: crosshair;
+    touch-action: none;
+    background: white;
+    display: block;
+}
+
+.canvas-controls {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0.5rem;
+}
+
+/* Right Side - Preview Grid */
+.draw-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    background: #ffffff;
+    border: 2px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 100%;
+    max-width: 450px;
+}
+
+.preview-mini-canvas {
+    width: 100%;
+    aspect-ratio: 148/105;
+    border: 1px solid var(--border-color);
+    background: white;
+    border-radius: 0.25rem;
+}
+
+/* Download Button for Draw Mode */
+.draw-right .btn-download-signature {
+    width: 100%;
+    max-width: 450px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .draw-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .canvas-container-a6 {
+        width: 100%;
+        overflow-x: auto;
+    }
+    
+    #signature-canvas {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .preview-grid {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    #signature-canvas {
+        width: 100%;
+    }
+    
+    .preview-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .preview-mini-canvas {
+        width: 100%;
+    }
+}
