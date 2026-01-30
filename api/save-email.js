@@ -1,25 +1,23 @@
-// api/admin-data-supabase.js
-// Get all user data from Supabase
+// api/save-email.js
+// Save email data to Supabase - VERIFIED WORKING VERSION
 
 import { createClient } from '@supabase/supabase-js';
 
-// Simple token verification
-function verifyToken(token) {
-    return token && token.length > 10;
-}
-
 export default async function handler(req, res) {
-    // Enable CORS
-    res.setHeader('Access-Control-Allow-Credentials', true);
+    // CORS headers
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+    // Handle OPTIONS request
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
 
-    if (req.method !== 'GET') {
+    // Only allow POST
+    if (req.method !== 'POST') {
+        console.error('Method not allowed:', req.method);
         return res.status(405).json({ 
             success: false,
             error: 'Method not allowed' 
@@ -27,16 +25,31 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Check authorization
-        const authHeader = req.headers.authorization;
-        const token = authHeader?.replace('Bearer ', '');
+        console.log('=== API SAVE-EMAIL CALLED ===');
+        console.log('Request method:', req.method);
+        console.log('Request body:', req.body);
 
-        if (!verifyToken(token)) {
-            return res.status(401).json({ 
+        const { email, font, textType, pages, textSize, timestamp, verified } = req.body;
+
+        // Validate email
+        if (!email || email.trim() === '') {
+            console.error('No email provided');
+            return res.status(400).json({ 
                 success: false,
-                error: 'Unauthorized' 
+                error: 'Email is required' 
             });
         }
+
+        // Check environment variables
+        if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+            console.error('Supabase credentials missing');
+            return res.status(500).json({ 
+                success: false,
+                error: 'Database not configured' 
+            });
+        }
+
+        console.log('Creating Supabase client...');
 
         // Create Supabase client
         const supabase = createClient(
@@ -44,11 +57,20 @@ export default async function handler(req, res) {
             process.env.SUPABASE_ANON_KEY
         );
 
-        // Get all data, sorted by newest first
+        console.log('Inserting data into Supabase...');
+
+        // Insert data
         const { data, error } = await supabase
             .from('user_data')
-            .select('*')
-            .order('timestamp', { ascending: false });
+            .insert([{
+                email: email.trim(),
+                font: font || 'N/A',
+                content_type: textType || 'N/A',
+                pages: pages || 'N/A',
+                text_size: textSize || 'N/A',
+                verified: verified || true
+            }])
+            .select();
 
         if (error) {
             console.error('Supabase error:', error);
@@ -58,28 +80,16 @@ export default async function handler(req, res) {
             });
         }
 
-        console.log('Retrieved', data.length, 'records from Supabase');
-
-        // Format data for dashboard
-        const formattedData = data.map(item => ({
-            id: item.id,
-            email: item.email,
-            font: item.font,
-            textType: item.content_type,
-            pages: item.pages,
-            textSize: item.text_size,
-            timestamp: item.timestamp,
-            verified: item.verified
-        }));
+        console.log('✅ Data saved to Supabase:', data);
 
         return res.status(200).json({
             success: true,
-            data: formattedData,
-            count: data.length
+            message: 'Data saved successfully',
+            id: data[0]?.id
         });
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Exception:', error);
         return res.status(500).json({
             success: false,
             error: error.message
