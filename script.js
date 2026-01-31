@@ -1,912 +1,1365 @@
-// ====================================
-// TRAYCE - COMPLETE JAVASCRIPT WITH KIDS MODE
-// ====================================
+// ===================================
+// TRAYCE - HANDWRITING PRACTICE APP
+// Live Preview - All Changes Update Instantly
+// COMPLETE FIXED VERSION
+// ===================================
 
-// ====================================
-// CONFIGURATION & CONSTANTS
-// ====================================
+// ===================================
+// HANDWRITING FONTS COLLECTION (105+)
+// ===================================
 
-const SUPABASE_URL = 'https://opcygfnslwsbbyhqydup.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wY3lnZm5zbHdzYmJ5aHF5ZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NjQ0MjcsImV4cCI6MjA4NTM0MDQyN30.PZMTMRexfv-XHeKUH-s0jPEZPbRZBZsRcYp-wuDkwdo';
-const RESEND_API_KEY = 're_aJ5fTLxs_N5KjMsG9hXW2ThcbEku4Fhpx';
-
-// Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Handwriting Fonts (105 fonts)
-const HANDWRITING_FONTS = [
-    'Delius', 'Dancing Script', 'Pacifico', 'Shadows Into Light', 'Indie Flower',
-    'Kalam', 'Permanent Marker', 'Caveat', 'Gloria Hallelujah', 'Architects Daughter',
-    'Amatic SC', 'Patrick Hand', 'Covered By Your Grace', 'Reenie Beanie', 'Satisfy',
-    'Cookie', 'Handlee', 'Homemade Apple', 'La Belle Aurore', 'Waiting for the Sunrise',
-    'Calligraffitti', 'Just Another Hand', 'Rock Salt', 'Sunshiney', 'Sue Ellen Francisco',
-    'Over the Rainbow', 'Schoolbell', 'Dawning of a New Day', 'Dekko', 'Gochi Hand',
-    'Mr Dafoe', 'Mrs Saint Delafield', 'Nanum Pen Script', 'Neucha', 'Petit Formal Script',
-    'Short Stack', 'Swanky and Moo Moo', 'Yellowtail', 'League Script', 'Monsieur La Doulaise',
-    'Mr De Haviland', 'Niconne', 'Norican', 'Pinyon Script', 'Rochester', 'Tangerine',
-    'Vibur', 'Zeyada', 'Bad Script', 'Charm', 'Gaegu', 'Gowun Batang', 'Gowun Dodum',
-    'Hi Melody', 'Nanum Brush Script', 'Nanum Gothic', 'Nanum Myeongjo', 'Gamja Flower',
-    'Dongle', 'Jua', 'Cute Font', 'Do Hyeon', 'Black Han Sans', 'Sunflower', 'Stylish',
-    'Single Day', 'Dokdo', 'East Sea Dokdo', 'Black And White Picture', 'Hahmlet',
-    'Yeon Sung', 'Song Myung', 'Gugi', 'Gothic A1', 'Poor Story', 'Kirang Haerang',
-    'Grandiflora One', 'Praise', 'Luxurious Script', 'Send Flowers', 'Whisper',
-    'Fuzzy Bubbles', 'Give You Glory', 'Loved by the King', 'Mountains of Christmas',
-    'Crafty Girls', 'Annie Use Your Telescope', 'Coming Soon', 'The Girl Next Door',
-    'Walter Turncoat', 'Julee', 'Just Me Again Down Here', 'Kristi', 'Unkempt',
-    'Pangolin', 'Mali', 'Sriracha', 'Itim', 'Kodchasan', 'Maitree', 'Srisakdi', 'K2D'
+const handwritingFonts = [
+    'Allura', 'Arizonia', 'Alex Brush', 'Architects Daughter', 'Bad Script',
+    'Ballet', 'Berkshire Swash', 'Bilbo', 'Bilbo Swash Caps', 'Caveat',
+    'Charm', 'Courgette', 'Damion', 'Dancing Script', 'Dawning of a New Day',
+    'Dekko', 'Delius', 'Devonshire', 'Dr Sugiyama', 'Eagle Lake',
+    'Engagement', 'Ephesis', 'Euphoria Script', 'Felipa', 'Fondamento',
+    'Give You Glory', 'Gloria Hallelujah', 'Grand Hotel', 'Great Vibes', 'Homemade Apple',
+    'Indie Flower', 'Italianno', 'Just Another Hand', 'Kalam', 'Kaushan Script',
+    'Kristi', 'La Belle Aurore', 'League Script', 'Leckerli One', 'Liu Jian Mao Cao',
+    'Lobster', 'Lobster Two', 'Long Cang', 'Loved by the King', 'Lovers Quarrel',
+    'Ma Shan Zheng', 'Marck Script', 'Meddon', 'Meie Script', 'Merienda',
+    'Miss Fajardose', 'Monsieur La Doulaise', 'Montez', 'Mr Dafoe', 'Mr De Haviland',
+    'Mrs Saint Delafield', 'Mrs Sheppards', 'Nanum Pen Script', 'Neucha', 'Norican',
+    'Nothing You Could Do', 'Over the Rainbow', 'Pacifico', 'Parisienne', 'Passero One',
+    'Patrick Hand', 'Permanent Marker', 'Petit Formal Script', 'Pinyon Script', 'Princess Sofia',
+    'Qwigley', 'Rancho', 'Reenie Beanie', 'Rochester', 'Rock Salt',
+    'Rosarivo', 'Rouge Script', 'Ruge Boogie', 'Ruthie', 'Sacramento',
+    'Satisfy', 'Schoolbell', 'Sedgwick Ave', 'Shadows Into Light', 'Shojumaru',
+    'Smooch', 'Snippet', 'Sofadi One', 'Sofia', 'Stalemate',
+    'Sue Ellen Francisco', 'Sunshiney', 'Swanky and Moo Moo', 'Tangerine', 'The Girl Next Door',
+    'Tillana', 'Vibur', 'Vollkorn', 'Walter Turncoat', 'Yellowtail',
+    'Yeseva One', 'Zeyada', 'Zhi Mang Xing', 'Playwrite AU NSW', 'Playwrite AU VIC',
+    'Playwrite BE VLG', 'Playwrite CL', 'Playwrite CU', 'Playwrite DE Grund', 'Playwrite GB S',
+    'Playwrite IN', 'Playwrite IT Moderna', 'Playwrite MX', 'Playwrite NZ', 'Playwrite US Modern',
+    'Borel', 'Gideon Roman', 'Handlee', 'Julee', 'Klee One'
 ];
 
-// Signature Fonts (12 fonts)
-const SIGNATURE_FONTS = [
-    'Dancing Script', 'Pacifico', 'Great Vibes', 'Allura', 'Kaushan Script',
-    'Courgette', 'Satisfy', 'Cookie', 'Mr De Haviland', 'Pinyon Script',
-    'Tangerine', 'Luxurious Script'
-];
+// ===================================
+// DOM ELEMENTS
+// ===================================
 
-// Simple/Clean Fonts for Kids Mode (95 fonts)
-const KIDS_FONTS = [
-    'Arial', 'Verdana', 'Helvetica', 'Tahoma', 'Trebuchet MS', 'Georgia',
-    'Times New Roman', 'Courier New', 'Lucida Console', 'Comic Sans MS', 'Impact',
-    'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Source Sans Pro', 'Raleway',
-    'PT Sans', 'Ubuntu', 'Merriweather', 'Playfair Display', 'Nunito', 'Poppins',
-    'Oswald', 'Mukta', 'Rubik', 'Work Sans', 'Noto Sans', 'Oxygen', 'Quicksand',
-    'Karla', 'Cabin', 'Barlow', 'Heebo', 'Titillium Web', 'Arimo', 'Hind',
-    'Josefin Sans', 'Dosis', 'Muli', 'Bitter', 'Crimson Text', 'Exo 2', 'Fira Sans',
-    'Libre Franklin', 'Libre Baskerville', 'Play', 'Assistant', 'Varela Round', 'Abel',
-    'Asap', 'Yanone Kaffeesatz', 'Archivo', 'Cairo', 'Catamaran', 'Fjalla One',
-    'Anton', 'Bebas Neue', 'Signika', 'Questrial', 'Pathway Gothic One', 'Acme',
-    'Righteous', 'Patua One', 'Alfa Slab One', 'Hammersmith One', 'Concert One',
-    'Bree Serif', 'Alegreya Sans', 'Maven Pro', 'Kanit', 'Prompt', 'Sarabun',
-    'IBM Plex Sans', 'Architects Daughter', 'Shadows Into Light', 'Gloria Hallelujah',
-    'Amatic SC', 'Permanent Marker', 'Pacifico', 'Lobster', 'Satisfy', 'Dancing Script',
-    'Cookie', 'Great Vibes', 'Allura', 'Kaushan Script', 'Courgette', 'Caveat'
-];
+const fontSelect = document.getElementById('font-select');
+const pangramSelect = document.getElementById('pangram-select');
+const customTextInput = document.getElementById('custom-text-input');
+const charCount = document.getElementById('char-count');
+const contentSelect = document.getElementById('content-select');
+const pagesSelect = document.getElementById('pages-select');
+const sizeSelect = document.getElementById('size-select');
+const fontCount = document.getElementById('font-count');
+const sizeEstimate = document.getElementById('size-estimate');
+const customTextGroup = document.getElementById('custom-text-group');
+const sheetContent = document.getElementById('sheet-content');
 
-// Simple Sentences for Kids Mode
-const SIMPLE_SENTENCES = [
-    "This is a cat",
-    "This is an apple",
-    "I am a child",
-    "The dog runs",
-    "I like to play",
-    "The sun is bright",
-    "I love my family",
-    "Birds can fly",
-    "Fish swim in water",
-    "I go to school",
-    "Cats like milk",
-    "Trees are green",
-    "I can read",
-    "Stars shine at night",
-    "I help my mom"
-];
+// Buttons
+const downloadBtn = document.getElementById('download-btn');
+const themeToggle = document.getElementById('theme-toggle');
 
-// ====================================
-// STATE MANAGEMENT
-// ====================================
+// Text mode radios
+const modePreset = document.getElementById('mode-preset');
+const modeCustom = document.getElementById('mode-custom');
 
-const state = {
-    currentMode: 'handwriting',
-    theme: localStorage.getItem('theme') || 'light',
-    userEmail: null,
-    verificationCode: null,
-    handwriting: {
-        font: 'Delius',
-        size: 0.7,
-        content: 'pangram',
-        customText: '',
-        pages: 1
-    },
-    signature: {
-        activeTab: 'draw',
-        font: 'Dancing Script',
-        text: '',
-        drawnSignature: null
-    },
-    kids: {
-        font: 'Arial',
-        size: 2.0,
-        content: 'uppercase',
-        sentence: 'This is a cat',
-        customSentence: '',
-        letter: 'A',
-        theme: 'none',
-        pages: 1
-    }
+// Modals
+const emailModal = document.getElementById('email-modal');
+const userEmailInput = document.getElementById('user-email');
+const emailError = document.getElementById('email-error');
+const sendCodeBtn = document.getElementById('send-code-btn');
+const cancelBtn = document.getElementById('cancel-btn');
+
+const codeModal = document.getElementById('code-modal');
+const displayEmail = document.getElementById('display-email');
+const verificationCodeInput = document.getElementById('verification-code');
+const codeError = document.getElementById('code-error');
+const verifyCodeBtn = document.getElementById('verify-code-btn');
+const codeCancelBtn = document.getElementById('code-cancel-btn');
+const resendCodeBtn = document.getElementById('resend-code-btn');
+
+const coffeeModal = document.getElementById('coffee-modal');
+const coffeeCloseBtn = document.getElementById('coffee-close-btn');
+
+// ===================================
+// VERIFICATION DATA
+// ===================================
+let verificationData = {
+    email: '',
+    code: '',
+    timestamp: null
 };
 
-// ====================================
+// ===================================
 // INITIALIZATION
-// ====================================
+// ===================================
 
-document.addEventListener('DOMContentLoaded', () => {
+function init() {
+    console.log('🚀 Trayce App Starting...');
     initTheme();
+    populateFonts();
+    updateLivePreview();
+    updateSizeEstimate();
+    setupEventListeners();
     initModeToggle();
-    initHandwritingMode();
-    initSignatureMode();
-    initKidsMode();
-    initModals();
-    
-    // Apply saved theme
-    document.documentElement.setAttribute('data-theme', state.theme);
-});
+    restoreVerificationState();  // ← ADD THIS LINE
+    console.log('✅ Trayce App Ready!');
+}
 
-// ====================================
+// ===================================
 // THEME MANAGEMENT
-// ====================================
+// ===================================
 
 function initTheme() {
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = themeToggle.querySelector('.theme-icon');
-    
-    // Set initial icon
-    themeIcon.textContent = state.theme === 'dark' ? '☀️' : '🌙';
-    
-    themeToggle.addEventListener('click', () => {
-        state.theme = state.theme === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', state.theme);
-        themeIcon.textContent = state.theme === 'dark' ? '☀️' : '🌙';
-        localStorage.setItem('theme', state.theme);
-    });
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
 }
 
-// ====================================
-// MODE TOGGLE
-// ====================================
-
-function initModeToggle() {
-    const modeButtons = document.querySelectorAll('.mode-btn');
-    const sections = document.querySelectorAll('.content-section');
-    
-    modeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const mode = button.dataset.mode;
-            
-            // Update state
-            state.currentMode = mode;
-            
-            // Update UI
-            modeButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            
-            sections.forEach(section => section.classList.remove('active'));
-            document.getElementById(`${mode}-section`).classList.add('active');
-            
-            // Update preview
-            if (mode === 'handwriting') {
-                updateHandwritingPreview();
-            } else if (mode === 'kids') {
-                updateKidsPreview();
-            }
-        });
-    });
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
 }
 
-// ====================================
-// HANDWRITING MODE
-// ====================================
+// ===================================
+// FONT MANAGEMENT
+// ===================================
 
-function initHandwritingMode() {
-    // Populate font select
-    const fontSelect = document.getElementById('font-select');
-    HANDWRITING_FONTS.forEach(font => {
-        const option = document.createElement('option');
-        option.value = font;
-        option.textContent = font;
-        option.style.fontFamily = font;
-        if (font === 'Delius') option.selected = true;
-        fontSelect.appendChild(option);
-    });
+function populateFonts() {
+    if (!fontSelect) return;
     
-    // Size slider
-    const sizeSlider = document.getElementById('text-size');
-    const sizeValue = document.getElementById('text-size-value');
-    sizeSlider.addEventListener('input', (e) => {
-        state.handwriting.size = parseFloat(e.target.value);
-        sizeValue.textContent = `${state.handwriting.size}cm`;
-        updateHandwritingPreview();
-    });
+    // Add default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = 'Dancing Script';
+    defaultOption.textContent = 'Dancing Script (Default)';
+    fontSelect.appendChild(defaultOption);
     
-    // Font select
-    fontSelect.addEventListener('change', (e) => {
-        state.handwriting.font = e.target.value;
-        updateHandwritingPreview();
-    });
-    
-    // Content type
-    const contentType = document.getElementById('content-type');
-    const customTextGroup = document.getElementById('custom-text-group');
-    const customText = document.getElementById('custom-text');
-    
-    contentType.addEventListener('change', (e) => {
-        state.handwriting.content = e.target.value;
-        customTextGroup.classList.toggle('hidden', e.target.value !== 'custom');
-        updateHandwritingPreview();
-    });
-    
-    customText.addEventListener('input', (e) => {
-        state.handwriting.customText = e.target.value;
-        updateHandwritingPreview();
-    });
-    
-    // Number of pages
-    document.getElementById('num-pages').addEventListener('change', (e) => {
-        state.handwriting.pages = parseInt(e.target.value);
-    });
-    
-    // Download button
-    document.getElementById('download-btn').addEventListener('click', () => {
-        if (state.currentMode === 'handwriting') {
-            showEmailModal();
-        } else if (state.currentMode === 'signature') {
-            generateSignaturePDF();
-        } else if (state.currentMode === 'kids') {
-            generateKidsPDF();
+    handwritingFonts.sort().forEach(font => {
+        if (font !== 'Dancing Script') {
+            const option = document.createElement('option');
+            option.value = font;
+            option.textContent = font;
+            fontSelect.appendChild(option);
         }
     });
     
-    // Initial preview
-    updateHandwritingPreview();
-}
-
-function updateHandwritingPreview() {
-    const preview = document.getElementById('preview');
-    const content = getHandwritingContent();
-    
-    preview.innerHTML = '';
-    preview.style.fontFamily = state.handwriting.font;
-    preview.style.fontSize = `${state.handwriting.size}cm`;
-    preview.style.lineHeight = '2';
-    preview.style.padding = '2cm';
-    preview.style.color = '#000';
-    
-    const lines = content.split('\n');
-    lines.forEach(line => {
-        const p = document.createElement('p');
-        p.textContent = line;
-        p.style.marginBottom = '0.5cm';
-        preview.appendChild(p);
-    });
-}
-
-function getHandwritingContent() {
-    const { content, customText } = state.handwriting;
-    
-    const pangram = "The quick brown fox jumps over the lazy dog";
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz";
-    const numbers = "0123456789";
-    
-    switch (content) {
-        case 'pangram':
-            return pangram;
-        case 'alphabet':
-            return alphabet;
-        case 'numbers':
-            return numbers;
-        case 'combined':
-            return `${pangram}\n\n${alphabet}\n\n${numbers}`;
-        case 'custom':
-            return customText || 'Enter your custom text...';
-        default:
-            return pangram;
+    if (fontCount) {
+        fontCount.textContent = `${handwritingFonts.length} handwriting fonts available`;
     }
 }
 
-// ====================================
-// SIGNATURE MODE
-// ====================================
+// ===================================
+// LIVE PREVIEW UPDATE
+// ===================================
 
-function initSignatureMode() {
-    // Populate signature fonts
-    const signatureFont = document.getElementById('signature-font');
-    SIGNATURE_FONTS.forEach(font => {
-        const option = document.createElement('option');
-        option.value = font;
-        option.textContent = font;
-        option.style.fontFamily = font;
-        signatureFont.appendChild(option);
+function updateLivePreview() {
+    if (!sheetContent) return;
+    
+    // Get current settings
+    const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
+    const selectedPangram = pangramSelect ? pangramSelect.value : 'The quick brown fox jumps over the lazy dog';
+    const selectedContent = contentSelect ? contentSelect.value : 'combined';
+    const isCustomMode = modeCustom && modeCustom.checked;
+    const customText = customTextInput ? customTextInput.value.trim() : '';
+    
+    // Determine what text to display
+    let practiceTexts = [];
+    
+    if (isCustomMode && customText) {
+        // Custom text mode
+        practiceTexts = customText.split('\n').filter(line => line.trim());
+        if (practiceTexts.length === 0) {
+            practiceTexts = [customText];
+        }
+    } else {
+        // Preset mode
+        if (selectedContent === 'combined') {
+            practiceTexts = [
+                selectedPangram,
+                'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+                'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+                '0 1 2 3 4 5 6 7 8 9'
+            ];
+        } else if (selectedContent === 'pangram') {
+            practiceTexts = [selectedPangram];
+        } else if (selectedContent === 'alphabet') {
+            practiceTexts = ['A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'];
+        } else if (selectedContent === 'lowercase') {
+            practiceTexts = ['a b c d e f g h i j k l m n o p q r s t u v w x y z'];
+        } else if (selectedContent === 'numbers') {
+            practiceTexts = ['0 1 2 3 4 5 6 7 8 9'];
+        }
+    }
+    
+    // Clear current content
+    sheetContent.innerHTML = '';
+    
+    // Generate 8 lines (4 text + 4 faded copies)
+    const totalLines = 8;
+    let lineIndex = 0;
+    
+    for (let i = 0; i < practiceTexts.length && lineIndex < totalLines; i++) {
+        const text = practiceTexts[i];
+        
+        // Main text line
+        if (lineIndex < totalLines) {
+            const lineGroup1 = document.createElement('div');
+            lineGroup1.className = 'handwriting-line-group';
+            
+            const textElement1 = document.createElement('p');
+            textElement1.className = 'practice-text';
+            textElement1.style.fontFamily = `'${selectedFont}', cursive`;
+            textElement1.textContent = text;
+            
+            lineGroup1.appendChild(textElement1);
+            sheetContent.appendChild(lineGroup1);
+            lineIndex++;
+        }
+        
+        // Faded text line
+        if (lineIndex < totalLines) {
+            const lineGroup2 = document.createElement('div');
+            lineGroup2.className = 'handwriting-line-group';
+            
+            const textElement2 = document.createElement('p');
+            textElement2.className = 'practice-text practice-text-faded';
+            textElement2.style.fontFamily = `'${selectedFont}', cursive`;
+            textElement2.textContent = text;
+            
+            lineGroup2.appendChild(textElement2);
+            sheetContent.appendChild(lineGroup2);
+            lineIndex++;
+        }
+    }
+    
+    // Fill remaining lines with empty line groups
+    while (lineIndex < totalLines) {
+        const emptyLine = document.createElement('div');
+        emptyLine.className = 'handwriting-line-group';
+        sheetContent.appendChild(emptyLine);
+        lineIndex++;
+    }
+}
+
+// ===================================
+// CUSTOM TEXT MANAGEMENT
+// ===================================
+
+function toggleCustomText() {
+    if (!modePreset || !modeCustom || !customTextGroup) return;
+    
+    if (modeCustom.checked) {
+        customTextGroup.style.display = 'block';
+        if (contentSelect) contentSelect.disabled = true;
+        if (pangramSelect) pangramSelect.disabled = true;
+    } else {
+        customTextGroup.style.display = 'none';
+        if (contentSelect) contentSelect.disabled = false;
+        if (pangramSelect) pangramSelect.disabled = false;
+    }
+    
+    updateLivePreview();
+}
+
+function updateCharCount() {
+    if (!customTextInput || !charCount) return;
+    const length = customTextInput.value.length;
+    charCount.textContent = length;
+    
+    if (length > 500) {
+        customTextInput.value = customTextInput.value.substring(0, 500);
+        charCount.textContent = '500';
+    }
+    
+    updateLivePreview();
+}
+
+// ===================================
+// SIZE ESTIMATE
+// ===================================
+
+function updateSizeEstimate() {
+    if (!pagesSelect || !sizeEstimate) return;
+    const pages = parseInt(pagesSelect.value);
+    const estimatedSize = Math.round(pages * 0.2 * 10) / 10;
+    sizeEstimate.textContent = `~${estimatedSize} MB`;
+}
+
+// ===================================
+// EMAIL VALIDATION
+// ===================================
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function generateVerificationCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// ===================================
+// API CALLS
+// ===================================
+// 2. UPDATE sendVerificationCode() - ADD saveVerificationState()
+async function sendVerificationCode(email) {
+    try {
+        const code = generateVerificationCode();
+        
+        verificationData.email = email;
+        verificationData.code = code;
+        verificationData.timestamp = Date.now();
+
+        console.log('📧 Email stored:', verificationData.email);
+        console.log('🔢 Code generated:', code);
+        
+        saveVerificationState();  // ← ADD THIS LINE
+
+        const response = await fetch('/api/send-verification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, code })
+        });
+
+        if (!response.ok) throw new Error('Failed to send verification code');
+        return { success: true };
+    } catch (error) {
+        console.error('Error sending code:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Save verification data to sessionStorage to survive page refresh
+function saveVerificationState() {
+    if (verificationData.email && verificationData.code) {
+        sessionStorage.setItem('verificationData', JSON.stringify({
+            email: verificationData.email,
+            code: verificationData.code,
+            timestamp: verificationData.timestamp
+        }));
+        console.log('✅ Verification state saved');
+    }
+}
+
+// Restore verification data after page refresh
+function restoreVerificationState() {
+    const saved = sessionStorage.getItem('verificationData');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            
+            // Check if code is still valid (within 10 minutes)
+            const codeAge = Date.now() - data.timestamp;
+            if (codeAge < 10 * 60 * 1000) {
+                verificationData = data;
+                console.log('✅ Verification state restored');
+                
+                // If user was on code modal, reopen it
+                const codeModalWasOpen = sessionStorage.getItem('codeModalOpen');
+                if (codeModalWasOpen === 'true') {
+                    openCodeModal();
+                    sessionStorage.removeItem('codeModalOpen');
+                }
+                
+                return true;
+            } else {
+                // Code expired, clear it
+                sessionStorage.removeItem('verificationData');
+                console.log('⏰ Verification code expired');
+            }
+        } catch (e) {
+            console.error('Error restoring verification:', e);
+        }
+    }
+    return false;
+}
+
+// Clear verification state after successful verification
+function clearVerificationState() {
+    sessionStorage.removeItem('verificationData');
+    sessionStorage.removeItem('codeModalOpen');
+    console.log('🗑️ Verification state cleared');
+}
+
+async function saveEmailData(email, font, contentType, pages, textSize) {
+    try {
+        console.log('=== SAVING EMAIL DATA ===');
+        console.log('📧 Email:', email);
+        console.log('🎨 Font:', font);
+        console.log('📝 Content Type:', contentType);
+        console.log('📄 Pages:', pages);
+        console.log('📏 Text Size:', textSize);
+
+        // Validate email
+        if (!email || email.trim() === '') {
+            console.error('❌ Email is empty!');
+            return { success: false, error: 'Email is empty' };
+        }
+
+        // Prepare data
+        const data = {
+            email: email,
+            font: font,
+            textType: contentType,
+            pages: pages + ' pages',
+            textSize: textSize,
+            timestamp: new Date().toISOString(),
+            verified: true
+        };
+
+        console.log('📦 Sending data to API:', data);
+        console.log('🌐 Endpoint: /api/save-email');
+
+        const response = await fetch('/api/save-email', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify(data)
+        });
+
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
+
+        const result = await response.json();
+        console.log('📡 Response data:', result);
+
+        if (response.ok && result.success) {
+            console.log('✅ Email saved to database!');
+            return { success: true };
+        } else {
+            console.error('❌ API returned error:', result.error);
+            return { success: false, error: result.error };
+        }
+
+    } catch (error) {
+        console.error('❌ Exception in saveEmailData:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// ===================================
+// MODAL MANAGEMENT
+// ===================================
+
+function openEmailModal() {
+    if (!emailModal) return;
+    emailModal.classList.add('active');
+    if (userEmailInput) userEmailInput.value = '';
+    if (emailError) emailError.classList.remove('show');
+}
+
+function closeEmailModal() {
+    if (!emailModal) return;
+    emailModal.classList.remove('active');
+}
+
+function openCodeModal() {
+    if (!codeModal) return;
+    codeModal.classList.add('active');
+    if (displayEmail) displayEmail.textContent = verificationData.email;
+    if (verificationCodeInput) verificationCodeInput.value = '';
+    if (codeError) codeError.classList.remove('show');
+    
+    sessionStorage.setItem('codeModalOpen', 'true');  // ← ADD THIS LINE
+}
+// ===================================
+// BONUS: AUTO-FOCUS CODE INPUT
+// Helps user immediately enter code after returning
+// ===================================
+
+// Add this to your openCodeModal function
+function openCodeModal() {
+    if (!codeModal) return;
+    codeModal.classList.add('active');
+    if (displayEmail) displayEmail.textContent = verificationData.email;
+    if (verificationCodeInput) {
+        verificationCodeInput.value = '';
+        // Auto-focus after a short delay
+        setTimeout(() => {
+            verificationCodeInput.focus();
+        }, 300);
+    }
+    if (codeError) codeError.classList.remove('show');
+    
+    sessionStorage.setItem('codeModalOpen', 'true');
+}
+
+// 4. UPDATE closeCodeModal() - CLEAR sessionStorage
+function closeCodeModal() {
+    if (!codeModal) return;
+    codeModal.classList.remove('active');
+    
+    sessionStorage.removeItem('codeModalOpen');  // ← ADD THIS LINE
+}
+function showCoffeeModal() {
+    if (!coffeeModal) {
+        console.error('Coffee modal not found');
+        return;
+    }
+    console.log('☕ Showing coffee modal');
+    coffeeModal.classList.add('active');
+}
+
+function closeCoffeeModal() {
+    if (!coffeeModal) return;
+    coffeeModal.classList.remove('active');
+    console.log('☕ Coffee modal closed');
+}
+
+// ===================================
+// PDF GENERATION
+// ===================================
+
+async function createPDFPage(font, contentType, textSize, pageNumber) {
+    console.log(`Creating page ${pageNumber + 1}...`);
+    
+    const container = document.createElement('div');
+    container.style.width = '210mm';
+    container.style.height = '297mm';
+    container.style.background = '#ffffff';
+    container.style.padding = '20mm';
+    container.style.boxSizing = 'border-box';
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    document.body.appendChild(container);
+
+    const TARGET_LINES = 16;
+    const titleHeightMm = 15;
+    const watermarkHeightMm = 10;
+    const usableHeightMm = 297 - 40 - titleHeightMm - watermarkHeightMm;
+    const spacePerLineMm = usableHeightMm / TARGET_LINES;
+    const fontSizePx = textSize * 37.8;
+    const lineHeightMultiplier = 1.4;
+    const textLineHeightMm = textSize * 10 * lineHeightMultiplier;
+    const guideLinePositionMm = spacePerLineMm - 2;
+
+    // Title
+    const title = document.createElement('div');
+    title.style.textAlign = 'center';
+    title.style.fontSize = '18px';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8mm';
+    title.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    title.style.color = '#000';
+    title.textContent = `Handwriting Practice - Page ${pageNumber + 1}`;
+    container.appendChild(title);
+
+    // Get content
+    let practiceTexts = [];
+    
+    const isCustomMode = modeCustom && modeCustom.checked;
+    const customText = customTextInput ? customTextInput.value.trim() : '';
+
+    if (isCustomMode && customText) {
+        practiceTexts = customText.split('\n').filter(line => line.trim());
+        if (practiceTexts.length === 0) {
+            practiceTexts = [customText];
+        }
+    } else {
+        const selectedPangram = pangramSelect ? pangramSelect.value : 'The quick brown fox jumps over the lazy dog';
+        
+        if (contentType === 'combined') {
+            practiceTexts = [
+                selectedPangram,
+                'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+                'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+                '0 1 2 3 4 5 6 7 8 9'
+            ];
+        } else if (contentType === 'pangram') {
+            practiceTexts = [selectedPangram];
+        } else if (contentType === 'alphabet') {
+            practiceTexts = ['A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'];
+        } else if (contentType === 'lowercase') {
+            practiceTexts = ['a b c d e f g h i j k l m n o p q r s t u v w x y z'];
+        } else if (contentType === 'numbers') {
+            practiceTexts = ['0 1 2 3 4 5 6 7 8 9'];
+        }
+    }
+
+    // Create exactly 16 lines
+    let lineCount = 0;
+    const linesPerText = Math.ceil(TARGET_LINES / practiceTexts.length);
+    
+    for (let text of practiceTexts) {
+        for (let i = 0; i < linesPerText && lineCount < TARGET_LINES; i++) {
+            const lineContainer = document.createElement('div');
+            lineContainer.style.position = 'relative';
+            lineContainer.style.height = `${spacePerLineMm}mm`;
+            lineContainer.style.marginBottom = '0';
+            lineContainer.style.overflow = 'hidden';
+
+            const textDiv = document.createElement('div');
+            textDiv.style.fontFamily = `'${font}', cursive`;
+            textDiv.style.fontSize = `${fontSizePx}px`;
+            textDiv.style.color = '#c0c0c0';
+            textDiv.style.lineHeight = `${textLineHeightMm}mm`;
+            textDiv.style.height = `${textLineHeightMm}mm`;
+            textDiv.style.overflow = 'hidden';
+            textDiv.style.position = 'relative';
+            textDiv.style.top = '0';
+            textDiv.textContent = text;
+
+            const guideLine = document.createElement('div');
+            guideLine.style.position = 'absolute';
+            guideLine.style.bottom = `${spacePerLineMm - guideLinePositionMm}mm`;
+            guideLine.style.left = '0';
+            guideLine.style.right = '0';
+            guideLine.style.height = '1.5px';
+            guideLine.style.backgroundColor = '#000';
+
+            lineContainer.appendChild(textDiv);
+            lineContainer.appendChild(guideLine);
+            container.appendChild(lineContainer);
+            lineCount++;
+        }
+    }
+
+    // Watermark
+    const watermark = document.createElement('div');
+    watermark.style.position = 'absolute';
+    watermark.style.bottom = '12mm';
+    watermark.style.left = '0';
+    watermark.style.right = '0';
+    watermark.style.textAlign = 'center';
+    watermark.style.fontSize = '9px';
+    watermark.style.color = '#aaa';
+    watermark.style.fontStyle = 'italic';
+    watermark.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    watermark.textContent = 'Made by Annaelechukwu';
+    container.appendChild(watermark);
+
+    await document.fonts.ready;
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    const canvas = await html2canvas(container, {
+        scale: 1.5,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        width: 794,
+        height: 1123
     });
+
+    document.body.removeChild(container);
+    return canvas;
+}
+
+async function generatePDF() {
+    console.log('=== PDF GENERATION START ===');
     
-    // Tab switching
-    const tabs = document.querySelectorAll('.signature-tab');
-    const tabContents = document.querySelectorAll('.signature-tab-content');
+    if (downloadBtn) {
+        downloadBtn.disabled = true;
+        downloadBtn.innerHTML = '<span class="material-symbols-outlined">refresh</span><span>Generating...</span>';
+    }
+
+    try {
+        const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
+        const selectedContent = contentSelect ? contentSelect.value : 'pangram';
+        const selectedSize = sizeSelect ? parseFloat(sizeSelect.value) : 0.9;
+        const totalPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
+
+        if (!window.jspdf) {
+            throw new Error('jsPDF library not loaded. Please refresh the page.');
+        }
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: true
+        });
+
+        for (let i = 0; i < totalPages; i++) {
+            const canvas = await createPDFPage(selectedFont, selectedContent, selectedSize, i);
+            const imgData = canvas.toDataURL('image/jpeg', 0.7);
+            
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        const fileName = `handwriting-${selectedFont.replace(/\s+/g, '-').toLowerCase()}-${totalPages}p.pdf`;
+        pdf.save(fileName);
+
+        setTimeout(() => showCoffeeModal(), 1000);
+
+    } catch (error) {
+        console.error('PDF generation failed:', error);
+        alert(`Error generating PDF: ${error.message}\n\nPlease try with fewer pages or refresh the page.`);
+    } finally {
+        if (downloadBtn) {
+            downloadBtn.disabled = false;
+            downloadBtn.innerHTML = '<span class="material-symbols-outlined">download</span><span>Download PDF</span>';
+        }
+    }
+}
+
+// ===================================
+// EVENT LISTENERS
+// ===================================
+
+function setupEventListeners() {
+    // Theme toggle
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+
+    // Font selection - LIVE UPDATE
+    if (fontSelect) {
+        fontSelect.addEventListener('change', updateLivePreview);
+    }
+
+    // Pangram selection - LIVE UPDATE
+    if (pangramSelect) {
+        pangramSelect.addEventListener('change', updateLivePreview);
+    }
+
+    // Content selection - LIVE UPDATE
+    if (contentSelect) {
+        contentSelect.addEventListener('change', updateLivePreview);
+    }
+
+    // Text mode toggle
+    if (modePreset) modePreset.addEventListener('change', toggleCustomText);
+    if (modeCustom) modeCustom.addEventListener('change', toggleCustomText);
+
+    // Custom text - LIVE UPDATE
+    if (customTextInput) {
+        customTextInput.addEventListener('input', updateCharCount);
+    }
+
+    // Size estimate
+    if (pagesSelect) {
+        pagesSelect.addEventListener('change', updateSizeEstimate);
+    }
+
+    // Download button
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', openEmailModal);
+    }
+
+    // Email modal
+    if (cancelBtn) cancelBtn.addEventListener('click', closeEmailModal);
+
+    if (sendCodeBtn) {
+        sendCodeBtn.addEventListener('click', async function() {
+            const email = userEmailInput ? userEmailInput.value.trim() : '';
+            
+            console.log('=== SEND CODE CLICKED ===');
+            console.log('Email entered:', email);
+            
+            if (!validateEmail(email)) {
+                if (emailError) {
+                    emailError.textContent = 'Please enter a valid email address';
+                    emailError.classList.add('show');
+                }
+                return;
+            }
     
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const tabName = tab.dataset.tab;
-            state.signature.activeTab = tabName;
+            sendCodeBtn.disabled = true;
+            sendCodeBtn.textContent = 'Sending...';
+    
+            const result = await sendVerificationCode(email);
+    
+            if (result.success) {
+                console.log('✅ Code sent successfully');
+                closeEmailModal();
+                openCodeModal();
+            } else {
+                if (emailError) {
+                    emailError.textContent = 'Failed to send code. Please try again.';
+                    emailError.classList.add('show');
+                }
+            }
+    
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.textContent = 'Send Code';
+        });
+    }
+
+    // Code modal
+    if (codeCancelBtn) codeCancelBtn.addEventListener('click', closeCodeModal);
+
+    if (resendCodeBtn) {
+        resendCodeBtn.addEventListener('click', async function() {
+            resendCodeBtn.disabled = true;
+            resendCodeBtn.textContent = 'Sending...';
+            const result = await sendVerificationCode(verificationData.email);
+            if (result.success) alert('New code sent!');
+            else alert('Failed to send code.');
+            resendCodeBtn.disabled = false;
+            resendCodeBtn.textContent = 'Resend';
+        });
+    }
+
+  // 5. UPDATE verifyCodeBtn handler - ADD clearVerificationState() after success
+if (verifyCodeBtn) {
+    verifyCodeBtn.addEventListener('click', async function() {
+        const enteredCode = verificationCodeInput ? verificationCodeInput.value.trim() : '';
+        
+        console.log('=== VERIFY CODE CLICKED ===');
+        console.log('Entered code:', enteredCode);
+        console.log('Stored code:', verificationData.code);
+        console.log('Stored email:', verificationData.email);
+        
+        if (enteredCode.length !== 6) {
+            if (codeError) {
+                codeError.textContent = 'Please enter a 6-digit code';
+                codeError.classList.add('show');
+            }
+            return;
+        }
+
+        const codeAge = Date.now() - verificationData.timestamp;
+        if (codeAge > 10 * 60 * 1000) {
+            if (codeError) {
+                codeError.textContent = 'Code expired. Request a new code.';
+                codeError.classList.add('show');
+            }
+            return;
+        }
+
+        if (enteredCode !== verificationData.code) {
+            if (codeError) {
+                codeError.textContent = 'Invalid code. Try again.';
+                codeError.classList.add('show');
+            }
+            return;
+        }
+
+        console.log('✅ Code verified!');
+        closeCodeModal();
+        clearVerificationState();  // ← ADD THIS LINE
+        
+        const selectedFont = fontSelect ? fontSelect.value : 'Dancing Script';
+        const selectedContent = contentSelect ? contentSelect.value : 'pangram';
+        const selectedPages = pagesSelect ? parseInt(pagesSelect.value) : 1;
+        const selectedSize = sizeSelect ? sizeSelect.value : '0.9';
+        
+        const userEmail = verificationData.email;
+        
+        console.log('🎨 Settings:');
+        console.log('  Font:', selectedFont);
+        console.log('  Content:', selectedContent);
+        console.log('  Pages:', selectedPages);
+        console.log('  Size:', selectedSize);
+        console.log('📧 User Email:', userEmail);
+        
+        if (!userEmail || userEmail.trim() === '') {
+            console.error('❌ ERROR: Email is empty!');
+            alert('Error: Email not found. Please try again.');
+            return;
+        }
+        
+        console.log('💾 About to call saveEmailData...');
+        
+        try {
+            const saveResult = await saveEmailData(userEmail, selectedFont, selectedContent, selectedPages, selectedSize);
+            console.log('💾 saveEmailData returned:', saveResult);
             
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
+            if (saveResult && saveResult.success) {
+                console.log('✅ Email save confirmed successful');
+            } else {
+                console.error('⚠️ Email save may have failed:', saveResult);
+            }
+        } catch (saveError) {
+            console.error('❌ Exception calling saveEmailData:', saveError);
+        }
+        
+        console.log('📄 Checking download type...');
+        
+        if (window.pendingSignatureDownload) {
+            console.log('📝 Signature download');
+            await generateSignaturePDF();
+            window.pendingSignatureDownload = null;
+        } else {
+            console.log('📄 Handwriting download');
+            await generatePDF();
+        }
+        
+        console.log('=== VERIFICATION PROCESS COMPLETE ===');
+    });
+}
+
+// ===================================
+// ALSO ADD PAGE VISIBILITY LISTENER
+// Saves state when page goes to background
+// ===================================
+
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        // Page is going to background - save state
+        if (verificationData.email && verificationData.code) {
+            saveVerificationState();
+            console.log('📱 App minimized - state saved');
+        }
+    } else {
+        // Page is back in foreground
+        console.log('📱 App restored');
+    }
+});
+
+
+    // Code input - numbers only
+    if (verificationCodeInput) {
+        verificationCodeInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (codeError) codeError.classList.remove('show');
+        });
+        
+        verificationCodeInput.addEventListener('keypress', e => { 
+            if (e.key === 'Enter' && verifyCodeBtn) verifyCodeBtn.click(); 
+        });
+    }
+
+    // Email input
+    if (userEmailInput) {
+        userEmailInput.addEventListener('keypress', e => { 
+            if (e.key === 'Enter' && sendCodeBtn) sendCodeBtn.click(); 
+        });
+        
+        userEmailInput.addEventListener('input', () => {
+            if (emailError) emailError.classList.remove('show');
+        });
+    }
+
+    // Coffee modal
+    if (coffeeCloseBtn) coffeeCloseBtn.addEventListener('click', closeCoffeeModal);
+}
+
+// ===================================
+// START APP
+// ===================================
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+
+// ===================================
+// SIGNATURE GENERATOR
+// ===================================
+
+// Signature State
+let signatureState = {
+    method: 'generate',
+    fullName: '',
+    selectedFont: '',
+    canvas: null,
+    ctx: null,
+    isDrawing: false,
+    lastX: 0,
+    lastY: 0,
+    strokes: []
+};
+
+// Mode Toggle
+function initModeToggle() {
+    const handwritingBtn = document.getElementById('mode-handwriting');
+    const signatureBtn = document.getElementById('mode-signature');
+    const handwritingSection = document.getElementById('handwriting-section');
+    const signatureSection = document.getElementById('signature-section');
+
+    if (handwritingBtn && signatureBtn) {
+        handwritingBtn.addEventListener('click', () => {
+            handwritingBtn.classList.add('active');
+            signatureBtn.classList.remove('active');
+            if (handwritingSection) {
+                handwritingSection.classList.add('active');
+                handwritingSection.classList.remove('hidden');
+            }
+            if (signatureSection) {
+                signatureSection.classList.remove('active');
+                signatureSection.classList.add('hidden');
+            }
+        });
+
+        signatureBtn.addEventListener('click', () => {
+            signatureBtn.classList.add('active');
+            handwritingBtn.classList.remove('active');
+            if (signatureSection) {
+                signatureSection.classList.add('active');
+                signatureSection.classList.remove('hidden');
+            }
+            if (handwritingSection) {
+                handwritingSection.classList.remove('active');
+                handwritingSection.classList.add('hidden');
+            }
+            initSignatureGenerator();
+        });
+    }
+}
+
+// 5. UPDATE initSignatureGenerator to handle both download buttons
+function initSignatureGenerator() {
+    const fullNameInput = document.getElementById('full-name-input');
+    const methodRadios = document.querySelectorAll('input[name="signature-method"]');
+    const generatedSection = document.getElementById('generated-signatures');
+    const drawSection = document.getElementById('draw-signature');
+
+    if (fullNameInput) {
+        fullNameInput.addEventListener('input', (e) => {
+            signatureState.fullName = e.target.value;
+            updateSignaturePreviews();
+        });
+    }
+
+    methodRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            signatureState.method = e.target.value;
             
-            tabContents.forEach(content => content.classList.remove('active'));
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+            if (signatureState.method === 'generate') {
+                if (generatedSection) generatedSection.classList.remove('hidden');
+                if (drawSection) drawSection.classList.add('hidden');
+            } else {
+                if (generatedSection) generatedSection.classList.add('hidden');
+                if (drawSection) drawSection.classList.remove('hidden');
+                initCanvas();
+            }
         });
     });
-    
-    // Canvas drawing
-    initSignatureCanvas();
-    
-    // Generate tab
-    const signatureText = document.getElementById('signature-text');
-    const signaturePreview = document.getElementById('signature-preview');
-    
-    signatureText.addEventListener('input', (e) => {
-        state.signature.text = e.target.value;
-        updateSignaturePreview();
+
+    document.querySelectorAll('.btn-select-signature').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const card = e.target.closest('.signature-card');
+            const font = card.dataset.font;
+            
+            document.querySelectorAll('.signature-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            
+            signatureState.selectedFont = font;
+            showFinalSignature();
+        });
     });
+
+    const clearBtn = document.getElementById('clear-canvas');
+    const undoBtn = document.getElementById('undo-canvas');
     
-    signatureFont.addEventListener('change', (e) => {
-        state.signature.font = e.target.value;
-        updateSignaturePreview();
+    if (clearBtn) clearBtn.addEventListener('click', clearCanvas);
+    if (undoBtn) undoBtn.addEventListener('click', undoStroke);
+    
+    const strokeWidth = document.getElementById('stroke-width');
+    const strokeValue = document.getElementById('stroke-value');
+    if (strokeWidth && strokeValue) {
+        strokeWidth.addEventListener('input', (e) => {
+            strokeValue.textContent = e.target.value + 'px';
+        });
+    }
+
+    // Handle both download buttons
+    const downloadDrawBtn = document.getElementById('download-signature-btn');
+    const downloadGenBtn = document.getElementById('download-generated-btn');
+    
+    if (downloadDrawBtn) {
+        downloadDrawBtn.addEventListener('click', downloadSignatureSheet);
+    }
+    
+    if (downloadGenBtn) {
+        downloadGenBtn.addEventListener('click', downloadSignatureSheet);
+    }
+}
+
+function updateSignaturePreviews() {
+    const name = signatureState.fullName || 'Your Name';
+    document.querySelectorAll('.signature-text').forEach(el => {
+        el.textContent = name;
     });
 }
 
-function initSignatureCanvas() {
+function initCanvas() {
     const canvas = document.getElementById('signature-canvas');
-    const ctx = canvas.getContext('2d');
-    const clearBtn = document.getElementById('clear-canvas');
+    if (!canvas) return;
+
+    signatureState.canvas = canvas;
+    signatureState.ctx = canvas.getContext('2d');
     
-    // Set canvas size
-    canvas.width = canvas.offsetWidth;
-    canvas.height = 300;
-    
-    let isDrawing = false;
-    let lastX = 0;
-    let lastY = 0;
-    
+    const ctx = signatureState.ctx;
     ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    
-    function startDrawing(e) {
-        isDrawing = true;
-        const rect = canvas.getBoundingClientRect();
-        [lastX, lastY] = [e.clientX - rect.left, e.clientY - rect.top];
-    }
-    
-    function draw(e) {
-        if (!isDrawing) return;
-        
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        
-        [lastX, lastY] = [x, y];
-        state.signature.drawnSignature = canvas.toDataURL();
-    }
-    
-    function stopDrawing() {
-        isDrawing = false;
-    }
-    
+
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseout', stopDrawing);
-    
-    // Touch events for mobile
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousedown', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        canvas.dispatchEvent(mouseEvent);
-    });
-    
-    canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousemove', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        canvas.dispatchEvent(mouseEvent);
-    });
-    
-    canvas.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        const mouseEvent = new MouseEvent('mouseup', {});
-        canvas.dispatchEvent(mouseEvent);
-    });
-    
-    clearBtn.addEventListener('click', () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        state.signature.drawnSignature = null;
-    });
+
+    canvas.addEventListener('touchstart', handleTouch, { passive: false });
+    canvas.addEventListener('touchmove', handleTouch, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
 }
 
-function updateSignaturePreview() {
-    const preview = document.getElementById('signature-preview');
-    preview.style.fontFamily = state.signature.font;
-    preview.textContent = state.signature.text || 'Your Name';
+function startDrawing(e) {
+    signatureState.isDrawing = true;
+    const rect = signatureState.canvas.getBoundingClientRect();
+    signatureState.lastX = e.clientX - rect.left;
+    signatureState.lastY = e.clientY - rect.top;
+    signatureState.strokes.push([]);
 }
 
-// ====================================
-// KIDS MODE
-// ====================================
-
-function initKidsMode() {
-    // Populate kids fonts
-    const kidsFont = document.getElementById('kids-font');
-    KIDS_FONTS.forEach(font => {
-        const option = document.createElement('option');
-        option.value = font;
-        option.textContent = font;
-        option.style.fontFamily = font;
-        kidsFont.appendChild(option);
+function draw(e) {
+    if (!signatureState.isDrawing) return;
+    e.preventDefault();
+    
+    const rect = signatureState.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const ctx = signatureState.ctx;
+    const strokeWidth = document.getElementById('stroke-width')?.value || 3;
+    
+    ctx.beginPath();
+    ctx.moveTo(signatureState.lastX, signatureState.lastY);
+    ctx.lineTo(x, y);
+    ctx.lineWidth = strokeWidth;
+    ctx.stroke();
+    
+    const currentStroke = signatureState.strokes[signatureState.strokes.length - 1];
+    currentStroke.push({
+        x1: signatureState.lastX,
+        y1: signatureState.lastY,
+        x2: x,
+        y2: y,
+        width: strokeWidth
     });
     
-    // Populate letter select (A-Z)
-    const letterSelect = document.getElementById('letter-select');
-    for (let i = 65; i <= 90; i++) {
-        const letter = String.fromCharCode(i);
-        const option = document.createElement('option');
-        option.value = letter;
-        option.textContent = letter;
-        letterSelect.appendChild(option);
+    signatureState.lastX = x;
+    signatureState.lastY = y;
+}
+
+function stopDrawing() {
+    if (signatureState.isDrawing) {
+        signatureState.isDrawing = false;
+        updatePreviewCanvases(); // Add this line
     }
+}
+
+// 2. ADD THIS NEW FUNCTION - Update 4 preview canvases
+function updatePreviewCanvases() {
+    if (!signatureState.canvas || signatureState.strokes.length === 0) return;
     
-    // Size slider
-    const sizeSlider = document.getElementById('kids-size');
-    const sizeValue = document.getElementById('kids-size-value');
-    sizeSlider.addEventListener('input', (e) => {
-        state.kids.size = parseFloat(e.target.value);
-        sizeValue.textContent = `${state.kids.size}cm`;
-        updateKidsPreview();
-    });
-    
-    // Font select
-    kidsFont.addEventListener('change', (e) => {
-        state.kids.font = e.target.value;
-        updateKidsPreview();
-    });
-    
-    // Content type
-    const kidsContent = document.getElementById('kids-content');
-    const sentenceGroup = document.getElementById('sentence-group');
-    const customSentenceGroup = document.getElementById('custom-sentence-group');
-    const singleLetterGroup = document.getElementById('single-letter-group');
-    
-    kidsContent.addEventListener('change', (e) => {
-        state.kids.content = e.target.value;
+    for (let i = 1; i <= 4; i++) {
+        const previewCanvas = document.getElementById(`preview-canvas-${i}`);
+        if (!previewCanvas) continue;
         
-        // Show/hide appropriate controls
-        sentenceGroup.classList.toggle('hidden', e.target.value !== 'sentences');
-        singleLetterGroup.classList.toggle('hidden', e.target.value !== 'single');
+        const ctx = previewCanvas.getContext('2d');
         
-        updateKidsPreview();
-    });
-    
-    // Sentence select
-    const sentenceSelect = document.getElementById('sentence-select');
-    sentenceSelect.addEventListener('change', (e) => {
-        state.kids.sentence = e.target.value;
-        customSentenceGroup.classList.toggle('hidden', e.target.value !== 'custom');
-        updateKidsPreview();
-    });
-    
-    // Custom sentence
-    document.getElementById('custom-sentence').addEventListener('input', (e) => {
-        state.kids.customSentence = e.target.value;
-        updateKidsPreview();
-    });
-    
-    // Letter select
-    letterSelect.addEventListener('change', (e) => {
-        state.kids.letter = e.target.value;
-        updateKidsPreview();
-    });
-    
-    // Theme select
-    document.getElementById('kids-theme').addEventListener('change', (e) => {
-        state.kids.theme = e.target.value;
-        updateKidsPreview();
-    });
-    
-    // Number of pages
-    document.getElementById('kids-pages').addEventListener('change', (e) => {
-        state.kids.pages = parseInt(e.target.value);
-    });
-    
-    // Download button
-    document.getElementById('kids-download').addEventListener('click', () => {
-        generateKidsPDF();
-    });
-    
-    // Initial preview
-    updateKidsPreview();
-}
-
-function updateKidsPreview() {
-    const preview = document.getElementById('kids-preview');
-    const content = getKidsContent();
-    
-    // Apply theme
-    preview.className = 'kids-preview';
-    if (state.kids.theme !== 'none') {
-        preview.classList.add(`theme-${state.kids.theme}`);
-    }
-    
-    // Add theme decorations
-    let decorationsHTML = '';
-    if (state.kids.theme === 'ocean') {
-        decorationsHTML = createThemeDecorations(['🐠', '🐟', '🐡', '🦈', '🐙', '🦀', '🐚', '⛵']);
-    } else if (state.kids.theme === 'teddy') {
-        decorationsHTML = createThemeDecorations(['🧸', '💕', '🎀', '🧸', '💕', '🎀']);
-    } else if (state.kids.theme === 'space') {
-        decorationsHTML = createThemeDecorations(['⭐', '🚀', '🌙', '🪐', '⭐', '🚀']);
-    } else if (state.kids.theme === 'safari') {
-        decorationsHTML = createThemeDecorations(['🦁', '🐘', '🦒', '🦓', '🐅', '🦜', '🐊', '🦜']);
-    }
-    
-    preview.innerHTML = `
-        ${decorationsHTML}
-        <div class="kids-preview-content" style="font-family: ${state.kids.font}; font-size: ${state.kids.size}cm; line-height: 2; padding: 2cm; color: ${state.kids.theme === 'space' ? '#fff' : '#000'};">
-            ${content}
-        </div>
-    `;
-}
-
-function createThemeDecorations(emojis) {
-    let html = '<div class="theme-decorations">';
-    const positions = [
-        { top: '5%', left: '5%' },
-        { top: '10%', right: '5%' },
-        { top: '30%', left: '10%' },
-        { top: '50%', right: '8%' },
-        { bottom: '30%', left: '7%' },
-        { bottom: '10%', right: '10%' }
-    ];
-    
-    positions.forEach((pos, i) => {
-        const emoji = emojis[i % emojis.length];
-        const style = Object.entries(pos).map(([key, val]) => `${key}: ${val}`).join('; ');
-        html += `<div class="decoration-emoji" style="${style}">${emoji}</div>`;
-    });
-    
-    html += '</div>';
-    return html;
-}
-
-function getKidsContent() {
-    const { content, sentence, customSentence, letter } = state.kids;
-    
-    switch (content) {
-        case 'uppercase':
-            return 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z';
-        case 'lowercase':
-            return 'a b c d e f g h i j k l m n o p q r s t u v w x y z';
-        case 'numbers':
-            return '0 1 2 3 4 5 6 7 8 9';
-        case 'pairs':
-            return 'Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz';
-        case 'sentences':
-            const text = sentence === 'custom' ? (customSentence || 'Type your sentence...') : sentence;
-            return text;
-        case 'math':
-            return '+ - × ÷ = < > ( ) [ ]';
-        case 'single':
-            const upper = letter;
-            const lower = letter.toLowerCase();
-            // Repeat to fill page
-            let repeated = '';
-            for (let i = 0; i < 20; i++) {
-                repeated += `${upper} ${lower} `;
-            }
-            return repeated;
-        default:
-            return 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z';
-    }
-}
-
-// ====================================
-// PDF GENERATION
-// ====================================
-
-async function generateHandwritingPDF() {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('portrait', 'cm', 'a4');
-    
-    const content = getHandwritingContent();
-    const lines = content.split('\n');
-    const { font, size, pages } = state.handwriting;
-    
-    pdf.setFont(font);
-    pdf.setFontSize(size * 28.35); // Convert cm to points
-    
-    for (let page = 0; page < pages; page++) {
-        if (page > 0) pdf.addPage();
+        // Set canvas size to match A6 aspect ratio
+        previewCanvas.width = 280;
+        previewCanvas.height = 198;
         
-        let y = 2;
-        lines.forEach((line, index) => {
-            if (y < 27) { // A4 height is ~29.7cm
-                pdf.text(line, 2, y);
-                y += size * 2; // Line height
-            }
-        });
+        // Clear
+        ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
         
-        // Add watermark
-        pdf.setTextColor(200, 200, 200);
-        pdf.setFontSize(8);
-        pdf.text('Generated by Trayce.xyz', 10.5, 28.5, { align: 'center' });
-        pdf.setTextColor(0, 0, 0);
+        // Calculate scale to fit signature
+        const scale = Math.min(
+            previewCanvas.width / signatureState.canvas.width,
+            previewCanvas.height / signatureState.canvas.height
+        );
+        
+        // Center the signature
+        const scaledWidth = signatureState.canvas.width * scale;
+        const scaledHeight = signatureState.canvas.height * scale;
+        const offsetX = (previewCanvas.width - scaledWidth) / 2;
+        const offsetY = (previewCanvas.height - scaledHeight) / 2;
+        
+        // Draw signature
+        ctx.save();
+        ctx.translate(offsetX, offsetY);
+        ctx.scale(scale, scale);
+        ctx.drawImage(signatureState.canvas, 0, 0);
+        ctx.restore();
     }
-    
-    pdf.save('trayce-handwriting-practice.pdf');
-    
-    // Save to database
-    await saveToDatabase('handwriting', pages);
 }
 
-async function generateSignaturePDF() {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('landscape', 'cm', [10.5, 14.8]); // A6 landscape
-    
-    if (state.signature.activeTab === 'draw' && state.signature.drawnSignature) {
-        const img = new Image();
-        img.src = state.signature.drawnSignature;
-        await new Promise(resolve => {
-            img.onload = () => {
-                pdf.addImage(img, 'PNG', 1, 1, 12.8, 8.5);
-                resolve();
-            };
-        });
-    } else {
-        pdf.setFont(state.signature.font);
-        pdf.setFontSize(60);
-        pdf.text(state.signature.text || 'Your Name', 7.4, 6, { align: 'center' });
-    }
-    
-    pdf.save('trayce-signature.pdf');
-    
-    // Save to database
-    await saveToDatabase('signature', 1);
+function handleTouch(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    signatureState.canvas.dispatchEvent(mouseEvent);
 }
 
-async function generateKidsPDF() {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('portrait', 'cm', 'a4');
+function clearCanvas() {
+    if (!signatureState.ctx) return;
+    signatureState.ctx.clearRect(0, 0, signatureState.canvas.width, signatureState.canvas.height);
+    signatureState.strokes = [];
     
-    const content = getKidsContent();
-    const { font, size, pages, theme } = state.kids;
-    
-    for (let page = 0; page < pages; page++) {
-        if (page > 0) pdf.addPage();
-        
-        // Add theme background
-        if (theme === 'ocean') {
-            pdf.setFillColor(219, 234, 254);
-            pdf.rect(0, 0, 21, 29.7, 'F');
-        } else if (theme === 'teddy') {
-            pdf.setFillColor(252, 231, 243);
-            pdf.rect(0, 0, 21, 29.7, 'F');
-        } else if (theme === 'space') {
-            pdf.setFillColor(30, 27, 75);
-            pdf.rect(0, 0, 21, 29.7, 'F');
-        } else if (theme === 'safari') {
-            pdf.setFillColor(209, 250, 229);
-            pdf.rect(0, 0, 21, 29.7, 'F');
+    // Clear preview canvases
+    for (let i = 1; i <= 4; i++) {
+        const previewCanvas = document.getElementById(`preview-canvas-${i}`);
+        if (previewCanvas) {
+            const ctx = previewCanvas.getContext('2d');
+            ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
         }
-        
-        // Add content
-        pdf.setFont(font);
-        pdf.setFontSize(size * 28.35);
-        pdf.setTextColor(theme === 'space' ? 255 : 0);
-        
-        const textLines = pdf.splitTextToSize(content, 17);
-        let y = 3;
-        textLines.forEach(line => {
-            if (y < 26) {
-                pdf.text(line, 2, y);
-                y += size * 2;
-            }
-        });
-        
-        // Add watermark
-        pdf.setTextColor(200, 200, 200);
-        pdf.setFontSize(8);
-        pdf.text('Generated by Trayce.xyz', 10.5, 28.5, { align: 'center' });
     }
     
-    pdf.save('trayce-kids-worksheet.pdf');
-    
-    // Save to database
-    await saveToDatabase('kids', pages);
-    
-    // Show coffee modal after 3rd download
-    checkCoffeeModal();
+    const previewSection = document.getElementById('signature-preview-section');
+    if (previewSection) previewSection.classList.add('hidden');
 }
 
-// ====================================
-// EMAIL VERIFICATION
-// ====================================
-
-function showEmailModal() {
-    const modal = document.getElementById('email-modal');
-    modal.classList.add('active');
-}
-
-function showCodeModal() {
-    const modal = document.getElementById('code-modal');
-    const emailSpan = document.getElementById('sent-email');
-    emailSpan.textContent = state.userEmail;
-    modal.classList.add('active');
-}
-
-function hideEmailModal() {
-    document.getElementById('email-modal').classList.remove('active');
-}
-
-function hideCodeModal() {
-    document.getElementById('code-modal').classList.remove('active');
-}
-
-async function sendVerificationCode() {
-    const emailInput = document.getElementById('email-input');
-    const email = emailInput.value.trim();
+// 4. UPDATE undoStroke to update previews
+function undoStroke() {
+    if (signatureState.strokes.length === 0) return;
     
-    if (!email || !email.includes('@')) {
-        alert('Please enter a valid email address');
-        return;
-    }
+    signatureState.strokes.pop();
     
-    state.userEmail = email;
-    state.verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const ctx = signatureState.ctx;
+    ctx.clearRect(0, 0, signatureState.canvas.width, signatureState.canvas.height);
     
-    // Send email via Resend API
-    try {
-        const response = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${RESEND_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                from: 'Trayce <noreply@trayce.xyz>',
-                to: email,
-                subject: 'Your Trayce Verification Code',
-                html: `
-                    <h2>Your Verification Code</h2>
-                    <p>Enter this code to download your worksheet:</p>
-                    <h1 style="font-size: 36px; color: #6366f1;">${state.verificationCode}</h1>
-                    <p>This code will expire in 10 minutes.</p>
-                `
-            })
-        });
-        
-        if (response.ok) {
-            hideEmailModal();
-            showCodeModal();
-        } else {
-            alert('Failed to send verification code. Please try again.');
-        }
-    } catch (error) {
-        console.error('Error sending email:', error);
-        alert('Failed to send verification code. Please try again.');
-    }
-}
-
-async function verifyCode() {
-    const codeInput = document.getElementById('code-input');
-    const code = codeInput.value.trim();
-    
-    if (code === state.verificationCode) {
-        hideCodeModal();
-        await generateHandwritingPDF();
-    } else {
-        alert('Invalid code. Please try again.');
-    }
-}
-
-// ====================================
-// DATABASE OPERATIONS
-// ====================================
-
-async function saveToDatabase(mode, pages) {
-    try {
-        const { error } = await supabase
-            .from('downloads')
-            .insert({
-                email: state.userEmail,
-                mode: mode,
-                pages: pages,
-                created_at: new Date().toISOString()
-            });
-        
-        if (error) throw error;
-    } catch (error) {
-        console.error('Error saving to database:', error);
-    }
-}
-
-// ====================================
-// COFFEE MODAL
-// ====================================
-
-function checkCoffeeModal() {
-    const downloadCount = parseInt(localStorage.getItem('downloadCount') || '0') + 1;
-    localStorage.setItem('downloadCount', downloadCount);
-    
-    if (downloadCount === 3) {
-        const coffeeModal = document.getElementById('coffee-modal');
-        coffeeModal.classList.add('active');
-    }
-}
-
-// ====================================
-// MODAL INITIALIZATION
-// ====================================
-
-function initModals() {
-    // Email modal
-    document.getElementById('send-code-btn').addEventListener('click', sendVerificationCode);
-    
-    // Code modal
-    document.getElementById('verify-code-btn').addEventListener('click', verifyCode);
-    document.getElementById('resend-code-btn').addEventListener('click', sendVerificationCode);
-    
-    // Coffee modal
-    document.getElementById('close-coffee').addEventListener('click', () => {
-        document.getElementById('coffee-modal').classList.remove('active');
-    });
-    
-    document.getElementById('maybe-later').addEventListener('click', () => {
-        document.getElementById('coffee-modal').classList.remove('active');
-    });
-    
-    // Close modals on outside click
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-            }
+    signatureState.strokes.forEach(stroke => {
+        stroke.forEach(point => {
+            ctx.beginPath();
+            ctx.moveTo(point.x1, point.y1);
+            ctx.lineTo(point.x2, point.y2);
+            ctx.lineWidth = point.width;
+            ctx.stroke();
         });
     });
+    
+    updatePreviewCanvases(); // Add this line
 }
 
-// ====================================
-// MOBILE OPTIMIZATION
-// ====================================
-
-// Prevent page refresh on mobile when switching apps
-let isPageVisible = true;
-
-document.addEventListener('visibilitychange', () => {
-    isPageVisible = !document.hidden;
-});
-
-// Prevent iOS Safari refresh
-window.addEventListener('pagehide', (e) => {
-    if (isPageVisible) {
-        e.preventDefault();
+function showFinalSignature() {
+    const previewSection = document.getElementById('signature-preview-section');
+    const finalCanvas = document.getElementById('final-signature-canvas');
+    
+    if (!previewSection || !finalCanvas) return;
+    
+    previewSection.classList.remove('hidden');
+    
+    const ctx = finalCanvas.getContext('2d');
+    
+    if (signatureState.method === 'generate' && signatureState.selectedFont) {
+        finalCanvas.width = 600;
+        finalCanvas.height = 200;
+        
+        ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
+        ctx.font = `72px '${signatureState.selectedFont}', cursive`;
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(signatureState.fullName || 'Your Name', finalCanvas.width / 2, finalCanvas.height / 2);
+        
+    } else if (signatureState.method === 'draw' && signatureState.strokes.length > 0) {
+        const sourceCanvas = signatureState.canvas;
+        finalCanvas.width = sourceCanvas.width;
+        finalCanvas.height = sourceCanvas.height;
+        ctx.drawImage(sourceCanvas, 0, 0);
     }
-});
+}
 
-// ====================================
-// UTILITY FUNCTIONS
-// ====================================
-
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+function downloadSignatureSheet() {
+    openEmailModal();
+    
+    window.pendingSignatureDownload = {
+        method: signatureState.method,
+        fullName: signatureState.fullName,
+        font: signatureState.selectedFont,
+        canvas: document.getElementById('final-signature-canvas')
     };
 }
 
-// Apply debouncing to preview updates
-const updateHandwritingPreview = debounce(updateHandwritingPreview, 300);
-const updateKidsPreview = debounce(updateKidsPreview, 300);
+// 6. COMPLETELY REPLACE generateSignaturePDF function
+async function generateSignaturePDF() {
+    console.log('=== SIGNATURE PDF GENERATION START ===');
+    
+    const data = window.pendingSignatureDownload;
+    if (!data) return;
+    
+    if (!window.jspdf) {
+        alert('PDF library not loaded. Please refresh the page.');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+    
+    // Title
+    pdf.setFontSize(18);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Signature Practice Sheet', pageWidth / 2, 15, { align: 'center' });
+    
+    // Get signature image
+    let signatureImg;
+    
+    if (data.method === 'draw') {
+        // For drawn signatures, use the main canvas
+        const canvas = document.getElementById('signature-canvas');
+        signatureImg = canvas.toDataURL('image/png');
+    } else {
+        // For generated signatures, use the final canvas
+        signatureImg = data.canvas.toDataURL('image/png');
+    }
+    
+    // A4 divided into 4 A6 sections (2x2 grid)
+    // Each A6 is 105mm x 148mm (landscape) = 148mm x 105mm
+    const a6Width = pageWidth / 2; // 105mm
+    const a6Height = (pageHeight - 30) / 2; // ~133mm (leaving space for title)
+    
+    // Each A6 section contains 4 signatures (2x2 grid)
+    const sigWidth = a6Width / 2;
+    const sigHeight = a6Height / 2;
+    
+    let startY = 25;
+    
+    // Create 4 A6 sections
+    for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 2; col++) {
+            const a6X = col * a6Width;
+            const a6Y = startY + (row * a6Height);
+            
+            // Draw A6 border (optional)
+            pdf.setDrawColor(200);
+            pdf.setLineWidth(0.3);
+            pdf.rect(a6X, a6Y, a6Width, a6Height);
+            
+            // Add 4 signatures in each A6 section
+            for (let sigRow = 0; sigRow < 2; sigRow++) {
+                for (let sigCol = 0; sigCol < 2; sigCol++) {
+                    const sigX = a6X + (sigCol * sigWidth) + 5;
+                    const sigY = a6Y + (sigRow * sigHeight) + 5;
+                    
+                    // Add signature image
+                    pdf.addImage(
+                        signatureImg, 
+                        'PNG', 
+                        sigX, 
+                        sigY, 
+                        sigWidth - 10, 
+                        sigHeight - 15
+                    );
+                    
+                    // Add practice line below signature
+                    const lineY = sigY + sigHeight - 12;
+                    pdf.setDrawColor(150);
+                    pdf.setLineWidth(0.5);
+                    pdf.line(sigX, lineY, sigX + sigWidth - 10, lineY);
+                }
+            }
+        }
+    }
+    
+    // Watermark
+    pdf.setFontSize(8);
+    pdf.setTextColor(150);
+    pdf.text('Made by Annaelechukwu - trayce.xyz', pageWidth / 2, pageHeight - 5, { align: 'center' });
+    
+    const fileName = `signature-practice-${(data.fullName || 'signature').replace(/\s+/g, '-').toLowerCase()}.pdf`;
+    pdf.save(fileName);
+    
+    setTimeout(() => showCoffeeModal(), 1000);
+    
+    console.log('=== SIGNATURE PDF GENERATION COMPLETE ===');
+    console.log('16 signatures generated on A4 page');
+}
