@@ -1,477 +1,321 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trayce - Handwriting Practice Worksheets</title>
+    <title>Trayce - Handwriting Practice & Kids Learning</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- Google Fonts - Handwriting Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Dancing+Script:wght@400;700&family=Pacifico&family=Shadows+Into+Light&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Permanent+Marker&family=Caveat:wght@400;700&family=Gloria+Hallelujah&family=Architects+Daughter&family=Amatic+SC:wght@400;700&family=Patrick+Hand&family=Covered+By+Your+Grace&family=Reenie+Beanie&family=Satisfy&family=Cookie&family=Handlee&family=Homemade+Apple&family=La+Belle+Aurore&family=Waiting+for+the+Sunrise&family=Calligraffitti&family=Just+Another+Hand&family=Rock+Salt&family=Sunshiney&family=Sue+Ellen+Francisco&family=Over+the+Rainbow&family=Schoolbell&family=Dawning+of+a+New+Day&family=Dekko&family=Gochi+Hand&family=Mr+Dafoe&family=Mrs+Saint+Delafield&family=Nanum+Pen+Script&family=Neucha&family=Petit+Formal+Script&family=Short+Stack&family=Swanky+and+Moo+Moo&family=Yellowtail&family=League+Script&family=Monsieur+La+Doulaise&family=Mr+De+Haviland&family=Niconne&family=Norican&family=Pinyon+Script&family=Rochester&family=Tangerine:wght@400;700&family=Vibur&family=Zeyada&family=Bad+Script&family=Charm:wght@400;700&family=Gaegu:wght@300;400;700&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Hi+Melody&family=Nanum+Brush+Script&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=Gamja+Flower&family=Dongle:wght@300;400;700&family=Jua&family=Cute+Font&family=Do+Hyeon&family=Black+Han+Sans&family=Sunflower:wght@300;500;700&family=Stylish&family=Single+Day&family=Dokdo&family=East+Sea+Dokdo&family=Black+And+White+Picture&family=Hahmlet:wght@100;200;300;400;500;600;700;800;900&family=Yeon+Sung&family=Song+Myung&family=Gugi&family=Gothic+A1:wght@100;200;300;400;500;600;700;800;900&family=Poor+Story&family=Stylish&family=Kirang+Haerang&family=Grandiflora+One&family=Praise&family=Luxurious+Script&family=Send+Flowers&family=Whisper&family=Fuzzy+Bubbles:wght@400;700&family=Give+You+Glory&family=Loved+by+the+King&family=Mountains+of+Christmas:wght@400;700&family=Crafty+Girls&family=Annie+Use+Your+Telescope&family=Coming+Soon&family=The+Girl+Next+Door&family=Walter+Turncoat&family=Julee&family=Just+Me+Again+Down+Here&family=Kristi&family=Unkempt:wght@400;700&family=Pangolin&family=Mali:wght@200;300;400;500;600;700&family=Sriracha&family=Itim&family=Kodchasan:wght@200;300;400;500;600;700&family=Maitree:wght@200;300;400;500;600;700&family=Srisakdi:wght@400;700&family=K2D:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Simple/Clean Fonts for Kids Mode -->
+    <link href="https://fonts.googleapis.com/css2?family=Arial&family=Verdana&family=Helvetica&family=Tahoma&family=Trebuchet+MS&family=Georgia&family=Times+New+Roman&family=Courier+New&family=Lucida+Console&family=Comic+Sans+MS&family=Impact&family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans:wght@300;400;600;700;800&family=Lato:wght@100;300;400;700;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Source+Sans+Pro:wght@200;300;400;600;700;900&family=Raleway:wght@100;200;300;400;500;600;700;800;900&family=PT+Sans:wght@400;700&family=Ubuntu:wght@300;400;500;700&family=Merriweather:wght@300;400;700;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Oswald:wght@200;300;400;500;600;700&family=Mukta:wght@200;300;400;500;600;700;800&family=Rubik:wght@300;400;500;600;700;800;900&family=Work+Sans:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&family=Oxygen:wght@300;400;700&family=Quicksand:wght@300;400;500;600;700&family=Karla:wght@200;300;400;500;600;700;800&family=Cabin:wght@400;500;600;700&family=Barlow:wght@100;200;300;400;500;600;700;800;900&family=Heebo:wght@100;200;300;400;500;600;700;800;900&family=Titillium+Web:wght@200;300;400;600;700;900&family=Arimo:wght@400;500;600;700&family=Hind:wght@300;400;500;600;700&family=Josefin+Sans:wght@100;200;300;400;500;600;700&family=Dosis:wght@200;300;400;500;600;700;800&family=Muli:wght@200;300;400;500;600;700;800;900&family=Bitter:wght@100;200;300;400;500;600;700;800;900&family=Crimson+Text:wght@400;600;700&family=Exo+2:wght@100;200;300;400;500;600;700;800;900&family=Fira+Sans:wght@100;200;300;400;500;600;700;800;900&family=Libre+Franklin:wght@100;200;300;400;500;600;700;800;900&family=Libre+Baskerville:wght@400;700&family=Play:wght@400;700&family=Assistant:wght@200;300;400;500;600;700;800&family=Varela+Round&family=Abel&family=Asap:wght@100;200;300;400;500;600;700;800;900&family=Yanone+Kaffeesatz:wght@200;300;400;500;600;700&family=Archivo:wght@100;200;300;400;500;600;700;800;900&family=Cairo:wght@200;300;400;500;600;700;800;900&family=Catamaran:wght@100;200;300;400;500;600;700;800;900&family=Fjalla+One&family=Anton&family=Bebas+Neue&family=Signika:wght@300;400;500;600;700&family=Questrial&family=Pathway+Gothic+One&family=Indie+Flower&family=Acme&family=Righteous&family=Patua+One&family=Alfa+Slab+One&family=Hammersmith+One&family=Concert+One&family=Bree+Serif&family=Alegreya+Sans:wght@100;300;400;500;700;800;900&family=Maven+Pro:wght@400;500;600;700;800;900&family=Kanit:wght@100;200;300;400;500;600;700;800;900&family=Prompt:wght@100;200;300;400;500;600;700;800;900&family=Sarabun:wght@100;200;300;400;500;600;700;800&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Architects+Daughter&family=Shadows+Into+Light&family=Gloria+Hallelujah&family=Amatic+SC:wght@400;700&family=Permanent+Marker&family=Pacifico&family=Lobster&family=Satisfy&family=Dancing+Script:wght@400;700&family=Cookie&family=Great+Vibes&family=Allura&family=Kaushan+Script&family=Courgette&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    
-    <!-- 105+ Handwriting Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Allura&family=Arizonia&family=Alex+Brush&family=Architects+Daughter&family=Bad+Script&family=Ballet&family=Berkshire+Swash&family=Bilbo&family=Bilbo+Swash+Caps&family=Caveat&family=Charm&family=Courgette&family=Damion&family=Dancing+Script&family=Dawning+of+a+New+Day&family=Dekko&family=Delius&family=Devonshire&family=Dr+Sugiyama&family=Eagle+Lake&family=Engagement&family=Ephesis&family=Euphoria+Script&family=Felipa&family=Fondamento&family=Give+You+Glory&family=Gloria+Hallelujah&family=Grand+Hotel&family=Great+Vibes&family=Homemade+Apple&family=Indie+Flower&family=Italianno&family=Just+Another+Hand&family=Kalam&family=Kaushan+Script&family=Kristi&family=La+Belle+Aurore&family=League+Script&family=Leckerli+One&family=Liu+Jian+Mao+Cao&family=Lobster&family=Lobster+Two&family=Long+Cang&family=Loved+by+the+King&family=Lovers+Quarrel&family=Ma+Shan+Zheng&family=Marck+Script&family=Meddon&family=Meie+Script&family=Merienda&family=Miss+Fajardose&family=Monsieur+La+Doulaise&family=Montez&family=Mr+Dafoe&family=Mr+De+Haviland&family=Mrs+Saint+Delafield&family=Mrs+Sheppards&family=Nanum+Pen+Script&family=Neucha&family=Norican&family=Nothing+You+Could+Do&family=Over+the+Rainbow&family=Pacifico&family=Parisienne&family=Passero+One&family=Patrick+Hand&family=Permanent+Marker&family=Petit+Formal+Script&family=Pinyon+Script&family=Princess+Sofia&family=Qwigley&family=Rancho&family=Reenie+Beanie&family=Rochester&family=Rock+Salt&family=Rosarivo&family=Rouge+Script&family=Ruge+Boogie&family=Ruthie&family=Sacramento&family=Satisfy&family=Schoolbell&family=Sedgwick+Ave&family=Shadows+Into+Light&family=Shojumaru&family=Smooch&family=Snippet&family=Sofadi+One&family=Sofia&family=Stalemate&family=Sue+Ellen+Francisco&family=Sunshiney&family=Swanky+and+Moo+Moo&family=Tangerine&family=The+Girl+Next+Door&family=Tillana&family=Vibur&family=Vollkorn&family=Walter+Turncoat&family=Yellowtail&family=Yeseva+One&family=Zeyada&family=Zhi+Mang+Xing&family=Playwrite+AU+NSW&family=Playwrite+AU+VIC&family=Playwrite+BE+VLG&family=Playwrite+CL&family=Playwrite+CU&family=Playwrite+DE+Grund&family=Playwrite+GB+S&family=Playwrite+IN&family=Playwrite+IT+Moderna&family=Playwrite+MX&family=Playwrite+NZ&family=Playwrite+US+Modern&family=Borel&family=Gideon+Roman&family=Handlee&family=Julee&family=Klee+One&display=swap" rel="stylesheet">
-    
-    <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-KIDS-COMPLETE.css">
 </head>
-
 <body>
-    
-    <!-- HEADER -->
-    <header class="header">
-        <div class="header-left">
-            <div class="logo-icon">
-                <span class="material-symbols-outlined">edit_note</span>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <h1 class="logo">✍️ Trayce</h1>
+                <p class="tagline">Handwriting & learning worksheets</p>
             </div>
-            <h2 class="logo-title">Trayce</h2>
-        </div>
-        
-        <div class="header-right">
-            <button id="download-btn" class="btn-download">
-                <span class="material-symbols-outlined">download</span>
-                <span>Download PDF</span>
-            </button>
-            
-            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
-                <div class="theme-slider">
-                    <span class="material-symbols-outlined icon-moon">dark_mode</span>
-                    <span class="material-symbols-outlined icon-sun">light_mode</span>
-                </div>
-            </button>
+            <div class="header-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button id="download-btn" class="download-btn">
+                    <span class="download-icon">⬇️</span>
+                    <span class="download-text">Download PDF</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- MODE TOGGLE -->
+    <!-- Mode Toggle -->
     <div class="mode-toggle-container">
-        <div class="mode-toggle">
-            <button id="mode-handwriting" class="mode-btn active">
-                <span class="material-symbols-outlined">edit_note</span>
-                <span>Handwriting Practice</span>
-            </button>
-            <button id="mode-signature" class="mode-btn">
-                <span class="material-symbols-outlined">draw</span>
-                <span>Signature Generator</span>
-            </button>
-        </div>
+        <button class="mode-btn active" data-mode="handwriting">
+            <span class="mode-icon">✍️</span>
+            <span class="mode-label">Handwriting</span>
+        </button>
+        <button class="mode-btn" data-mode="signature">
+            <span class="mode-icon">✒️</span>
+            <span class="mode-label">Signature</span>
+        </button>
+        <button class="mode-btn" data-mode="kids">
+            <span class="mode-icon">🎨</span>
+            <span class="mode-label">Kids Mode</span>
+        </button>
     </div>
 
-    <!-- HANDWRITING SECTION -->
-    <div id="handwriting-section" class="content-section active">
-        <div class="main-content">
-            
-            <!-- SIDEBAR -->
-            <aside class="sidebar">
-                <div class="sidebar-inner">
-                    <div class="sidebar-header">
-                        <h3 class="sidebar-title">Settings</h3>
-                        <p class="sidebar-subtitle">Customize your worksheet</p>
+    <!-- Main Content -->
+    <main>
+        <!-- Handwriting Practice Section -->
+        <section id="handwriting-section" class="content-section active">
+            <div class="controls-container">
+                <div class="control-group">
+                    <label for="font-select">Handwriting Font</label>
+                    <select id="font-select" class="control-select">
+                        <!-- Handwriting fonts will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="text-size">Text Size</label>
+                    <div class="slider-container">
+                        <input type="range" id="text-size" class="size-slider" min="0.5" max="1.0" step="0.1" value="0.7">
+                        <div class="slider-labels">
+                            <span>Small</span>
+                            <span id="text-size-value">0.7cm</span>
+                            <span>Large</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="content-type">Practice Content</label>
+                    <select id="content-type" class="control-select">
+                        <option value="pangram">Pangram Only</option>
+                        <option value="alphabet">Alphabet Only</option>
+                        <option value="numbers">Numbers Only</option>
+                        <option value="combined">Combined (All)</option>
+                        <option value="custom">Custom Text</option>
+                    </select>
+                </div>
+
+                <div id="custom-text-group" class="control-group hidden">
+                    <label for="custom-text">Your Text</label>
+                    <textarea id="custom-text" class="control-textarea" placeholder="Enter your custom text here..." rows="4"></textarea>
+                </div>
+
+                <div class="control-group">
+                    <label for="num-pages">Number of Pages</label>
+                    <select id="num-pages" class="control-select">
+                        <option value="1">1 Page</option>
+                        <option value="3">3 Pages</option>
+                        <option value="5">5 Pages</option>
+                        <option value="10">10 Pages</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="preview-container">
+                <div class="preview-label">Live Preview</div>
+                <div id="preview" class="preview-area"></div>
+            </div>
+        </section>
+
+        <!-- Signature Generator Section -->
+        <section id="signature-section" class="content-section">
+            <div class="signature-layout">
+                <div class="signature-controls">
+                    <div class="signature-tabs">
+                        <button class="signature-tab active" data-tab="draw">✏️ Draw</button>
+                        <button class="signature-tab" data-tab="generate">✨ Generate</button>
                     </div>
 
-                    <!-- Font Selection -->
-                    <div class="form-group">
-                        <label class="form-label">Font Style</label>
-                        <select id="font-select" class="form-select"></select>
-                        <p id="font-count" class="form-hint"></p>
-                    </div>
-
-                    <!-- Text Mode -->
-                    <div class="form-group">
-                        <label class="form-label">Text Mode</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="text-mode" id="mode-preset" value="preset" checked>
-                                <span>Preset Text</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="text-mode" id="mode-custom" value="custom">
-                                <span>Custom Text</span>
-                            </label>
+                    <div id="draw-tab" class="signature-tab-content active">
+                        <div class="canvas-container">
+                            <canvas id="signature-canvas"></canvas>
+                            <button id="clear-canvas" class="clear-btn">Clear</button>
                         </div>
                     </div>
 
-                    <!-- Pangram Selection -->
-                    <div class="form-group">
-                        <label class="form-label">Pangram</label>
-                        <select id="pangram-select" class="form-select">
-                            <option value="The quick brown fox jumps over the lazy dog">The quick brown fox jumps over the lazy dog</option>
-                            <option value="Pack my box with five dozen liquor jugs">Pack my box with five dozen liquor jugs</option>
-                            <option value="How vexingly quick daft zebras jump">How vexingly quick daft zebras jump</option>
-                            <option value="Sphinx of black quartz, judge my vow">Sphinx of black quartz, judge my vow</option>
-                            <option value="The five boxing wizards jump quickly">The five boxing wizards jump quickly</option>
-                            <option value="Waltz, bad nymph, for quick jigs vex">Waltz, bad nymph, for quick jigs vex</option>
-                        </select>
-                    </div>
-
-                    <!-- Custom Text -->
-                    <div id="custom-text-group" class="form-group" style="display: none;">
-                        <div class="form-label-row">
-                            <label class="form-label">Custom Text</label>
-                            <span id="char-count" class="char-count">0</span>
+                    <div id="generate-tab" class="signature-tab-content">
+                        <div class="control-group">
+                            <label for="signature-text">Your Name</label>
+                            <input type="text" id="signature-text" class="control-input" placeholder="Enter your name">
                         </div>
-                        <textarea id="custom-text-input" class="form-textarea" placeholder="Enter your custom text here..."></textarea>
-                        <p class="form-hint">Each line creates a practice line (max 500 characters)</p>
-                    </div>
 
-                    <!-- Practice Content -->
-                    <div class="form-group">
-                        <label class="form-label">Practice Content</label>
-                        <select id="content-select" class="form-select">
-                            <option value="combined">Combined (Pangram + Alphabet + Numbers)</option>
-                            <option value="pangram">Pangram Only</option>
-                            <option value="alphabet">Uppercase Alphabet</option>
-                            <option value="lowercase">Lowercase Alphabet</option>
-                            <option value="numbers">Numbers</option>
-                        </select>
-                    </div>
+                        <div class="control-group">
+                            <label for="signature-font">Signature Font</label>
+                            <select id="signature-font" class="control-select">
+                                <!-- Signature fonts will be populated by JavaScript -->
+                            </select>
+                        </div>
 
-                    <!-- Pages -->
-                    <div class="form-group">
-                        <label class="form-label">Number of Pages</label>
-                        <select id="pages-select" class="form-select">
-                            <option value="1">1 Page</option>
-                            <option value="5">5 Pages</option>
-                            <option value="10" selected>10 Pages</option>
-                            <option value="20">20 Pages</option>
-                        </select>
-                        <p id="size-estimate" class="form-hint"></p>
-                    </div>
-
-                    <!-- Text Size -->
-                    <div class="form-group">
-                        <label class="form-label">Text Size</label>
-                        <select id="size-select" class="form-select">
-                            <option value="0.5">Extra Small (0.5cm)</option>
-                            <option value="0.6">Small (0.6cm)</option>
-                            <option value="0.7">Medium-Small (0.7cm)</option>
-                            <option value="0.8">Medium (0.8cm)</option>
-                            <option value="0.9" selected>Medium-Large (0.9cm)</option>
-                            <option value="1.0">Large (1.0cm)</option>
-                        </select>
+                        <div class="signature-preview-box">
+                            <div id="signature-preview" class="signature-preview"></div>
+                        </div>
                     </div>
                 </div>
-            </aside>
 
-            <!-- PREVIEW AREA -->
-            <div class="preview-area">
-                <div class="preview-badge">
-                    <span>Preview Mode</span>
-                    <div class="badge-divider"></div>
-                    <span>A4 Portrait</span>
+                <div class="signature-output">
+                    <div class="output-label">Your Signature (A6 Size)</div>
+                    <div id="signature-output-canvas" class="signature-output-area"></div>
                 </div>
+            </div>
+        </section>
 
-                <div class="preview-container">
-                    <div class="preview-sheet">
-                        <!-- Sheet Header -->
-                        <div class="sheet-header">
-                            <div class="sheet-field">
-                                <span class="field-label">Name</span>
-                                <div class="field-line"></div>
+        <!-- Kids Mode Section -->
+        <section id="kids-section" class="content-section">
+            <div class="kids-layout">
+                <aside class="kids-sidebar">
+                    <div class="kids-controls">
+                        <div class="control-group">
+                            <label for="kids-font">Font</label>
+                            <select id="kids-font" class="control-select">
+                                <!-- Simple fonts will be populated by JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="kids-size">Text Size</label>
+                            <div class="slider-container">
+                                <input type="range" id="kids-size" class="size-slider kids-slider" min="1.0" max="3.5" step="0.1" value="2.0">
+                                <div class="slider-labels">
+                                    <span>Small</span>
+                                    <span id="kids-size-value" class="size-value-large">2.0cm</span>
+                                    <span>Massive</span>
+                                </div>
                             </div>
-                            <div class="sheet-field sheet-field-right">
-                                <span class="field-label">Date</span>
-                                <div class="field-line field-line-small"></div>
-                            </div>
                         </div>
 
-                        <!-- Sheet Content -->
-                        <div id="sheet-content" class="sheet-content"></div>
-
-                        <!-- Watermark -->
-                        <div class="sheet-footer">
-                            <p class="watermark">Made by Annaelechukwu</p>
+                        <div class="control-group">
+                            <label for="kids-content">Practice Type</label>
+                            <select id="kids-content" class="control-select">
+                                <option value="uppercase">Uppercase Alphabet</option>
+                                <option value="lowercase">Lowercase Alphabet</option>
+                                <option value="numbers">Numbers</option>
+                                <option value="pairs">Letter Pairs (Aa Bb Cc...)</option>
+                                <option value="sentences">Simple Sentences</option>
+                                <option value="math">Math Symbols</option>
+                                <option value="single">Single Letter Practice</option>
+                            </select>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-        </div>
-    </div>
+                        <div id="sentence-group" class="control-group hidden">
+                            <label for="sentence-select">Choose Sentence</label>
+                            <select id="sentence-select" class="control-select">
+                                <option value="This is a cat">This is a cat</option>
+                                <option value="This is an apple">This is an apple</option>
+                                <option value="I am a child">I am a child</option>
+                                <option value="The dog runs">The dog runs</option>
+                                <option value="I like to play">I like to play</option>
+                                <option value="The sun is bright">The sun is bright</option>
+                                <option value="I love my family">I love my family</option>
+                                <option value="Birds can fly">Birds can fly</option>
+                                <option value="Fish swim in water">Fish swim in water</option>
+                                <option value="I go to school">I go to school</option>
+                                <option value="Cats like milk">Cats like milk</option>
+                                <option value="Trees are green">Trees are green</option>
+                                <option value="I can read">I can read</option>
+                                <option value="Stars shine at night">Stars shine at night</option>
+                                <option value="I help my mom">I help my mom</option>
+                                <option value="custom">Custom sentence...</option>
+                            </select>
+                        </div>
 
-    <!-- SIGNATURE SECTION -->
-   <!-- REPLACE THE ENTIRE SIGNATURE SECTION IN YOUR INDEX.HTML -->
-<!-- Find the section starting with <div id="signature-section"> and replace it with this -->
+                        <div id="custom-sentence-group" class="control-group hidden">
+                            <label for="custom-sentence">Your Sentence</label>
+                            <input type="text" id="custom-sentence" class="control-input" placeholder="Type your sentence here...">
+                        </div>
 
-<div id="signature-section" class="content-section hidden">
-    <div class="signature-container">
-        
-        <div class="signature-header">
-            <h1 class="signature-title">Signature Generator</h1>
-            <p class="signature-subtitle">Create your unique signature in seconds</p>
-        </div>
+                        <div id="single-letter-group" class="control-group hidden">
+                            <label for="letter-select">Choose Letter</label>
+                            <select id="letter-select" class="control-select">
+                                <!-- A-Z will be populated by JavaScript -->
+                            </select>
+                        </div>
 
-        <div class="signature-input-section">
-            <div class="form-group">
-                <label class="form-label">Enter Your Full Name</label>
-                <input type="text" id="full-name-input" class="form-input" placeholder="e.g., John Smith" maxlength="50">
-                <p class="form-hint">Your signature will be generated from your name</p>
-            </div>
+                        <div class="control-group">
+                            <label for="kids-theme">Theme</label>
+                            <select id="kids-theme" class="control-select">
+                                <option value="none">No Theme</option>
+                                <option value="ocean">🌊 Ocean Theme</option>
+                                <option value="teddy">🧸 Teddy Bear Theme</option>
+                                <option value="space">🚀 Space Theme</option>
+                                <option value="safari">🦁 Safari Theme</option>
+                            </select>
+                        </div>
 
-            <div class="signature-method-toggle">
-                <label class="radio-option">
-                    <input type="radio" name="signature-method" value="generate" checked>
-                    <span>Generate Signature</span>
-                </label>
-                <label class="radio-option">
-                    <input type="radio" name="signature-method" value="draw">
-                    <span>Draw My Own</span>
-                </label>
-            </div>
-        </div>
+                        <div class="control-group">
+                            <label for="kids-pages">Number of Pages</label>
+                            <select id="kids-pages" class="control-select">
+                                <option value="1">1 Page</option>
+                                <option value="3">3 Pages</option>
+                                <option value="5">5 Pages</option>
+                                <option value="10">10 Pages</option>
+                            </select>
+                        </div>
 
-        <!-- GENERATED SIGNATURES -->
-        <div id="generated-signatures" class="signature-options">
-            <h3 class="section-subtitle">Choose Your Signature Style</h3>
-            
-            <div class="signature-grid">
-                <div class="signature-card" data-font="Allura">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Allura', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Allura</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Alex Brush">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Alex Brush', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Alex Brush</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Great Vibes">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Great Vibes', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Great Vibes</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Tangerine">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Tangerine', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Tangerine</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Mr De Haviland">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Mr De Haviland', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Mr De Haviland</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Pinyon Script">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Pinyon Script', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Pinyon Script</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Parisienne">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Parisienne', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Parisienne</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Sacramento">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Sacramento', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Sacramento</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Satisfy">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Satisfy', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Satisfy</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Dancing Script">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Dancing Script', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Dancing Script</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Arizonia">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Arizonia', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Arizonia</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-
-                <div class="signature-card" data-font="Yellowtail">
-                    <div class="signature-preview">
-                        <span class="signature-text" style="font-family: 'Yellowtail', cursive;">Your Name</span>
-                    </div>
-                    <p class="signature-font-name">Yellowtail</p>
-                    <button class="btn-select-signature">Select</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- DRAW SIGNATURE - NEW LAYOUT -->
-        <div id="draw-signature" class="draw-section hidden">
-            <h3 class="section-subtitle">Draw Your Signature</h3>
-            
-            <div class="draw-layout">
-                <!-- LEFT: Canvas + Controls -->
-                <div class="draw-left">
-                    <div class="canvas-container-a6">
-                        <canvas id="signature-canvas" width="560" height="397"></canvas>
-                    </div>
-                    
-                    <div class="canvas-controls">
-                        <button id="clear-canvas" class="btn-secondary">
-                            <span class="material-symbols-outlined">delete</span>
-                            <span>Clear</span>
+                        <button id="kids-download" class="kids-download-btn">
+                            <span class="download-icon">⬇️</span>
+                            <span>Download PDF</span>
                         </button>
-                        <button id="undo-canvas" class="btn-secondary">
-                            <span class="material-symbols-outlined">undo</span>
-                            <span>Undo</span>
-                        </button>
-                        <div class="stroke-width-control">
-                            <label>Pen Size:</label>
-                            <input type="range" id="stroke-width" min="1" max="10" value="3">
-                            <span id="stroke-value">3px</span>
-                        </div>
                     </div>
-                </div>
+                </aside>
 
-                <!-- RIGHT: Preview with 4 copies -->
-                <div class="draw-right">
-                    <div class="preview-grid">
-                        <canvas id="preview-canvas-1" class="preview-mini-canvas"></canvas>
-                        <canvas id="preview-canvas-2" class="preview-mini-canvas"></canvas>
-                        <canvas id="preview-canvas-3" class="preview-mini-canvas"></canvas>
-                        <canvas id="preview-canvas-4" class="preview-mini-canvas"></canvas>
-                    </div>
-                    
-                    <button id="download-signature-btn" class="btn-download-signature">
-                        <span class="material-symbols-outlined">download</span>
-                        <span>Download Signature Sheet</span>
-                    </button>
+                <div class="kids-preview-area">
+                    <div class="kids-preview-label">Live Preview</div>
+                    <div id="kids-preview" class="kids-preview"></div>
                 </div>
             </div>
-        </div>
+        </section>
+    </main>
 
-        <!-- FINAL PREVIEW FOR GENERATED SIGNATURES -->
-        <div id="signature-preview-section" class="signature-final-preview hidden">
-            <h3 class="section-subtitle">Your Signature</h3>
-            <div class="final-signature-display">
-                <canvas id="final-signature-canvas"></canvas>
-            </div>
-            <button id="download-generated-btn" class="btn-download-signature">
-                <span class="material-symbols-outlined">download</span>
-                <span>Download Signature Sheet</span>
-            </button>
-        </div>
-
-    </div>
-</div>
-
-    <!-- EMAIL MODAL -->
+    <!-- Email Verification Modal -->
     <div id="email-modal" class="modal">
         <div class="modal-content">
-            <h2 class="modal-title">Download Your Worksheet</h2>
-            <p class="modal-subtitle">Enter your email to receive a verification code</p>
-
-            <div class="error-message" id="email-error"></div>
-
-            <div class="form-group-modal">
-                <label class="form-label-modal">Email Address</label>
-                <input type="email" id="user-email" class="form-input-modal" placeholder="you@example.com" autocomplete="email">
+            <div class="modal-header">
+                <h2>📧 Get Your Worksheet</h2>
+                <p>Enter your email to download your practice worksheet</p>
             </div>
-
-            <div class="email-tip">
-                <p class="email-tip-title">📧 Can't find the email?</p>
-                <ul class="email-tip-list">
-                    <li>Check your spam/junk folder</li>
-                    <li>Wait 1-2 minutes for delivery</li>
-                    <li>Make sure you entered the correct email</li>
-                </ul>
-            </div>
-
-            <div class="modal-buttons">
-                <button id="send-code-btn" class="btn-modal-primary">Send Code</button>
-                <button id="cancel-btn" class="btn-modal-secondary">Cancel</button>
+            <div class="modal-body">
+                <input type="email" id="email-input" class="modal-input" placeholder="your.email@example.com">
+                <button id="send-code-btn" class="modal-btn">Send Verification Code</button>
+                <p class="modal-note">We'll send you a 6-digit code to verify your email</p>
             </div>
         </div>
     </div>
 
-    <!-- CODE VERIFICATION MODAL -->
+    <!-- Verification Code Modal -->
     <div id="code-modal" class="modal">
         <div class="modal-content">
-            <h2 class="modal-title">Enter Verification Code</h2>
-            <p class="modal-subtitle">We sent a 6-digit code to <strong id="display-email"></strong></p>
-
-            <div class="error-message" id="code-error"></div>
-
-            <div class="form-group-modal">
-                <label class="form-label-modal">Verification Code</label>
-                <input type="text" id="verification-code" class="form-input-modal code-input" placeholder="000000" maxlength="6" autocomplete="one-time-code">
+            <div class="modal-header">
+                <h2>🔐 Verify Your Email</h2>
+                <p>Enter the 6-digit code we sent to <span id="sent-email"></span></p>
             </div>
-
-            <div class="resend-code">
-                Didn't receive it? <button id="resend-code-btn" class="link-btn">Resend</button>
-            </div>
-
-            <div class="modal-buttons">
-                <button id="verify-code-btn" class="btn-modal-primary">Verify & Download</button>
-                <button id="code-cancel-btn" class="btn-modal-secondary">Cancel</button>
+            <div class="modal-body">
+                <input type="text" id="code-input" class="modal-input code-input" placeholder="000000" maxlength="6">
+                <button id="verify-code-btn" class="modal-btn">Verify & Download</button>
+                <button id="resend-code-btn" class="modal-btn-secondary">Resend Code</button>
             </div>
         </div>
     </div>
 
-    <!-- COFFEE MODAL -->
+    <!-- Coffee Modal -->
     <div id="coffee-modal" class="modal">
         <div class="modal-content">
-            <h2 class="modal-title">☕ Enjoy Your Worksheet!</h2>
-            <p class="modal-subtitle">Your download is complete</p>
-
-            <div class="coffee-message">
-                <p>If Trayce helped you, consider buying me a coffee! Your support helps keep this tool free and ad-free. ❤️</p>
+            <button class="modal-close" id="close-coffee">×</button>
+            <div class="modal-header">
+                <h2>☕ Enjoying Trayce?</h2>
+                <p>If you find this tool helpful, consider buying me a coffee!</p>
             </div>
-
-            <div class="modal-buttons">
-                <a href="https://www.buymeacoffee.com/ndukaanthonya" target="_blank" class="btn-coffee-link">
-                    <button class="btn-coffee">☕ Buy Me a Coffee</button>
+            <div class="modal-body">
+                <p class="coffee-message">Your support helps keep this tool free and helps me create more useful resources for everyone.</p>
+                <a href="https://buymeacoffee.com/trayce" target="_blank" class="coffee-btn">
+                    ☕ Buy Me a Coffee
                 </a>
-                <button id="coffee-close-btn" class="btn-modal-secondary">Maybe Later</button>
+                <button id="maybe-later" class="modal-btn-secondary">Maybe Later</button>
             </div>
-
-            <p class="coffee-footer">Thank you for using Trayce! 🎉</p>
         </div>
     </div>
 
-    <!-- Hidden container for PDF generation -->
-    <div id="a4-container" style="position: absolute; left: -9999px;"></div>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>Made with ❤️ by Trayce • <a href="admin-login.html">Admin</a></p>
+            <p class="footer-note">Free handwriting practice worksheets for everyone</p>
+        </div>
+    </footer>
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
+    <script src="script-KIDS-COMPLETE.js"></script>
 </body>
 </html>
